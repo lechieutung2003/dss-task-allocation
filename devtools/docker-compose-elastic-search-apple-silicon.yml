@@ -12,36 +12,36 @@ services:
     volumes:
       - ./docker/mysql:/var/lib/mysql
 
-  redis:
-    image: redis
-    networks: ['intern-network']
-    ports:
-      - ${REDIS_PORT}:6379
-    volumes:
-      - ./docker/redis:/data
+  # redis:
+  #   image: redis
+  #   networks: ['intern-network']
+  #   ports:
+  #     - ${REDIS_PORT}:6379
+  #   volumes:
+  #     - ./docker/redis:/data
 
-  mongo:
-    image: mongo:8.0.9
-    networks: ['intern-network']
-    ports:
-      - ${MONGO_PORT}:27017
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+  # mongo:
+  #   image: mongo:8.0.9
+  #   networks: ['intern-network']
+  #   ports:
+  #     - ${MONGO_PORT}:27017
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
 
-  mongo-express:
-    image: mongo-express:1.0.2-20-alpine3.19
-    networks: ['intern-network']
-    restart: always
-    ports:
-      - ${MONGO_EXPRESS_PORT}:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/
-      ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
+  # mongo-express:
+  #   image: mongo-express:1.0.2-20-alpine3.19
+  #   networks: ['intern-network']
+  #   restart: always
+  #   ports:
+  #     - ${MONGO_EXPRESS_PORT}:8081
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+  #     ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/
+  #     ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
+  #     ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
 
   setup:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
@@ -244,27 +244,27 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTIC_HOSTS=https://es01:9200
 
-  dynamodb-local:
-   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-   image: "amazon/dynamodb-local:latest"
-   networks: ['intern-network']
-   container_name: dynamodb-local
-   ports:
-     - ${DYNAMODB_PORT}:8000
-   volumes:
-     - "./docker/dynamodb:/home/dynamodblocal/data"
-   working_dir: /home/dynamodblocal
+  # dynamodb-local:
+  #  command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+  #  image: "amazon/dynamodb-local:latest"
+  #  networks: ['intern-network']
+  #  container_name: dynamodb-local
+  #  ports:
+  #    - ${DYNAMODB_PORT}:8000
+  #  volumes:
+  #    - "./docker/dynamodb:/home/dynamodblocal/data"
+  #  working_dir: /home/dynamodblocal
 
-  rasa:
-    build: ./rasa-apple-silicon
-    networks: ['intern-network']
-    ports:
-    - ${RASA_PORT}:5005
-    volumes:
-    - "./rasa/credentials.yml:/app/credentials.yml"
-    - "./docker/rasa/models:/app/models"
-    - "./docker/rasa/logs:/app/logs"
-    command: "run --enable-api --debug"
+  # rasa:
+  #   build: ./rasa-apple-silicon
+  #   networks: ['intern-network']
+  #   ports:
+  #   - ${RASA_PORT}:5005
+  #   volumes:
+  #   - "./rasa/credentials.yml:/app/credentials.yml"
+  #   - "./docker/rasa/models:/app/models"
+  #   - "./docker/rasa/logs:/app/logs"
+  #   command: "run --enable-api --debug"
 
   builder:
     build: ./builder

@@ -32,7 +32,7 @@ RUN python -m pip install -r requirements.txt
 
 # cron: add job
 RUN chmod 0644 /etc/cron.d/crontab
-RUN /usr/bin/crontab /etc/cron.d/crontab
+# RUN /usr/bin/crontab /etc/cron.d/crontab
 
 
 CMD ["cron", "-f"]
