@@ -11,13 +11,18 @@ from rest_framework.status import (
 from common.constants.client_constants import  client_constants as common_client_constants
 from oauth.constants.client_constants import client_constants as oauth_client_constants
 from hr.constants.client_constants import client_constants as hr_client_constants
+from knowledge.constants.client_constants import client_constants as knowledge_client_constants
+from ecommerce.constants.client_constants import client_constants as ecommerce_client_constants
 from websites.constants.client_constants import client_constants as website_client_constants
 
 client_constants= {
     **common_client_constants,
     **oauth_client_constants,
     **hr_client_constants,
-    **website_client_constants
+    **knowledge_client_constants,
+    **ecommerce_client_constants,
+    **website_client_constants,
+    **va_client_constants
 }
 
 @api_view(['GET'])
