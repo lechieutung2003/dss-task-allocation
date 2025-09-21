@@ -62,51 +62,6 @@ class Command(BaseCommand):
                 user=user
             )
     
-    # @classmethod
-    # def create_accounts(cls):
-    #     role, created = Role.objects.get_or_create(
-    #         name="Super Administrator",
-    #         description="Unlimited resources access.",
-    #         scope="__all__",
-    #     )
-    #     user = User.objects.filter(email=SUPER_ADMIN_EMAIL).first()
-    #     employee = Employee.objects.filter(work_mail=SUPER_ADMIN_EMAIL).first()
-    #     customer = Customer.objects.filter(email=SUPER_ADMIN_EMAIL).first()
-    #     with transaction.atomic():
-    #         if not user:
-    #             user = User.objects.create(
-    #                 email=SUPER_ADMIN_EMAIL,
-    #                 password=make_password(
-    #                     SUPER_ADMIN_PASSWORD, salt=SECRET_KEY
-    #                 ),
-    #                 first_name="Super",
-    #                 last_name="Administrator",
-    #                 is_superuser=True,
-    #                 is_staff=True,
-    #                 active=True
-    #             )
-    #         if not employee:
-    #             employee = Employee.objects.create(
-    #                 first_name="Super",
-    #                 last_name="Administrator",
-    #                 work_mail=SUPER_ADMIN_EMAIL,
-    #                 personal_mail=SUPER_ADMIN_EMAIL,
-    #                 status=AccountStatus.ACTIVE,
-    #                 user=user
-    #             )
-    #             employee.roles.add(role)
-    #             employee.save()
-    #         if not customer:
-    #             customer = Customer.objects.create(
-    #             name="Super Administrator",
-    #             phone="0000000000",  # hoặc giá trị mặc định nào bạn muốn
-    #             email=SUPER_ADMIN_EMAIL,
-    #             password=make_password(SUPER_ADMIN_PASSWORD, salt=SECRET_KEY),
-    #             address="System Address",  # có thể để chuỗi rỗng "" nếu không quan trọng
-    #             area="urban",  # hoặc "vip" nếu muốn account đặc biệt
-    #         )
-
-    #     return user, employee, customer
     @classmethod
     def create_accounts(cls):
         role, created = Role.objects.get_or_create(
