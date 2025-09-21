@@ -260,7 +260,6 @@ INSTALLED_APPS = [
     'django_opensearch_dsl',
     'businesses',
     'hr',
-	'knowledge',
     'websites',
     'contents',
     'firebase',
