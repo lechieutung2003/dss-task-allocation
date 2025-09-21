@@ -264,7 +264,6 @@ INSTALLED_APPS = [
     'contents',
     'firebase',
     'health_check',
-
 ]
 
 
