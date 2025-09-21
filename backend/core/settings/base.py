@@ -262,8 +262,6 @@ INSTALLED_APPS = [
     'hr',
 	'knowledge',
     'websites',
-    'va',
-    'ecommerce',
     'contents',
     'firebase',
     'health_check'

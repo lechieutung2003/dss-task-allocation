@@ -45,8 +45,6 @@ urlpatterns = [
     path(r'', include('hr.urls')),
 	path(r'', include('knowledge.urls')),
     path(r'', include('websites.urls')),
-    path(r'', include('va.urls')),
-    path(r'', include('ecommerce.urls')),
     path(r'', include('contents.urls')),
     path(r'', include('firebase.urls'))
 ]
