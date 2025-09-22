@@ -13,7 +13,7 @@ def signed_token_generator(private_pem, **kwargs):
     """
     def signed_token_generator(request):
         request.claims = kwargs
-        refresh_token_instance = getattr(request, "refresh_token_instance", None)
+        refresh_token_instance = getattr(request, "refresh_token_instance", None)     
         if request.scope is None and refresh_token_instance is not None:
             access_token = refresh_token_instance.access_token if refresh_token_instance is not None else None
             scope = access_token.scope if access_token is not None else None
@@ -23,6 +23,9 @@ def signed_token_generator(private_pem, **kwargs):
                 "sub": str(request.user.id),
                 "aud": request.client_id,
                 "iat": timezone.now(),
+                "isStaff": request.user.is_staff,
+                "isSuperuser": request.user.is_superuser,
+                "isGuest": request.user.is_guest
             },
         )
         return generate_signed_token(private_pem, request)
@@ -35,7 +38,10 @@ class JWTUser():
         self.email = kwargs.get("email")
         self.first_name = kwargs.get("first_name")
         self.last_name = kwargs.get("last_name")
+        self.is_staff = kwargs.get("is_staff", False)
+        self.is_superuser = kwargs.get("is_superuser", False)
         self.USERNAME_FIELD = "email"
+        self.guest = kwargs.get("is_guest", False)
     
     def get_username(self):
         """Return the username for this User."""
@@ -75,7 +81,10 @@ class JWTAccessToken():
             id=claims["sub"],
             email=claims.get("email", None),
             first_name=claims.get("first_name", None),
-            last_name=claims.get("last_name", None)
+            last_name=claims.get("last_name", None),
+            is_staff=claims.get("isStaff", False),
+            is_superuser=claims.get("isSuperuser", False),
+            is_guest=claims.get("isGuest", False)
         )
         self.application=JWTApplication(
             id=claims["aud"],
