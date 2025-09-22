@@ -1,9 +1,4 @@
-# Pandosima intern starter project
-We publish this repository to help students, who wisht to join Pandosima's intership/open training program, have chance to adtap with technologies and build something for yourself.
-* Checkout this project as a starter point.
-* Follow the guideline in Readme files to setup enviroment, build and run the backend, frontend. 
-* Then take a look on the project's structure, coding convention,...
-* Read the requirements in Todo.md files to implement/develop features and functions as your own.
+# dss-task-allocation project
 
 ## Requirements
 
