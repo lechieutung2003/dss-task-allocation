@@ -22,16 +22,6 @@ from websites.scopes import (
     default_scopes as websites_default_scopes
 )
 
-from va.scopes import (
-    scopes as va_scopes,
-    default_scopes as va_default_scopes
-)
-
-from knowledge.scopes import (
-    scopes as knowledge_scopes,
-    default_scopes as knowledge_default_scopes
-)
-
 from ecommerce.scopes import (
     scopes as ecommerce_scopes,
     default_scopes as ecommerce_default_scopes
@@ -43,9 +33,6 @@ scopes = {
     **businesses_scopes,
     **hr_scopes,
     **websites_scopes,
-    **va_scopes,
-    **websites_scopes,
-    **knowledge_scopes,
     **ecommerce_scopes
 }
 
@@ -55,7 +42,5 @@ default_scopes = {
     **hr_default_scopes,
     **businesses_default_scopes,
     **websites_default_scopes,
-    **va_default_scopes,
-    **knowledge_default_scopes,
     **ecommerce_default_scopes
 }
