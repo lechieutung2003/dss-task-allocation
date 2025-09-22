@@ -31,8 +31,8 @@ export const useOauthStore = defineStore('oauth', {
             return state.first_login
         },
         grantedScopes: (state) => {
-            const {scope} = state.tokenInfo;
-            if (!scope || scope.length ==0) {
+            const { scope } = state.tokenInfo;
+            if (!scope || scope.length == 0) {
                 return [];
             }
             return scope.split(" ");
@@ -63,14 +63,22 @@ export const useOauthStore = defineStore('oauth', {
                 return scope.indexOf(n) === -1;
             });
         },
-        hasOneOfScopes: (state) => (scopes) => {
+        // hasOneOfScopes: (state) => (scopes) => {
+        //     const { scope } = state.tokenInfo;
+        //     if (!scope || scope.length === 0) {
+        //         return false;
+        //     }
+        //     return scopes.some((n) => {
+        //         return scope.indexOf(n) !== -1;
+        //     });
+        // },
+                hasOneOfScopes: (state) => (scopes) => {
             const { scope } = state.tokenInfo;
             if (!scope || scope.length === 0) {
                 return false;
             }
-            return scopes.some((n) => {
-              return scope.indexOf(n) !== -1;
-            });
+            const scopeArr = scope.split(' ');
+            return scopes.some((n) => scopeArr.includes(n));
         },
         isOwnerOrHasOneOfScopes: (state) => (data, scopes) => {
             const { sub, scope } = state.tokenInfo;
