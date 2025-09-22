@@ -157,7 +157,7 @@ django-admin compilemessages
     On client side (frontend or mobile app), put `Accept-Language` to your request, you will see the translated contents.
 
 ## Create user by shell
-1. Virtual environment and setup shell
+1. Virtual environment and create account
 ```
 .\venv\Scripts\activate
 cd backend
