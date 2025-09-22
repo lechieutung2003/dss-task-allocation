@@ -263,7 +263,7 @@ INSTALLED_APPS = [
     'websites',
     'contents',
     'firebase',
-    'health_check',
+    'health_check'
 ]
 
 

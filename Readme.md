@@ -160,3 +160,15 @@ django-admin compilemessages
 4. Consum translated contents
 
     On client side (frontend or mobile app), put `Accept-Language` to your request, you will see the translated contents.
+
+## Create user by shell
+1. Virtual environment and setup shell
+```
+.\venv\Scripts\activate
+cd backend
+python create_users.py
+```
+2. Login with account
+- SuperAdministator: admin@gmail.com
+- Employee: employee@gmail.com
+- Guest: guest@gmail.com

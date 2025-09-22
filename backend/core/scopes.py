@@ -22,30 +22,20 @@ from websites.scopes import (
     default_scopes as websites_default_scopes
 )
 
-
-# from knowledge.scopes import (
-#     scopes as knowledge_scopes,
-#     default_scopes as knowledge_default_scopes
-# )
-
-
-
 scopes = {
     **oauth_scopes,
     **contents_scopes,
     **businesses_scopes,
     **hr_scopes,
     **websites_scopes,
-
-  
+    **websites_scopes,
 }
 
 default_scopes = {
     **oauth_default_scopes,
     **contents_default_scopes,
+    **websites_default_scopes,
     **hr_default_scopes,
     **businesses_default_scopes,
     **websites_default_scopes,
-  
-
 }

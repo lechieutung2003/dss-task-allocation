@@ -42,7 +42,6 @@ urlpatterns = [
     path(r'', include('oauth.urls')),
     path(r'', include('otp.urls')),
     path(r'', include('businesses.urls')),
-    # path(r'', include('knowledge.urls')),
     path(r'', include('hr.urls')),
     path(r'', include('websites.urls')),
     path(r'', include('contents.urls')),
