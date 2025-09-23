@@ -1,5 +1,5 @@
 <template>
-    <div class=" flex flex-col w-full p-3 justify-center left-0 mt-10 items-center">
+    <div class=" flex flex-col w-full p-3 justify-center left-0 items-center mb-auto mt-auto">
         <span class="my-5">{{ t('Service_to_manage') }}</span>
         <div class=" self-center grid grid-cols-3 gap-2 text-sm mt-12">
             <el-card>

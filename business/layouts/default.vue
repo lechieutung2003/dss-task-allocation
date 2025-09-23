@@ -14,7 +14,7 @@
     </div>
     <div v-else class="w-full">
       <TopbarNav />
-      <div class="pt-50">
+      <div class="pt-10">
         <slot />
       </div>
       <footer class="w-full bg-gray-100 flex justify-center">

@@ -22,6 +22,7 @@ from websites.scopes import (
     default_scopes as websites_default_scopes
 )
 
+<<<<<<< HEAD
 from va.scopes import (
     scopes as va_scopes,
     default_scopes as va_default_scopes
@@ -34,23 +35,33 @@ from knowledge.scopes import (
 
 
 
+=======
+>>>>>>> f9e65f11a354c81caa65c4ef4b2b08ff424d2f25
 scopes = {
     **oauth_scopes,
     **contents_scopes,
     **businesses_scopes,
     **hr_scopes,
     **websites_scopes,
+<<<<<<< HEAD
     **va_scopes,
     **websites_scopes,
     **knowledge_scopes,
+=======
+    **websites_scopes,
+>>>>>>> f9e65f11a354c81caa65c4ef4b2b08ff424d2f25
 }
 
 default_scopes = {
     **oauth_default_scopes,
     **contents_default_scopes,
+    **websites_default_scopes,
     **hr_default_scopes,
     **businesses_default_scopes,
     **websites_default_scopes,
+<<<<<<< HEAD
     **va_default_scopes,
     **knowledge_default_scopes,
+=======
+>>>>>>> f9e65f11a354c81caa65c4ef4b2b08ff424d2f25
 }

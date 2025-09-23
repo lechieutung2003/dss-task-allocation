@@ -10,8 +10,13 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const tokenValid = tokenInfo && tokenInfo.exp && tokenInfo.exp > currentTime;
   if (authenticated && tokenValid) {
     console.log('tokenInfo.exp',tokenInfo.exp);
+    if (oauthStore.hasOneOfScopes(['employees:view'])) {
+      return navigateTo('/employee/info/EmployeeInfo'); // Trang chủ nhân viên
+    }
+    
     if (to.path === '/') {
       return navigateTo('/dashboard');
     }
+
   }
 })

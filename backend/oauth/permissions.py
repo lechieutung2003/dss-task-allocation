@@ -61,3 +61,5 @@ class IsAdministrator(TokenMatchesOASRequirements):
         if token is not None and token.application is not None and token.application.id == settings.BUSINESS_CLIENT_ID:
             return True
         return False
+
+
