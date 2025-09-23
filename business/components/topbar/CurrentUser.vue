@@ -43,6 +43,7 @@ const currentUser = computed(() => {
 const logout = async () => {
   OAuthService.logout()
     .then(response => {
+      console.log('Logout successful:', response);
       store.$reset()
     })
     .catch(error => {

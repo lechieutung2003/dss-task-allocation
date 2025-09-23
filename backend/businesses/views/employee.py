@@ -49,8 +49,8 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
         "update": [["admin:employees:edit"], ["employees:view"]],
         "destroy": [["admin:employees:edit"], ["employees:edit"]],
         "invite": [["admin:employees:edit"], ["employees:edit"]],
-        "list": [["admin:employees:view"], ["employees:view"]],
-        "retrieve": [["admin:employees:view"], ["employees:view"]]
+        "list": [["admin:employees:view"], ["employees:view-mine"]],
+        "retrieve": [["admin:employees:view"], ["employees:view-mine"]]
     }
 
     def create(self, request, *args, **kwargs):
