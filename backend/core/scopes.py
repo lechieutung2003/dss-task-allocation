@@ -43,7 +43,6 @@ scopes = {
     **va_scopes,
     **websites_scopes,
     **knowledge_scopes,
-    **ecommerce_scopes
 }
 
 default_scopes = {
@@ -54,5 +53,4 @@ default_scopes = {
     **websites_default_scopes,
     **va_default_scopes,
     **knowledge_default_scopes,
-    **ecommerce_default_scopes
 }
