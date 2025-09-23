@@ -161,6 +161,8 @@ django-admin compilemessages
 ```
 .\venv\Scripts\activate
 cd backend
+python manage.py makemigrations
+python manage.py migrate
 python create_users.py
 ```
 2. Login with account
