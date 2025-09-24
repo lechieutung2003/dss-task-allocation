@@ -1,3 +1,7 @@
+#Add register
+from .views.user import RegisterView
+#####
+
 from django.urls import path, re_path, include
 from base import routers
 
@@ -24,4 +28,8 @@ router.register(r"applications", ApplicationViewSet, basename="applications")
 urlpatterns = [
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     re_path(r'^api/v1/', include(router.urls)),
+    path('register/', RegisterView.as_view(), name='register'),
 ]
+
+
+

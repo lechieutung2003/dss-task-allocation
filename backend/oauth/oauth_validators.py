@@ -1,4 +1,5 @@
 import json
+from urllib import request
 from jwcrypto import jwt
 from jwcrypto.common import JWException
 from jwcrypto.jwt import JWTExpired
@@ -60,6 +61,7 @@ class CustomOAuth2Validator(OAuth2Validator):
     # otherwise the OIDC standard scopes are used.
 
     def get_additional_claims(self, request):
+        
         return {
             "first_name": request.user.first_name,
             "last_name": request.user.last_name,

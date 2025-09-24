@@ -259,11 +259,12 @@ INSTALLED_APPS = [
     'otp',
     'django_opensearch_dsl',
     'businesses',
+    'ecommerce',
     'hr',
     'websites',
     'contents',
     'firebase',
-    'health_check'
+    'health_check',
 ]
 
 

@@ -14,13 +14,52 @@ from businesses.models import Employee
 from django.contrib.auth.hashers import make_password
 from oauth.constants import AccountStatus
 
+def create_roles():
+    """Tạo các roles cơ bản trong hệ thống"""
+    roles_data = [
+        {
+            'name': 'Super Administrator',
+            'description': 'Unlimited resources access.',
+            'scope': '__all__'
+        },
+        {
+            'name': 'Employee',
+            'description': 'Regular employee with basic access.',
+            'scope': 'employees:view'
+        },
+        {
+            'name': 'Guest',
+            'description': 'Guest user with limited access.',
+            'scope': 'users:view-mine'
+        }
+    ]
+    
+    created_roles = []
+    
+    with transaction.atomic():
+        for role_data in roles_data:
+            role, created = Role.objects.update_or_create(
+                name=role_data['name'],  # ✅ LOOKUP FIELD
+                defaults={
+                    'description': role_data['description'],
+                    'scope': role_data['scope']
+                }
+            )
+            created_roles.append(role)
+            print(f"Role {'created' if created else 'updated'}: {role.name} (ID: {role.id})")
+    
+    print(f"\nTổng cộng {len(created_roles)} roles đã được tạo/cập nhật")
+    return created_roles
+
+
 def create_users_with_roles():
+    create_roles()
     # Lấy role đã tồn tại trong database theo ID
     try:
-        admin_role = Role.objects.get(id='17bcdb90365f45fe98875cdc9d8c1271')  # Super Administrator
-        employee_role = Role.objects.get(id='6fba65978fd3470a827339b56128dadd')  # Employee
-        guest_role = Role.objects.get(id='493659278d2d460697574e92bb8c4e1a')  # Guest
-        
+        admin_role = Role.objects.get(name='Super Administrator')  # Super Administrator
+        employee_role = Role.objects.get(name='Employee')  # Employee
+        guest_role = Role.objects.get(name='Guest')  # Guest
+
         print(f"Tìm thấy roles: Admin({admin_role.name}), Employee({employee_role.name}), Guest({guest_role.name})")
     except Role.DoesNotExist:
         print("Không tìm thấy role theo ID, kiểm tra lại dữ liệu role trong database")
