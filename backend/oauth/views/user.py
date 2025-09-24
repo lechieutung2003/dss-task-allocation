@@ -13,6 +13,10 @@ from django.core.exceptions import ValidationError
 from ..models import User
 from ..serializers import UserSerializer
 
+#Add register
+from rest_framework.permissions import AllowAny
+#####
+
 
 class UserViewSet(BaseViewSet):
     """
@@ -119,3 +123,16 @@ class UserViewSet(BaseViewSet):
             )
         
         return Response({"message": _("The password have been updated.")})
+
+
+#Add register
+from rest_framework.views import APIView
+from oauth.serializers.user import UserRegisterSerializer
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = UserRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"id": user.id, "email": user.email}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
