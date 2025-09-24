@@ -6,7 +6,8 @@ default_scopes = {
 
 approvable_scopes = {
     "offices:edit": "Edit my business's offices",
-    "organization:edit": "Edit my business's offices"
+    "organization:edit": "Edit my business's offices",
+    "admin:edit": "Edit admin dashboard",
 }
 
 scopes = {}

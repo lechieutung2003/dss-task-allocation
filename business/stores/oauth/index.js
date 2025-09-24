@@ -13,6 +13,9 @@ export const useOauthStore = defineStore('oauth', {
             exp: 0,
             nbf: 0,
             scope: "",
+            isStaff: false,
+            isSuperuser: false,
+            isGuest: false
         },
         scopes: {
             ...createCachedEntry([], 0)
@@ -54,14 +57,22 @@ export const useOauthStore = defineStore('oauth', {
             }
             return scopes;
         },
+        // hasAllScopes: (state) => (scopes) => {
+        //     const { scope } = state.tokenInfo;
+        //     if (!scope || scope.length === 0) {
+        //         return false;
+        //     }
+        //     return !scopes.some((n) => {
+        //         return scope.indexOf(n) === -1;
+        //     });
+        // },
         hasAllScopes: (state) => (scopes) => {
             const { scope } = state.tokenInfo;
             if (!scope || scope.length === 0) {
                 return false;
             }
-            return !scopes.some((n) => {
-                return scope.indexOf(n) === -1;
-            });
+            const scopeArr = scope.split(' ');
+            return scopes.every((n) => scopeArr.includes(n));
         },
         // hasOneOfScopes: (state) => (scopes) => {
         //     const { scope } = state.tokenInfo;
@@ -72,7 +83,7 @@ export const useOauthStore = defineStore('oauth', {
         //         return scope.indexOf(n) !== -1;
         //     });
         // },
-                hasOneOfScopes: (state) => (scopes) => {
+        hasOneOfScopes: (state) => (scopes) => {
             const { scope } = state.tokenInfo;
             if (!scope || scope.length === 0) {
                 return false;
@@ -99,7 +110,7 @@ export const useOauthStore = defineStore('oauth', {
     },
     actions: {
         setTokenInfo({ access_token, refresh_token }) {
-            const { sub, iat, exp, nbf, scope } = jwtDecode(access_token);
+            const { sub, iat, exp, nbf, scope, isStaff, isSuperuser, isGuest } = jwtDecode(access_token);
             this.tokenInfo = {
                 access_token,
                 refresh_token,
@@ -107,7 +118,10 @@ export const useOauthStore = defineStore('oauth', {
                 iat,
                 exp,
                 nbf: nbf,
-                scope
+                scope,
+                isStaff,
+                isSuperuser,
+                isGuest
             }
 
         },

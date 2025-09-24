@@ -32,8 +32,8 @@ class UserViewSet(BaseViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     required_alternate_scopes = {
-        "create": [["admin:users:edit"]],
-        "invite": [["admin:users:edit"],],
+        "create": [["admin:users:edit"], ["users:create"]],
+        "invite": [["admin:users:edit"], ["users:invite"]],
         "retrieve": [
             ["admin:users:view"],
             ["admin:users:edit"],
@@ -44,7 +44,7 @@ class UserViewSet(BaseViewSet):
         ],
         "destroy": [["admin:users:edit"]],
         "multiple_delele": [["admin:users:edit"]],
-        "list": [["admin:users:view"], ["admin:users:edit"]],
+        "list": [["admin:users:view"], ["admin:users:edit"], ["users:view-mine"]],
         "change_password": [["users:edit-mine"]],
         "import_data": [["admin:users:edit"]],
     }

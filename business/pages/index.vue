@@ -1,8 +1,8 @@
 <template>
-    <p>Test index page</p>
-    <Dashboard v-if="isAdmin" />
-    <EmployeeInfo v-else-if="isEmployee" />
-    <GettingStarted v-else />
+  <EmployeeInfo v-if="isAdmin" />
+  <EmployeeInfo v-else-if="isEmployee" />
+  <GuestInfo v-else-if="isGuest" />
+  <GettingStarted v-else />
 </template>
 
 <script setup>
@@ -13,36 +13,37 @@ definePageMeta({
 import { useOauthStore } from '@/stores/oauth';
 import Dashboard from '@/components/Dashboard.vue'
 import EmployeeInfo from '@/components/EmployeeInfo.vue'
+import GuestInfo from '@/components/GuestInfo.vue'
 const oauthStore = useOauthStore()
 
-
 // const isAdmin = computed(() => {
-//   if(oauthStore.hasOneOfScopes(['__all__'])){
-//     const { tokenInfo } = oauthStore;
-//     if (!tokenInfo) return false;
-//     const { access_token } = tokenInfo;
-//     if (!access_token) return false;
-//     return access_token.length > 0;
-//   }
-// })
+//   return !oauthStore.tokenInfo.isGuest && oauthStore.tokenInfo.isStaff && oauthStore.tokenInfo.isSuperuser;
+// });
 
 // const isEmployee = computed(() => {
-//   if(oauthStore.hasOneOfScopes(['employees:view'])) {
-//     const { tokenInfo } = oauthStore;
-//     if (!tokenInfo) return false;
-//     const { access_token } = tokenInfo;
-//     if (!access_token) return false;
-//     return access_token.length > 0;
-//   }
-// })
+//   return !oauthStore.tokenInfo.isGuest && oauthStore.tokenInfo.isStaff && !oauthStore.tokenInfo.isSuperuser;
+// });
 
-const isAdmin = computed(() => oauthStore.hasOneOfScopes(['admin:view']))
-const isEmployee = computed(() => oauthStore.hasOneOfScopes(['employees:view']))
+// const isGuest = computed(() => {
+//   return oauthStore.tokenInfo.isGuest && !oauthStore.tokenInfo.isStaff && !oauthStore.tokenInfo.isSuperuser;
+// });
 
-// console.log('oauthStore:', oauthStore)
-// console.log('tokenInfo:', oauthStore.tokenInfo)
-console.log('scope:', oauthStore.tokenInfo.scope)
-console.log('isAdmin:', isAdmin.value)
-console.log('isEmployee:', isEmployee.value)
+const isAdmin = computed(() => {
+  return oauthStore.hasAllScopes(['users:view', 'users:edit', 'roles:view', 'roles:edit']);
+});
+
+const isEmployee = computed(() => {
+  return oauthStore.hasOneOfScopes(['employees:view', 'tasks:view-mine']);
+});
+
+const isGuest = computed(() => {
+  return oauthStore.hasAllScopes(['users:view-mine']) && 
+         !oauthStore.hasOneOfScopes(['employees:view', 'roles:view']);
+});
+
+console.log('isAdmin:', isAdmin.value);
+console.log('isEmployee:', isEmployee.value);
+console.log('isGuest:', isGuest.value);
+console.log('tokenInfo:', oauthStore.tokenInfo);
 
 </script>

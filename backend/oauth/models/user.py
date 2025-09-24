@@ -23,6 +23,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=False,
         help_text=_("Designates whether the user can log into this admin site."),
     )
+    is_guest = models.BooleanField(
+        _("guest status"),
+        default=False,
+        help_text=_("Designates whether the user can log into this admin site."),
+    )
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
