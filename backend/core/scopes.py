@@ -28,13 +28,11 @@ scopes = {
     **businesses_scopes,
     **hr_scopes,
     **websites_scopes,
-    **websites_scopes,
 }
 
 default_scopes = {
     **oauth_default_scopes,
     **contents_default_scopes,
-    **websites_default_scopes,
     **hr_default_scopes,
     **businesses_default_scopes,
     **websites_default_scopes,

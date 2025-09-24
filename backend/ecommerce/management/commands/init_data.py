@@ -16,15 +16,15 @@ from oauth2_provider.models import AbstractApplication
 from oauth.constants import AccountStatus
 from oauth.models import Role, User, Application
 from businesses.models import Employee
-from ecommerce.models import Customer
-from ecommerce.scopes import default_scopes as ecommerce_default_scopes
+from ...models import Customer
+from ...scopes import default_scopes as ecommerce_default_scopes
 
 
 class Command(BaseCommand):
     help = "Init ecommerce data"
 
     def handle(self, *args, **options):
-        user, employee, customer, emp_user, emp_profile, guest_user, guest_customer = self.create_accounts()
+        user, employee, customer = self.create_accounts()
         self.create_applications(user=user)
         self.stdout.write(self.style.SUCCESS("Init data successfully"))
     
@@ -38,7 +38,7 @@ class Command(BaseCommand):
                 client_type="confidential",
                 authorization_grant_type="password",
                 client_secret=BUSINESS_CLIENT_SECRET,
-                name="Amoz Business",
+                name="Alpha Business",
                 algorithm=AbstractApplication.RS256_ALGORITHM,
                 scope="__all__",
                 skip_authorization=True,
@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 client_type="confidential",
                 authorization_grant_type="password",
                 client_secret=ECOMMERCE_CLIENT_SECRET,
-                name="Amoz Ecommerce",
+                name="Alpha Ecommerce",
                 algorithm=AbstractApplication.RS256_ALGORITHM,
                 scope=list_to_scope(ecommere_client_scopes),
                 skip_authorization=True,
@@ -104,76 +104,4 @@ class Command(BaseCommand):
                     status=AccountStatus.ACTIVE,
                     user=user
                 )
-        
-        # Tạo thêm các roles mới
-        employee_role, _ = Role.objects.get_or_create(
-            name="Employee",
-            description="Regular employee access",
-            scope="users:view-mine users:edit-mine employees:view-mine employees:edit-mine tasks:view tasks:edit-mine",
-        )
-        
-        guest_role, _ = Role.objects.get_or_create(
-            name="Guest",
-            description="Limited guest access",
-            scope="users:view-mine users:edit-mine",
-        )
-        
-        # Tạo Employee thông thường
-        regular_employee_email = "employee@gmail.com"
-        employee_user = User.objects.filter(email=regular_employee_email).first()
-        employee_profile = Employee.objects.filter(work_mail=regular_employee_email).first()
-        
-        with transaction.atomic():
-            if not employee_user:
-                employee_user = User.objects.create(
-                    email=regular_employee_email,
-                    password=make_password("123456", salt=SECRET_KEY),
-                    first_name="Regular",
-                    last_name="Employee",
-                    is_superuser=False,
-                    is_staff=True,  # Vẫn cho phép đăng nhập admin site
-                    active=True
-                )
-            if not employee_profile:
-                employee_profile = Employee.objects.create(
-                    first_name="Regular",
-                    last_name="Employee",
-                    work_mail=regular_employee_email,
-                    personal_mail=regular_employee_email,
-                    status=AccountStatus.ACTIVE,
-                    user=employee_user
-                )
-                employee_profile.roles.add(employee_role)
-                employee_profile.save()
-        
-        # Tạo Guest
-        guest_email = "guest@gmail.com"
-        guest_user = User.objects.filter(email=guest_email).first()
-        guest_customer = Customer.objects.filter(email=guest_email).first()
-        
-        with transaction.atomic():
-            if not guest_user:
-                guest_user = User.objects.create(
-                    email=guest_email,
-                    password=make_password("123456", salt=SECRET_KEY),
-                    first_name="Guest",
-                    last_name="User",
-                    is_superuser=False,
-                    is_staff=False,
-                    is_guest=True,
-                    active=True
-                )
-            if not guest_customer:
-                guest_customer = Customer.objects.create(
-                    first_name="Guest",
-                    last_name="User",
-                    email=guest_email,
-                    status=AccountStatus.ACTIVE,
-                    user=guest_user
-                )
-        
-        print(f"Employee created with ID: {employee_user.id if employee_user else 'None'}")
-        print(f"Guest created with ID: {guest_user.id if guest_user else 'None'}")
-        
-        # Trả về kết quả ban đầu
-        return user, employee, customer, employee_user, employee_profile, guest_user, guest_customer
+        return user, employee, customer
