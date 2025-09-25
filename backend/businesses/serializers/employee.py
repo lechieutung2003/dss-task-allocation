@@ -39,6 +39,13 @@ class EmployeeSerializer(WritableNestedSerializer):
             'additional_information',
             'status',
             'updated_at',
+            # Thêm các trường mới
+            'area',
+            'working_start_time',
+            'working_end_time',
+            'completed_orders_count',
+            'salary',
+            'total_hours_worked',
         ]
         extra_kwargs = {
             'user': {'required': False},
@@ -52,7 +59,14 @@ class EmployeeSerializer(WritableNestedSerializer):
             'avatar': {'required': False},
             'roles': {'required': False},
             'status': {'required': False},
-            'updated_at': {'read_only': True}
+            'updated_at': {'read_only': True},
+            # Thêm các trường mới
+            'area': {'required': False},
+            'working_start_time': {'required': False},
+            'working_end_time': {'required': False},
+            'completed_orders_count': {'required': False},
+            'salary': {'required': False},
+            'total_hours_worked': {'required': False},
         }
         nested_create_fields = ["user"]
         nested_update_fields = ["additional_information"]
@@ -76,7 +90,14 @@ class EmployeeShortSerializer(serializers.ModelSerializer):
             'phone',
             'gender',
             'avatar',
-            'status'
+            'status',
+            # Thêm các trường mới
+            'area',
+            'working_start_time',
+            'working_end_time',
+            'completed_orders_count',
+            'salary',
+            'total_hours_worked',
         ]
         extra_kwargs = {
             'user': {'required': False},
@@ -89,6 +110,11 @@ class EmployeeShortSerializer(serializers.ModelSerializer):
             'gender': {'required': False},
             'avatar': {'required': False},
             'status': {'required': False},
+            # Thêm các trường mới
+            'area': {'required': False},
+            'working_start_time': {'required': False},
+            'working_end_time': {'required': False},
+            'completed_orders_count': {'required': False},
+            'salary': {'required': False},
+            'total_hours_worked': {'required': False},
         }
-        # depth = 1
-

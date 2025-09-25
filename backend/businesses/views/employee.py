@@ -42,7 +42,8 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
     search_map = {
         "first_name": "icontains",
         "last_name": "icontains",
-        "work_mail": "icontains"
+        "work_mail": "icontains",
+        "area": "icontains",
     }
     required_alternate_scopes = {
         "create": [["admin:employees:edit"], ["employees:edit"]],
