@@ -72,7 +72,8 @@
                 <select v-model="form.area" class="input">
                   <option disabled value="">Select area</option>
                   <option value="urban">Urban</option>
-                  <option value="rural">Rural</option>
+                  <option value="suburban">Suburban</option>
+                  <option value="vip">Vip</option>
                 </select>
               </div>
             </div>

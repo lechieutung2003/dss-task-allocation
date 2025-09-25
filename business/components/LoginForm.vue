@@ -160,7 +160,7 @@ const login = async () => {
     try {
         const response = await OAuthService.login(data);
         const { access_token, refresh_token } = response;
-        
+        store.setTokenInfo({ access_token, refresh_token });
         if (access_token && refresh_token) {
             store.setTokenInfo({ access_token, refresh_token });
         }

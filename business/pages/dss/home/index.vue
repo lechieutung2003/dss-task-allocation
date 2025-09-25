@@ -1,143 +1,119 @@
-<template>
-  <div class="lg:py-10 py-6 lg:px-12 px-6 min-w-280 sm:w-full h-full bg-white rounded-lg drop-shadow-md">
-    <main class="w-full">
-      <div class="w-full md:max-w-[550px] max-w-[450px] mx-auto">
-        <!-- Header -->
-        <div class="form-header">
-          <h1 class="form-title">Trang cá nhân</h1>
-          <p class="form-subtitle">Xem thông tin và tạo đơn hàng</p>
-        </div>
+<script setup lang="ts">
+import { useOauthStore } from '@/stores/oauth';
+import { useRouter } from 'vue-router';
 
-        <!-- Thông tin cá nhân -->
-        <div class="flex-column mb-4">
-          <label>Họ và tên</label>
-          <div class="inputForm">
-            <input v-model="user.name" type="text" class="input" disabled />
-          </div>
-        </div>
+const store = useOauthStore();
+const router = useRouter();
 
-        <div class="flex-column mb-4">
-          <label>Email</label>
-          <div class="inputForm">
-            <input v-model="user.email" type="email" class="input" disabled />
-          </div>
-        </div>
-
-        <div class="flex-column mb-4">
-          <label>Số điện thoại</label>
-          <div class="inputForm">
-            <input v-model="user.phone" type="text" class="input" disabled />
-          </div>
-        </div>
-
-        <!-- Form tạo đơn hàng -->
-        <form class="form" @submit.prevent="createOrder">
-          <div class="form-header">
-            <h2 class="form-title">Tạo đơn hàng</h2>
-          </div>
-
-          <div class="flex-column">
-            <label>Sản phẩm</label>
-          </div>
-          <div class="inputForm">
-            <select v-model="order.product" class="input">
-              <option disabled value="">-- Chọn sản phẩm --</option>
-              <option v-for="product in products" :key="product.id" :value="product.name">
-                {{ product.name }}
-              </option>
-            </select>
-          </div>
-
-          <div class="flex-column">
-            <label>Số lượng</label>
-          </div>
-          <div class="inputForm">
-            <input v-model.number="order.quantity" type="number" min="1" class="input" />
-          </div>
-
-          <button type="submit" class="button-submit">
-            Đặt hàng
-          </button>
-        </form>
-      </div>
-    </main>
-  </div>
-</template>
-
-<script setup>
-import { ref } from "vue";
-
-const user = ref({
-  name: "Nguyễn Văn A",
-  email: "a6@gmail.com",
-  phone: "0123456789",
-});
-
-const products = ref([
-  { id: 1, name: "Sản phẩm 1" },
-  { id: 2, name: "Sản phẩm 2" },
-]);
-
-const order = ref({
-  product: "",
-  quantity: 1,
-});
-
-const createOrder = () => {
-  if (!order.value.product) {
-    alert("Vui lòng chọn sản phẩm!");
-    return;
-  }
-  alert(`Đã tạo đơn hàng: ${order.value.product} x ${order.value.quantity}`);
+// Hàm điều hướng tới trang tạo đơn
+const goToCreateOrder = () => {
+  router.push('/dss/orders/create');
 };
 </script>
 
+<template>
+  <nav class="user-menu">
+    <div class="user-menu__wrapper">
+      <!-- Nếu đã đăng nhập -->
+      <template v-if="store.user">
+        <div class="user-menu__info">
+          <span class="user-menu__greeting">Hello,</span>
+          <span class="user-menu__name">{{ store.user.first_name }} {{ store.user.last_name }}</span>
+        </div>
+
+        <!-- Button tạo đơn -->
+        <button
+          class="create-order-btn"
+          @click="goToCreateOrder"
+        >
+          Tạo đơn
+        </button>
+      </template>
+
+      <!-- Nếu chưa đăng nhập -->
+      <template v-else>
+        <div class="user-menu__info user-menu__not-logged">
+          <span>Not logged in</span>
+        </div>
+      </template>
+    </div>
+  </nav>
+</template>
+
 <style scoped>
-/* Dùng lại style từ form login */
-.form-header {
-  text-align: center;
-  margin-bottom: 20px;
+.user-menu {
+  display: flex;
+  justify-content: flex-start; /* nằm bên trái */
+  padding: 1.5rem 2rem;
+  background-color: #f3f4f6;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
-.form-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.form-subtitle {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
-}
-.inputForm {
-  border: 1.5px solid #ecedec;
-  border-radius: 10px;
-  height: 45px;
+
+.user-menu__wrapper {
   display: flex;
   align-items: center;
-  padding: 0 10px;
-  margin-bottom: 10px;
+  gap: 1rem;
+  background-color: #fff;
+  padding: 0.5rem 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  transition: all 0.2s ease-in-out;
 }
-.input {
-  border: none;
-  width: 100%;
-  background: transparent;
+
+.user-menu__wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
 }
-.input:focus {
-  outline: none;
+
+.user-menu__info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
-.button-submit {
-  margin-top: 10px;
-  background-color: #151717;
-  border: none;
-  color: white;
-  font-size: 15px;
+
+.user-menu__greeting {
   font-weight: 500;
-  border-radius: 10px;
-  height: 45px;
-  width: 100%;
-  cursor: pointer;
+  color: #111827;
 }
-.button-submit:hover {
-  background-color: #252727;
+
+.user-menu__name {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.create-order-btn {
+  padding: 0.3rem 0.8rem;
+  background-color: #000000;
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.create-order-btn:hover {
+  background-color: #000000;
+  transform: translateY(-1px);
+}
+
+.user-menu__not-logged {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+  .user-menu {
+    justify-content: center; /* mobile vẫn center */
+    padding: 1rem;
+  }
+  .user-menu__wrapper {
+    padding: 0.5rem 1rem;
+    gap: 0.75rem;
+  }
+  .create-order-btn {
+    margin-left: 0;
+  }
 }
 </style>

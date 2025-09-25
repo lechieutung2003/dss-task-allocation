@@ -265,6 +265,7 @@ INSTALLED_APPS = [
     'contents',
     'firebase',
     'health_check',
+    'django_extensions',
 ]
 
 

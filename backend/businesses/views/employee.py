@@ -13,6 +13,7 @@ from rest_framework.status import (
     HTTP_406_NOT_ACCEPTABLE,
     HTTP_500_INTERNAL_SERVER_ERROR
 )
+
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_nested_forms.utils import NestedForm
 from oauthlib.oauth2.rfc6749.utils import list_to_scope
@@ -193,7 +194,10 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
     @action(detail=False, methods=[Http.HTTP_POST], url_path="login", permission_classes=[AllowAny], authentication_classes=[])
     def login(self, request, pk=None):
         try:
-            user_name = request.POST.get("username")
+            # user_name = request.POST.get("username")
+            user_name = request.data.get("username")  # đọc từ JSON
+            password = request.data.get("password")
+    
             user = User.objects.prefetch_related("employees").get(email=user_name)
         except User.DoesNotExist:
             return Response(
@@ -232,9 +236,11 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
         for k, v in headers.items():
             response[k] = v
         return response
+   
+
 
     @action(detail=False, methods=[Http.HTTP_POST], url_path="refresh-token", permission_classes=[AllowAny], authentication_classes=[])
-    def refeshToken(self, request):
+    def refreshToken(self, request):
         request.POST._mutable = True
         refresh_token =  request.POST.get("refresh_token")
         if not refresh_token or refresh_token == 'null':
