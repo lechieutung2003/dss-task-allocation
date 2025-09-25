@@ -2,17 +2,23 @@ from django.urls import re_path, include, path
 from rest_framework_nested import routers
 from base import routers
 
+
 from .views import (
     GroupViewSet,
     OfficeViewSet,
     HolidayViewSet,
     WorkSessionViewSet,
     UnitViewSet,
-    UnitTypeViewSet
+    UnitTypeViewSet,
 )
+from .views.order import CustomerViewSet, ServiceTypeViewSet, OrderViewSet
 
 app_name = "hr"
 router = routers.MutipleUpdateRouter(trailing_slash=False)
+
+router.register(r'customers', CustomerViewSet, basename="customers")
+router.register(r'service-types', ServiceTypeViewSet, basename="service-types")
+router.register(r'orders', OrderViewSet, basename="orders")
 
 router.register(r'groups', GroupViewSet, basename="groups")
 router.register(r'offices', OfficeViewSet, basename="offices")
@@ -30,10 +36,12 @@ office_router_non_group = routers.NestedMutipleUpdateRouter(router, r'offices', 
 office_router_non_group.register(r'holidays', HolidayViewSet, basename="holidays")
 office_router_non_group.register(r'work-sessions', WorkSessionViewSet, basename="work-sessions")
 
+from .views.register_customer import RegisterCustomerAPIView
+
 urlpatterns = [
     re_path(r'^api/v1/', include(router.urls)),
     re_path(r'^api/v1/', include(group_router.urls)),
     re_path(r'^api/v1/', include(office_router.urls)),
     re_path(r'^api/v1/', include(office_router_non_group.urls)),
-
+    path('api/v1/register-customer', RegisterCustomerAPIView.as_view(), name='register-customer'),
 ]
