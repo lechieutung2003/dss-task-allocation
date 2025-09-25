@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 from rest_framework import viewsets, permissions
 from hr.models.customer import Customer, ServiceType
@@ -48,7 +47,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return [permissions.IsAuthenticated()]
             return [permissions.IsAdminUser()]
         return [permissions.IsAdminUser()]
-=======
+
 from base.views import BaseViewSet
 from ..models import Order, Assignment, DecisionLog
 from ..serializers.order import OrderSerializer, AssignmentSerializer, DecisionLogSerializer
@@ -107,4 +106,3 @@ class AssignmentViewSet(BaseViewSet):
         "destroy": [["assignments:edit"]],
         "list": [["assignments:view"], ["assignments:edit"]],
     }
->>>>>>> Features/feat-view-oder-and-details
