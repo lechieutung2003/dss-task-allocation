@@ -35,8 +35,8 @@ const isGuest = computed(() => {
 
 // redirect nếu là admin hoặc employee
 watchEffect(() => {
-  if (isAdmin.value || isEmployee.value) {
-    router.push("/dss/dashboard");
+  if (isGuest.value) {
+    router.push("/dss/home");
   }
 });
 

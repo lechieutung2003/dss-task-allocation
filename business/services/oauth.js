@@ -13,6 +13,16 @@ class OAuthService extends BaseService {
     formData.append("password", password);
     return this.request().post(`${this.entity}/login`, formData);
   }
+  
+  registerCustomer(data) {
+    const formData = new FormData();
+    for (const key in data) {
+      formData.append(key, data[key]);
+    }
+    return this.request().post('register-customer', formData);
+  }
+
+
 
   logout() {
     const store = useOauthStore();
