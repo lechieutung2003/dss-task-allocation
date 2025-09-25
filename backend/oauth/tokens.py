@@ -7,10 +7,33 @@ import pytz
 utc=pytz.UTC
 
 
+# def signed_token_generator(private_pem, **kwargs):
+#     """
+#     :param private_pem:
+#     """
+#     def signed_token_generator(request):
+#         request.claims = kwargs
+#         refresh_token_instance = getattr(request, "refresh_token_instance", None)     
+#         if request.scope is None and refresh_token_instance is not None:
+#             access_token = refresh_token_instance.access_token if refresh_token_instance is not None else None
+#             scope = access_token.scope if access_token is not None else None
+#             request.scope = scope
+#         request.claims.update(
+#             {
+#                 "sub": str(request.user.id),
+#                 "aud": request.client_id,
+#                 "iat": timezone.now(),
+#                 "isStaff": request.user.is_staff,
+#                 "isSuperuser": request.user.is_superuser,
+#                 "isGuest": request.user.is_guest
+#             },
+#         )
+#         return generate_signed_token(private_pem, request)
+
+#     return signed_token_generator
+
+#Add Scope theo user
 def signed_token_generator(private_pem, **kwargs):
-    """
-    :param private_pem:
-    """
     def signed_token_generator(request):
         request.claims = kwargs
         refresh_token_instance = getattr(request, "refresh_token_instance", None)     
@@ -18,6 +41,14 @@ def signed_token_generator(private_pem, **kwargs):
             access_token = refresh_token_instance.access_token if refresh_token_instance is not None else None
             scope = access_token.scope if access_token is not None else None
             request.scope = scope
+
+        if not request.scope:
+            if hasattr(request, "user") and request.user:
+                if request.user.is_superuser or request.user.is_staff:
+                    request.scope = "users:view users:edit"  # scope cho admin
+                else:
+                    request.scope = "users:view-mine"       # scope cho user thường
+
         request.claims.update(
             {
                 "sub": str(request.user.id),
@@ -42,7 +73,6 @@ class JWTUser():
         self.is_superuser = kwargs.get("is_superuser", False)
         self.USERNAME_FIELD = "email"
         self.guest = kwargs.get("is_guest", False)
-    
     def get_username(self):
         """Return the username for this User."""
         return getattr(self, self.USERNAME_FIELD)
