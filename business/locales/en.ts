@@ -536,7 +536,30 @@ const en = {
   employee_not_found_description: 'This employee does not exist or has been deleted',
   save: 'Save',
   saving: 'Saving...',
-  cancel: 'Cancel'
+  cancel: 'Cancel',
+  delete: 'Delete',
+  deleting: 'Deleting...',
+  confirm_delete: 'Confirm Delete',
+  confirm_delete_employee_message: 'Are you sure you want to delete employee {name}?',
+  this_action_cannot_be_undone: 'This action cannot be undone.',
+  status: 'Status',
+  inactive: 'Inactive',
+  add_new_employee: 'Add New Employee',
+  create_employee: 'Create Employee',
+  creating: 'Creating...',
+  enter_first_name: 'Enter first name',
+  enter_last_name: 'Enter last name',
+  enter_work_email: 'Enter work email',
+  enter_personal_email: 'Enter personal email',
+  enter_phone: 'Enter phone number',
+  enter_area: 'Enter area',
+  enter_salary: 'Enter salary',
+  select_gender: 'Select gender',
+  work_email: 'Work Email',
+  personal_email: 'Personal Email',
+  please_fill_required_fields: 'Please fill in all required fields',
+  select_area: 'Select area',
+  
 }
 
 export default en;

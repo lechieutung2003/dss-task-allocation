@@ -67,6 +67,190 @@
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
 
+      <!-- Create Employee Modal -->
+    <div
+      v-if="showCreateModal"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+      @click="closeCreateModal"
+    >
+      <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white" @click.stop>
+        <div class="mt-3">
+          <!-- Modal Header -->
+          <div class="flex items-center justify-between pb-4 border-b">
+            <h3 class="text-lg font-medium text-gray-900">{{ $t('add_new_employee') }}</h3>
+            <button
+              @click="closeCreateModal"
+              class="text-gray-400 hover:text-gray-600"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="py-4 max-h-[500px] overflow-y-auto">
+            <form @submit.prevent="createEmployee">
+              <!-- Personal Information Section -->
+              <div class="mb-6">
+                <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('personal_information') }}</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      {{ $t('first_name') }} <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                      v-model="newEmployee.first_name"
+                      type="text"
+                      required
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      :placeholder="$t('enter_first_name')"
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      {{ $t('last_name') }} <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                      v-model="newEmployee.last_name"
+                      type="text"
+                      required
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      :placeholder="$t('enter_last_name')"
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      {{ $t('work_email') }} <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                      v-model="newEmployee.work_mail"
+                      type="email"
+                      required
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      :placeholder="$t('enter_work_email')"
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      {{ $t('phone') }} <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                      v-model="newEmployee.phone"
+                      type="tel"
+                      required
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      :placeholder="$t('enter_phone')"
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('personal_email') }}</label>
+                    <input
+                      v-model="newEmployee.personal_mail"
+                      type="email"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      :placeholder="$t('enter_personal_email')"
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('gender') }}</label>
+                    <select
+                      v-model="newEmployee.gender"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">{{ $t('select_gender') }}</option>
+                      <option value="male">{{ $t('male') }}</option>
+                      <option value="female">{{ $t('female') }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('date_of_birth') }}</label>
+                    <input
+                      v-model="newEmployee.date_of_birth"
+                      type="date"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('join_date') }}</label>
+                    <input
+                      v-model="newEmployee.join_date"
+                      type="date"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Work Information Section -->
+              <div class="mb-6">
+                <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('work_information') }}</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('area') }}</label>
+                    <select
+                      v-model="newEmployee.area"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                      <option value="">{{ $t('select_area') }}</option>
+                      <option v-for="area in availableAreas" :key="area.value" :value="area.value">
+                      {{ area.label }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('salary') }}</label>
+                    <input
+                      v-model="newEmployee.salary"
+                      type="number"
+                      step="0.01"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      :placeholder="$t('enter_salary')"
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('working_start_time') }}</label>
+                    <input
+                      v-model="newEmployee.working_start_time"
+                      type="time"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('working_end_time') }}</label>
+                    <input
+                      v-model="newEmployee.working_end_time"
+                      type="time"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal Footer -->
+              <div class="flex items-center justify-end pt-4 border-t space-x-3">
+                <button
+                  type="button"
+                  @click="closeCreateModal"
+                  :disabled="creating"
+                  class="px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
+                >
+                  {{ $t('cancel') }}
+                </button>
+                <button
+                  type="submit"
+                  :disabled="creating"
+                  class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                >
+                  {{ creating ? $t('creating') : $t('create_employee') }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
       <!-- Table -->
       <div v-else class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -309,6 +493,139 @@ const router = useRouter()
 const employees = ref([])
 const loading = ref(false)
 const showCreateModal = ref(false)
+const creating = ref(false) 
+
+const availableAreas = computed(() => {
+  const uniqueAreas = [...new Set(employees.value.map(emp => emp.area).filter(Boolean))]
+  return uniqueAreas.map(area => ({ value: area, label: area }))
+})
+  
+// New employee form data
+const newEmployee = ref({
+  first_name: '',
+  last_name: '',
+  work_mail: '',
+  personal_mail: '',
+  phone: '',
+  gender: '',
+  date_of_birth: '',
+  join_date: '',
+  area: '',
+  salary: '',
+  working_start_time: '',
+  working_end_time: '',
+  status: 1 // Default active
+})
+
+const resetNewEmployee = () => {
+  newEmployee.value = {
+    first_name: '',
+    last_name: '',
+    work_mail: '',
+    personal_mail: '',
+    phone: '',
+    gender: '',
+    date_of_birth: '',
+    join_date: '',
+    area: '',
+    salary: '',
+    working_start_time: '',
+    working_end_time: '',
+    status: 1
+  }
+}
+
+const closeCreateModal = () => {
+  showCreateModal.value = false
+  resetNewEmployee()
+  creating.value = false
+}
+
+const createEmployee = async () => {
+  creating.value = true
+  try {
+    // Validate required fields
+    if (!newEmployee.value.first_name || !newEmployee.value.last_name || 
+        !newEmployee.value.work_mail || !newEmployee.value.phone) {
+      alert(t('please_fill_required_fields'))
+      return
+    }
+
+    // Prepare data for API
+    const employeeData = {
+      first_name: newEmployee.value.first_name?.trim(),
+      last_name: newEmployee.value.last_name?.trim(),
+      work_mail: newEmployee.value.work_mail?.trim(),
+      phone: newEmployee.value.phone?.trim(),
+      // Optional fields - chỉ gửi nếu có giá trị
+      ...(newEmployee.value.personal_mail && { 
+        personal_mail: newEmployee.value.personal_mail.trim() 
+      }),
+      ...(newEmployee.value.gender && { 
+        gender: newEmployee.value.gender 
+      }),
+      ...(newEmployee.value.date_of_birth && { 
+        date_of_birth: newEmployee.value.date_of_birth 
+      }),
+      ...(newEmployee.value.join_date && { 
+        join_date: newEmployee.value.join_date 
+      }),
+      ...(newEmployee.value.area && { 
+        area: newEmployee.value.area.trim() 
+      }),
+      ...(newEmployee.value.salary && { 
+        salary: parseFloat(newEmployee.value.salary) 
+      }),
+      ...(newEmployee.value.working_start_time && { 
+        working_start_time: newEmployee.value.working_start_time 
+      }),
+      ...(newEmployee.value.working_end_time && { 
+        working_end_time: newEmployee.value.working_end_time 
+      }),
+      status: 1 // Default active
+    }
+
+    // Convert salary to number if provided
+    if (employeeData.salary) {
+      employeeData.salary = parseFloat(employeeData.salary)
+    }
+
+    // Call API to create employee
+    const response = await EmployeeService.createEmployee(employeeData)
+    
+    // Add new employee to local list
+    employees.value.unshift(response)
+    totalItems.value = totalItems.value + 1
+    
+    // Show success message
+    alert(`Đã tạo nhân viên ${employeeData.first_name} ${employeeData.last_name} thành công!`)
+    
+    // Close modal
+    closeCreateModal()
+    
+    // Optionally reload first page to get fresh data
+    if (currentPage.value === 1) {
+      loadEmployees()
+    }
+    
+  } catch (error) {
+    console.error('Error creating employee:', error)
+    
+    let errorMessage = 'Có lỗi xảy ra khi tạo nhân viên'
+    
+    if (error.response?.status === 400) {
+      errorMessage = 'Dữ liệu nhập vào không hợp lệ'
+    } else if (error.response?.status === 409) {
+      errorMessage = 'Email hoặc số điện thoại đã được sử dụng'
+    } else if (error.message) {
+      errorMessage = error.message
+    }
+    
+    alert(errorMessage)
+  } finally {
+    creating.value = false
+  }
+}
 
 const showDeleteModal = ref(false)
 const employeeToDelete = ref(null)
@@ -424,9 +741,8 @@ const deleteEmployee = async () => {
     // Xóa employee khỏi danh sách local
     employees.value = employees.value.filter(emp => emp.id !== employeeToDelete.value.id)
     totalItems.value = totalItems.value - 1
-    
-    // Đóng modal
-    closeDeleteModal()
+
+    alert(`Đã xóa nhân viên ${employeeToDelete.value.first_name} ${employeeToDelete.value.last_name} thành công!`)
     
     // Show success notification
     console.log(`Employee ${employeeToDelete.value.first_name} ${employeeToDelete.value.last_name} deleted successfully`)
@@ -439,15 +755,19 @@ const deleteEmployee = async () => {
     
   } catch (error) {
     console.error('Error deleting employee:', error)
-    alert('Có lỗi xảy ra khi xóa nhân viên')
+    alert(`Có lỗi xảy ra khi xóa nhân viên: ${error.message || 'Vui lòng thử lại'}`)
   } finally {
     deleting.value = false
+    // Đóng modal
+    closeDeleteModal()
   }
 }
 
 // Utility functions
 const getInitials = (firstName: string, lastName: string) => {
-  return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase()
+  const first = firstName?.trim()?.charAt(0)?.toUpperCase() || ''
+  const last = lastName?.trim()?.charAt(0)?.toUpperCase() || ''
+  return (first + last) || 'N/A'
 }
 
 const formatWorkingHours = (startTime: string, endTime: string) => {
@@ -468,5 +788,6 @@ const formatCurrency = (amount: number) => {
 // Lifecycle
 onMounted(() => {
   loadEmployees()
+  newEmployee.value.join_date = new Date().toISOString().split('T')[0]
 })
 </script>
