@@ -1,6 +1,8 @@
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from django.contrib.auth.hashers import make_password
+
 from hr.models.customer import Customer
 
 User = get_user_model()
@@ -23,7 +25,8 @@ class RegisterCustomerSerializer(serializers.Serializer):
         user = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
         user.is_guest = True
         user.save()
-        customer = Customer.objects.create(user=user, **validated_data)
+        # customer = Customer.objects.create(user=user, **validated_data)
+        customer = Customer.objects.create(user=user, password=make_password(password), **validated_data)
         return customer
 
     def to_representation(self, instance):

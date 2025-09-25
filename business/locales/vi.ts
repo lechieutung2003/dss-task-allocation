@@ -5,7 +5,7 @@ const vi = {
   welcome_to_amoz: "Chào mừng bạn đến với Alpha!",
   amoz_short_description:
     "- Nền tảng hỗ trợ kinh doanh dựa trên Trí tuệ nhân tạo -",
-  start_using: "Chao mừng bạn trở lại!",
+  start_using: "Chào mừng bạn trở lại!",
   forgot_password: "Quên mật khẩu?",
   password_place_holder: "Mật khẩu",
   change_password: "Đổi mật khẩu",

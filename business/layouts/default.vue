@@ -14,7 +14,7 @@
     </div>
     <div v-else class="w-full">
       <TopbarNav />
-      <div class="pt-10">
+      <div class="pt-20">
         <slot />
       </div>
       <footer class="w-full bg-gray-100 flex justify-center">
@@ -22,15 +22,20 @@
       </footer>
     </div>
 
+    
+    <!--
+    ========================
+    👇 Chatbot Widget (đã comment toàn bộ)
+    ========================
     <div class="widget">
       <div class="chat_header">
-        <!--Add the name of the bot here -->
+        // Add the name of the bot here
         <span class="chat_header_title">Alpha</span>
         <span class="dropdown-trigger" href="#" data-target="dropdown1">
           <More/>
         </span>
 
-        <!-- Dropdown menu-->
+        // Dropdown menu
         <ul id="dropdown1" class="dropdown-content">
           <li><a href="#" id="clear">Clear</a></li>
           <li><a href="#" id="restart">Restart</a></li>
@@ -38,12 +43,12 @@
         </ul>
       </div>
 
-      <!--Chatbot contents goes here -->
+      // Chatbot contents goes here
       <div class="chats" id="chats">
         <div class="clearfix"></div>
       </div>
 
-      <!--keypad for user to type the message -->
+      // Keypad for user to type the message
       <div class="keypad">
         <textarea
           id="userInput"
@@ -55,6 +60,8 @@
         </div>
       </div>
     </div>
+    ========================
+    -->
   </div>
 </template>
 
