@@ -153,6 +153,10 @@ const router = useRouter();
 const loading = ref(false);
 const orderList = ref([]);
 
+definePageMeta({
+  layout: "dss",
+});
+
 // Bộ lọc
 const filters = reactive({
   keyword: '',
@@ -164,7 +168,7 @@ const filters = reactive({
 // Phân trang
 const pagination = reactive({
   currentPage: 1,
-  pageSize: 10,
+  pageSize: 4,
   total: 0
 });
 
