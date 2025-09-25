@@ -1,7 +1,7 @@
 from django.urls import re_path, include, path
-from rest_framework_nested import routers
-from base import routers
-
+from rest_framework_nested import routers as drf_nested_routers  # Đổi tên để rõ ràng
+from base import routers as base_routers  # Đổi tên để rõ ràng
+from .views.register_customer import RegisterCustomerAPIView  # Di chuyển lên đầu
 
 from .views import (
     GroupViewSet,
@@ -9,42 +9,45 @@ from .views import (
     HolidayViewSet,
     WorkSessionViewSet,
     UnitViewSet,
-    UnitTypeViewSet,
-<<<<<<< HEAD
-=======
-    OrderViewSet,
-    AssignmentViewSet
->>>>>>> Features/feat-view-oder-and-details
+    UnitTypeViewSet
 )
-from .views.order import CustomerViewSet, ServiceTypeViewSet, OrderViewSet
+
+# Tách riêng imports cho API orders để rõ ràng hơn
+from .views.order import OrderViewSet, AssignmentViewSet, CustomerViewSet, ServiceTypeViewSet
 
 app_name = "hr"
-router = routers.MutipleUpdateRouter(trailing_slash=False)
+router = base_routers.MutipleUpdateRouter(trailing_slash=False)
 
-router.register(r'customers', CustomerViewSet, basename="customers")
-router.register(r'service-types', ServiceTypeViewSet, basename="service-types")
-router.register(r'orders', OrderViewSet, basename="orders")
-
+# Đăng ký các ViewSets
 router.register(r'groups', GroupViewSet, basename="groups")
 router.register(r'offices', OfficeViewSet, basename="offices")
 router.register(r'units', UnitViewSet, basename="units")
 router.register(r'unit-types', UnitTypeViewSet, basename="unit-types")
+
+# Đăng ký các ViewSets liên quan đến order
+router.register(r'customers', CustomerViewSet, basename="customers")
+router.register(r'service-types', ServiceTypeViewSet, basename="service-types")
 router.register(r'orders', OrderViewSet, basename="orders")
 router.register(r'assignments', AssignmentViewSet, basename="assignments")
 
-group_router = routers.NestedMutipleUpdateRouter(router, r'groups', lookup='group')
-group_router.register(r'offices', OfficeViewSet, basename="offices")
+# Đăng ký các router lồng nhau
+# 1. Đảm bảo đã đăng ký 'groups' trong router chính
+group_router = base_routers.NestedMutipleUpdateRouter(router, r'groups', lookup='group')
 
-office_router = routers.NestedMutipleUpdateRouter(group_router, r'offices', lookup='office')
+# 2. Đăng ký 'offices' trong group_router
+group_router.register(r'offices', OfficeViewSet, basename="group-offices")
+
+# 3. Sau khi đã đăng ký 'offices' trong group_router, mới đăng ký các child routers
+office_router = base_routers.NestedMutipleUpdateRouter(group_router, r'offices', lookup='office')
 office_router.register(r'holidays', HolidayViewSet, basename="holidays")
 office_router.register(r'work-sessions', WorkSessionViewSet, basename="work-sessions")
 
-office_router_non_group = routers.NestedMutipleUpdateRouter(router, r'offices', lookup='office')
-office_router_non_group.register(r'holidays', HolidayViewSet, basename="holidays")
-office_router_non_group.register(r'work-sessions', WorkSessionViewSet, basename="work-sessions")
+# Router cho offices không thuộc group
+office_router_non_group = base_routers.NestedMutipleUpdateRouter(router, r'offices', lookup='office')
+office_router_non_group.register(r'holidays', HolidayViewSet, basename="non-group-holidays")
+office_router_non_group.register(r'work-sessions', WorkSessionViewSet, basename="non-group-work-sessions")
 
-from .views.register_customer import RegisterCustomerAPIView
-
+# Định nghĩa URLs
 urlpatterns = [
     re_path(r'^api/v1/', include(router.urls)),
     re_path(r'^api/v1/', include(group_router.urls)),

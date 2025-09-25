@@ -1,7 +1,7 @@
 from rest_framework import serializers
-<<<<<<< HEAD
-from hr.models.customer import Customer, ServiceType
-from hr.models.order import Order
+from ..models import Order, Assignment, DecisionLog
+from ..models.customer import Customer, ServiceType
+from businesses.serializers.employee import EmployeeShortSerializer
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,15 +12,6 @@ class ServiceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceType
         fields = '__all__'
-
-class OrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = '__all__'
-=======
-from ..models import Order, Assignment, DecisionLog
-from businesses.serializers.employee import EmployeeShortSerializer
-from .customer import CustomerSerializer, ServiceTypeSerializer
 
 class OrderSerializer(serializers.ModelSerializer):
     customer_details = CustomerSerializer(source='customer', read_only=True)
@@ -58,4 +49,3 @@ class DecisionLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = DecisionLog
         fields = '__all__'
->>>>>>> Features/feat-view-oder-and-details
