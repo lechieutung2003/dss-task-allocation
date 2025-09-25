@@ -38,6 +38,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class AssignmentSerializer(serializers.ModelSerializer):
     employee_details = EmployeeShortSerializer(source='employee', read_only=True)
+    order_details = OrderSerializer(source='order', read_only=True)
     
     class Meta:
         model = Assignment
