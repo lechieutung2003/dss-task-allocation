@@ -20,22 +20,22 @@
             <template #header>
               <h5 class="text-white font-bold">DSS</h5>
             </template>
-            <el-menu-item index="/dss/dashboard">
+            <el-menu-item index="/dss/dashboard" v-if="isAdmin">
               <span>Dashboard</span>
             </el-menu-item>
-            <el-menu-item index="/dss/services">
+            <el-menu-item index="/dss/services" v-if="isAdmin">
               <span>Quản lý Dịch vụ</span>
             </el-menu-item>
-            <el-menu-item index="/dss/orders">
+            <el-menu-item index="/dss/orders" v-if="isAdmin || isStaff">
               <span>Quản lý Đơn hàng</span>
             </el-menu-item>
-            <el-menu-item index="/dss/employees">
+            <el-menu-item index="/dss/employees" v-if="isAdmin">
               <span>Quản lý Nhân viên</span>
             </el-menu-item>
-            <el-menu-item index="/dss/customers">
+            <el-menu-item index="/dss/customers" v-if="isAdmin">
               <span>Quản lý Khách hàng</span>
             </el-menu-item>
-            <el-menu-item index="/dss/tasks">
+            <el-menu-item index="/dss/tasks" v-if="isAdmin">
               <span>Giao task cho nhân viên</span>
             </el-menu-item>
             <el-menu-item index="/dss/profile">
@@ -57,6 +57,7 @@
 <script setup>
 import AmozLogo from "/assets/icons/Logo.svg";
 import { useOauthStore } from "@/stores/oauth";
+import { computed } from "vue";
 
 const { t } = useI18n();
 
@@ -68,6 +69,16 @@ const authenticated = computed(() => {
   if (!access_token) return false;
   return access_token.length > 0;
 });
+
+const isAdmin = computed(
+  () => oauthStore.user?.isAdmin || oauthStore.tokenInfo?.isSuperuser
+);
+const isStaff = computed(
+  () => oauthStore.user?.isStaff || oauthStore.tokenInfo?.isStaff
+);
+const isGuest = computed(
+  () => oauthStore.user?.isGuest || oauthStore.tokenInfo?.isGuest
+);
 </script>
 
 <style scoped></style>
