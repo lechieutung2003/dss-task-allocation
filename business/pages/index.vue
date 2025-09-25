@@ -31,12 +31,20 @@ const isGuest = computed(() => {
     !oauthStore.hasOneOfScopes(["employees:view", "roles:view"])
   );
 });
+<<<<<<< HEAD
 
 
 // redirect nếu là admin hoặc employee
 watchEffect(() => {
   if (isGuest.value) {
     router.push("/dss/home");
+=======
+
+// redirect nếu là admin hoặc employee
+watchEffect(() => {
+  if (isAdmin.value || isEmployee.value) {
+    router.push("/dss/dashboard");
+>>>>>>> Features/employee-management
   }
 });
 
