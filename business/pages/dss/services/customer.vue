@@ -41,7 +41,10 @@ onMounted(fetchServices);
           <div v-for="service in services" :key="service.id" class="service-card">
             <div class="service-image">
               <img v-if="service.image_url" :src="service.image_url" alt="Hình dịch vụ" />
-              <div v-else class="image-placeholder">Ảnh dịch vụ</div>
+                <div v-else class="image-placeholder">
+                  <img src="@/assets/images/deep.jpg" alt="Ảnh dịch vụ" style="width:100%;height:100%;object-fit:cover;" />
+                  <span style="position:absolute;bottom:8px;left:0;right:0;text-align:center;color:#aaa;font-size:13px;">Ảnh dịch vụ</span>
+                </div>
             </div>
             <div class="service-info">
               <div class="service-title">{{ service.name }}</div>
@@ -49,9 +52,14 @@ onMounted(fetchServices);
               <div class="service-detail"><b>Tốc độ (m2/h):</b> {{ service.cleaning_rate_m2_per_h }}</div>
               <div class="service-detail"><b>Mô tả:</b> {{ service.description || 'Chưa có mô tả' }}</div>
             </div>
-            <el-button class="button-submit" size="small" @click="router.push(`/dss/orders/create?service=${service.id}`)">
-              Đặt dịch vụ này
-            </el-button>
+            <div style="display:flex;gap:10px;width:100%;justify-content:center;">
+              <el-button class="button-submit" size="small" @click="router.push(`/dss/orders/create`)">
+                Đặt dịch vụ này
+              </el-button>
+              <el-button class="button-submit" size="small" type="info" >
+                Xem chi tiết
+              </el-button>
+            </div>
           </div>
         </div>
         <div v-if="!loading && services.length === 0" class="text-center text-gray-500 py-8">
