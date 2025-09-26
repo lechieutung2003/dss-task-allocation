@@ -6,16 +6,20 @@ const getApiInstance = () => {
 };
 
 export default {
-  get(url, options) {
-    return getApiInstance()(url, { ...options, method: 'GET' });
+  async get(url, options) {
+    const response = await getApiInstance()(url, { ...options, method: 'GET' });
+    return response;
   },
-  post(url, data, options) {
-    return getApiInstance()(url, { ...options, method: 'POST', body: data });
+  async post(url, data, options) {
+    const response = await getApiInstance()(url, { ...options, method: 'POST', body: data });
+    return response;
   },
-  put(url, data, options) {
-    return getApiInstance()(url, { ...options, method: 'PUT', body: data });
+  async put(url, data, options) {
+    const response = await getApiInstance()(url, { ...options, method: 'PUT', body: data });
+    return response;
   },
-  delete(url, options) {
-    return getApiInstance()(url, { ...options, method: 'DELETE' });
+  async delete(url, options) {
+    const response = await getApiInstance()(url, { ...options, method: 'DELETE' });
+    return response;
   },
 };
