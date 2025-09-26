@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 from base.views import BaseViewSet
-=======
-
->>>>>>> Features/employee-management
 from rest_framework import viewsets, permissions
 from ..models import Order, Assignment, DecisionLog
 from ..models.customer import Customer, ServiceType
@@ -29,8 +25,7 @@ class ServiceTypeViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-<<<<<<< HEAD
-=======
+
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
@@ -70,7 +65,6 @@ from rest_framework import status
 from common.constants.http import Http
 from django.db.models import Q
 
->>>>>>> Features/employee-management
 class OrderViewSet(BaseViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -153,18 +147,18 @@ class AssignmentViewSet(BaseViewSet):
         "destroy": [["assignments:edit"]],
         "list": [["assignments:view"], ["assignments:edit"]],
     }
-<<<<<<< HEAD
+# <<<<<<< HEAD
 
-class DecisionLogViewSet(BaseViewSet):
-    queryset = DecisionLog.objects.all()
-    serializer_class = DecisionLogSerializer
+# class DecisionLogViewSet(BaseViewSet):
+#     queryset = DecisionLog.objects.all()
+#     serializer_class = DecisionLogSerializer
     
-    required_alternate_scopes = {
-        "create": [["decision-logs:edit"]],
-        "retrieve": [["decision-logs:view"], ["decision-logs:edit"]],
-        "update": [["decision-logs:edit"]],
-        "destroy": [["decision-logs:edit"]],
-        "list": [["decision-logs:view"], ["decision-logs:edit"]],
-    }
-=======
->>>>>>> Features/employee-management
+#     required_alternate_scopes = {
+#         "create": [["decision-logs:edit"]],
+#         "retrieve": [["decision-logs:view"], ["decision-logs:edit"]],
+#         "update": [["decision-logs:edit"]],
+#         "destroy": [["decision-logs:edit"]],
+#         "list": [["decision-logs:view"], ["decision-logs:edit"]],
+#     }
+# =======
+# >>>>>>> Features/employee-management
