@@ -3,8 +3,7 @@ from rest_framework_nested import routers as drf_nested_routers  # Đổi tên �
 from .views.employee_order import EmployeeOrdersAPIView
 from base import routers as base_routers  # Đổi tên để rõ ràng
 from .views.register_customer import RegisterCustomerAPIView  # Di chuyển lên đầu
-#from .views.profile_customer import CustomerProfileAPIView
-
+from hr.views.create_order_api import SimpleCreateOrderAPIView
 from .views import (
     GroupViewSet,
     OfficeViewSet,
@@ -57,5 +56,6 @@ urlpatterns = [
     re_path(r'^api/v1/', include(office_router.urls)),
     re_path(r'^api/v1/', include(office_router_non_group.urls)),
     path('api/v1/register-customer', RegisterCustomerAPIView.as_view(), name='register-customer'),
+    path('api/v1/create-order', SimpleCreateOrderAPIView.as_view(), name='simple-create-order'),
     path('api/v1/employee-orders', EmployeeOrdersAPIView.as_view(), name='employee-orders'),
 ]
