@@ -74,7 +74,7 @@ const selectMenu = (key, callback) => {
 
 const goHome = () => router.push('/dss/home')
 const goAbout = () => router.push('/dss/about')
-const goServices = () => router.push('/dss/services')
+const goServices = () => router.push('/dss/services/customer')
 const goContact = () => router.push('/dss/contact')
 const goCreateOrder = () => router.push('/dss/orders/create')
 const goProfile = () => { showMenu.value = false; router.push('/dss/profile/client') }

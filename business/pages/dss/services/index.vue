@@ -3,11 +3,19 @@ definePageMeta({
   layout: "dss",
 });
 
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { useOauthStore } from "@/stores/oauth";
 import { useRouter } from "vue-router";
 import serviceTypesApi from "@/services/dss/serviceTypes.js";
 
 const router = useRouter();
+const oauthStore = useOauthStore();
+const isAdmin = computed(() => oauthStore.hasAllScopes([
+  "users:view",
+  "users:edit",
+  "roles:view",
+  "roles:edit",
+]));
 const services = ref([]);
 const loading = ref(false);
 const error = ref("");
@@ -75,20 +83,22 @@ onMounted(fetchServices);
           >
             Xem
           </el-button>
-          <el-button
-            size="small"
-            type="warning"
-            @click="router.push(`/dss/services/${scope.row.id}/edit`)"
-          >
-            Sửa
-          </el-button>
-          <el-button
-            size="small"
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-          >
-            Xoá
-          </el-button>
+          <template v-if="isAdmin.value">
+            <el-button
+              size="small"
+              type="warning"
+              @click="router.push(`/dss/services/${scope.row.id}/edit`)"
+            >
+              Sửa
+            </el-button>
+            <el-button
+              size="small"
+              type="danger"
+              @click="handleDelete(scope.row.id)"
+            >
+              Xoá
+            </el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
