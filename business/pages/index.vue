@@ -3,15 +3,15 @@ definePageMeta({
   layout: "anonymous",
 });
 
+import { computed, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { useOauthStore } from "@/stores/oauth";
-import EmployeeInfo from "@/components/EmployeeInfo.vue";
 import GuestInfo from "@/components/GuestInfo.vue";
-import GettingStarted from "@/components/GettingStarted.vue";
 
 const router = useRouter();
 const oauthStore = useOauthStore();
 
+// Xác định quyền
 const isAdmin = computed(() => {
   return oauthStore.hasAllScopes([
     "users:view",
@@ -21,7 +21,7 @@ const isAdmin = computed(() => {
   ]);
 });
 
-const isEmployee = computed(() => {
+const isStaff = computed(() => {
   return oauthStore.hasOneOfScopes(["employees:view", "tasks:view-mine"]);
 });
 
@@ -39,13 +39,16 @@ watchEffect(() => {
   }
 });
 
+
+
 console.log("isAdmin:", isAdmin.value);
-console.log("isEmployee:", isEmployee.value);
+console.log("isStaff:", isStaff.value);
 console.log("isGuest:", isGuest.value);
 console.log("tokenInfo:", oauthStore.tokenInfo);
 </script>
 
 <template>
+  <!-- Guest sẽ hiển thị component riêng -->
   <GuestInfo v-if="isGuest" />
-  <GettingStarted v-else />
+  <!-- Admin/Staff sẽ redirect nên không cần hiển thị gì ở đây -->
 </template>

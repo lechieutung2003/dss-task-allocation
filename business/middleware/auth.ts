@@ -9,6 +9,13 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const currentTime = Math.floor(Date.now() / 1000);
   const tokenValid = tokenInfo && tokenInfo.exp && tokenInfo.exp > currentTime;
   if (authenticated && tokenValid) {
+
+    console.log('tokenInfo.exp',tokenInfo.exp);
+    // if (oauthStore.hasOneOfScopes(['employees:view'])) {
+    //   return navigateTo('/employee/info/EmployeeInfo'); // Trang chủ nhân viên
+    // }
+    
+
     console.log('tokenInfo.exp', tokenInfo.exp);
 
     if (to.path === '/') {
