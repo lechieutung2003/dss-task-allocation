@@ -13,62 +13,23 @@
       </LoginForm>
     </div>
     <div v-else class="w-full">
-      <TopbarNav />
+      <TopbarNav v-if="!isCustomer" />
+      <UserTopbar v-else />
       <div class="pt-20">
         <slot />
       </div>
-      <footer class="w-full bg-gray-100 flex justify-center">
+      <footer v-if="!isCustomer" class="w-full bg-gray-100 flex justify-center">
         <FooterContent />
       </footer>
     </div>
-
-    
-    <!--
-    ========================
-    👇 Chatbot Widget (đã comment toàn bộ)
-    ========================
-    <div class="widget">
-      <div class="chat_header">
-        // Add the name of the bot here
-        <span class="chat_header_title">Alpha</span>
-        <span class="dropdown-trigger" href="#" data-target="dropdown1">
-          <More/>
-        </span>
-
-        // Dropdown menu
-        <ul id="dropdown1" class="dropdown-content">
-          <li><a href="#" id="clear">Clear</a></li>
-          <li><a href="#" id="restart">Restart</a></li>
-          <li><a href="#" id="close">Close</a></li>
-        </ul>
-      </div>
-
-      // Chatbot contents goes here
-      <div class="chats" id="chats">
-        <div class="clearfix"></div>
-      </div>
-
-      // Keypad for user to type the message
-      <div class="keypad">
-        <textarea
-          id="userInput"
-          placeholder="Type a message..."
-          class="usrInput"
-        ></textarea>
-        <div id="sendButton">
-          <i class="fa fa-paper-plane" aria-hidden="true"></i>
-        </div>
-      </div>
-    </div>
-    ========================
-    -->
   </div>
 </template>
-
 <script setup>
 import AmozLogo from "~/assets/icons/Logo.svg";
 import { More } from "@element-plus/icons-vue";
 import { useOauthStore } from "@/stores/oauth";
+import UserTopbar from '@/components/topbar/UserTopbar.vue'
+import { computed } from "vue";
 const oauthStore = useOauthStore();
 const authenticated = computed(() => {
   const { tokenInfo } = oauthStore;
@@ -76,5 +37,11 @@ const authenticated = computed(() => {
   const { access_token } = tokenInfo;
   if (!access_token) return false;
   return access_token.length > 0;
+});
+
+const isCustomer = computed(() => {
+  return oauthStore.user?.role === 'customer'
+    || oauthStore.user?.role === 'Guest'
+    || oauthStore.hasOneOfScopes?.(['customers:view-mine', 'users:view-mine']);
 });
 </script>

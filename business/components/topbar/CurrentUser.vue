@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div class="flex flex-col" @click.stop>
     <div class="flex flex-row items-center min-w-45 cursor-pointer" @click="toggleDetail">
       <el-avatar v-if="showAvatar" :icon="UserFilled" class="mx-2" />
@@ -69,92 +69,4 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
 });
-</script> -->
-
-
-<template>
-  <div class="flex flex-col" @click.stop>
-    <div class="flex flex-row items-center min-w-45 cursor-pointer" @click="toggleDetail">
-      <el-avatar v-if="showAvatar" :icon="UserFilled" class="mx-2" />
-      <p>{{ currentUser ? `${currentUser.first_name}` : 'Anonymous' }}</p>
-      <p class="hidden sm:block pl-1">{{ currentUser ? `${currentUser.last_name}` : 'User' }}</p>
-    </div>
-
-    <div v-if="!isCollapse"
-      class="absolute w-100 mt-12 drop-shadow bg-white border border-solid border-primary rounded">
-      
-      <!-- Xem profile -->
-      <div class="px-6 py-2 hover:bg-primary hover:text-white cursor-pointer" @click="goProfile">
-        <span>{{ $t('account_information') }}</span>
-      </div>
-
-      <!-- Đổi mật khẩu -->
-      <div class="px-6 py-2 hover:bg-primary hover:text-white">
-        <NuxtLink to="/change-password"><span>{{ $t('change_password') }}</span></NuxtLink>
-      </div>
-
-      <!-- Logout -->
-      <div class="px-6 py-2 hover:bg-primary hover:text-white cursor-pointer" @click="logout">
-        <span>Logout</span>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup>
-import { UserFilled } from '@element-plus/icons-vue'
-import { useOauthStore } from '@/stores/oauth';
-import OAuthService from '@/services/oauth';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
-
-const props = defineProps({
-  showAvatar: {
-    type: Boolean,
-    default: true
-  },
-})
-
-const store = useOauthStore();
-const router = useRouter();
-
-const isCollapse = ref(true);
-
-const toggleDetail = () => {
-  isCollapse.value = !isCollapse.value;
-}
-
-const currentUser = computed(() => store.user);
-
-const goProfile = () => {
-  isCollapse.value = true;
-  router.push('/dss/profile/client'); 
-}
-
-const logout = async () => {
-  try {
-    await OAuthService.logout();
-    store.$reset();
-  } catch (error) {
-    console.error(error);
-    store.$reset();
-  } finally {
-    router.push('/');
-  }
-}
-
-function handleClickOutside(event) {
-  const dropdownElement = document.querySelector(".flex.flex-col");
-  if (!dropdownElement.contains(event.target)) {
-    isCollapse.value = true;
-  }
-}
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-
-onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
-</script>
+</script> 

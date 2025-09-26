@@ -1,90 +1,152 @@
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useOauthStore } from '@/stores/oauth'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-import OAuthService from '@/services/oauth'
+<script setup>
+import { useOauthStore } from '@/stores/oauth';
 
-const store = useOauthStore()
-const router = useRouter()
-const userDetail = ref<any>(null)
-const isCollapse = ref(true)
-
-// Toggle dropdown
-const toggleDetail = () => {
-  isCollapse.value = !isCollapse.value
-}
-
-// Logout
-const logout = async () => {
-  try {
-    await OAuthService.logout()
-  } catch (err) {
-    console.error(err)
-  } finally {
-    store.$reset()
-    router.push('/')
-  }
-}
-
-// Lấy thông tin user khi mounted
-onMounted(async () => {
-  if (store.accessToken) {
-    try {
-      const response = await axios.get('http://localhost:8008/api/v1/employees/userinfo', {
-        headers: {
-          Authorization: `Bearer ${store.accessToken}`
-        }
-      })
-      userDetail.value = response.data
-      console.log('User info:', userDetail.value)
-    } catch (err) {
-      console.error('Lấy thông tin user thất bại:', err)
-    }
-  }
-})
-
-// Đóng dropdown khi click ngoài
-function handleClickOutside(event: MouseEvent) {
-  const dropdownElement = document.querySelector('.user-menu')
-  if (dropdownElement && !dropdownElement.contains(event.target as Node)) {
-    isCollapse.value = true
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
+const store = useOauthStore();
+const user = store.user;
 </script>
 
 <template>
-  <div class="user-menu">
-    <div class="user-menu__wrapper" @click.stop="toggleDetail">
-      <template v-if="userDetail">
-        <div class="user-menu__info">
-          <span class="user-menu__greeting">Hello,</span>
-          <span class="user-menu__name">{{ userDetail.first_name }} {{ userDetail.last_name }}</span>
+  <div class="signup-container">
+    <div class="form-wrapper">
+      <div class="form">
+        <!-- Tiêu đề -->
+        <div class="form-header">
+          <h1 class="form-title">Thông tin tài khoản</h1>
+          <p class="form-subtitle">Thông tin cá nhân của bạn được hiển thị tại đây</p>
         </div>
-      </template>
 
-      <template v-else>
-        <div class="user-menu__info user-menu__not-logged">
-          <span>Not logged in</span>
+        <div v-if="user" class="signup-columns">
+          <div class="signup-column">
+            <div class="form-group">
+              <label>Email</label>
+              <div class="inputForm">
+                <span class="input">{{ user.email }}</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Họ tên</label>
+              <div class="inputForm">
+                <span class="input">{{ user.first_name }} {{ user.last_name }}</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Full Name</label>
+              <div class="inputForm">
+                <span class="input">{{ user.name }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="signup-column">
+            <div class="form-group">
+              <label>Số điện thoại</label>
+              <div class="inputForm">
+                <span class="input">{{ user.phone }}</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Địa chỉ</label>
+              <div class="inputForm">
+                <span class="input">{{ user.address }}</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Khu vực</label>
+              <div class="inputForm">
+                <span class="input">{{ user.area }}</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </template>
+
+        <div v-else class="p">
+          Không tìm thấy thông tin người dùng.
+        </div>
+      </div>
     </div>
-
-    <div v-if="userDetail && !isCollapse" class="user-menu__dropdown">
-
-  <p><strong>First Name:</strong> {{ userDetail.first_name }}</p>
-  <p><strong>Last Name:</strong> {{ userDetail.last_name }}</p>
-
-  <button class="btn-logout" @click="logout">Logout</button>
-</div>
-
   </div>
 </template>
+
+<style scoped>
+/* tái sử dụng style của form đăng ký */
+.signup-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 900px;
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.form-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #151717;
+  margin-bottom: 5px;
+}
+
+.form-subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  font-weight: 400;
+  margin: 0;
+}
+
+.signup-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.signup-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.inputForm {
+  border: 1.5px solid #ecedec;
+  border-radius: 10px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.input {
+  margin-left: 10px;
+  color: #151717;
+  font-size: 15px;
+}
+</style>
