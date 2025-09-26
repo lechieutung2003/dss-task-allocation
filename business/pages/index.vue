@@ -32,14 +32,19 @@ const isGuest = computed(() => {
   );
 });
 
-// Watch để redirect theo role
 watchEffect(() => {
-  if (isGuest.value) {
+  if (isAdmin.value || isEmployee.value) {
+    router.push("/dss/dashboard");
+
+  } 
+  else if (isGuest.value) {
     router.push("/dss/home");
   } else if (isAdmin.value || isStaff.value) {
     router.push("/dss/dashboard");
   }
 });
+
+
 
 console.log("isAdmin:", isAdmin.value);
 console.log("isStaff:", isStaff.value);

@@ -13,7 +13,7 @@
       </LoginForm>
     </div>
     <div v-else class="absolute w-full">
-      <TopbarNav />
+      <TopbarNav  />
       <div class="flex flex-row">
         <aside>
           <Sidebar>
