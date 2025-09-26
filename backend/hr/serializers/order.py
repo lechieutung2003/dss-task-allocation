@@ -1,22 +1,7 @@
 from rest_framework import serializers
 from ..models import Order, Assignment, DecisionLog
-<<<<<<< HEAD
-from ..models.customer import Customer, ServiceType
-from businesses.serializers.employee import EmployeeShortSerializer
-
-class CustomerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = '__all__'
-
-class ServiceTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ServiceType
-        fields = '__all__'
-=======
 from businesses.serializers.employee import EmployeeShortSerializer
 from .customer import CustomerSerializer, ServiceTypeSerializer
->>>>>>> Features/employee-management
 
 class OrderSerializer(serializers.ModelSerializer):
     customer_details = CustomerSerializer(source='customer', read_only=True)

@@ -243,7 +243,7 @@ import EmployeeService from '@/services/dss/users/employees'
 import BackButton from '@/components/BackButton.vue'
 
 definePageMeta({
-  layout: 'default',
+  layout: 'dss',
   middleware: 'auth'
 })
 
