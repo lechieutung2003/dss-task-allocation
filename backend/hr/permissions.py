@@ -10,4 +10,4 @@ class IsEmployee(permissions.BasePermission):
 
 class IsCustomer(permissions.BasePermission):
     def has_permission(self, request, view):
-        return hasattr(request.user, 'role') and request.user.role == 'customer'
+        return hasattr(request.user, 'role') and request.user.role in ['customer']

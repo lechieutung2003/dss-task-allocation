@@ -52,7 +52,7 @@ class OrderService extends BaseService {
   
   // Tạo đơn hàng mới
   createOrder(orderData) {
-    return this.request().post(this.entity, orderData);
+    return this.request().post('create-order', orderData);
   }
   
   // Lấy danh sách phân công cho một đơn hàng
