@@ -13,6 +13,9 @@ from rest_framework.status import (
     HTTP_406_NOT_ACCEPTABLE,
     HTTP_500_INTERNAL_SERVER_ERROR
 )
+from hr.models.customer import Customer
+from hr.serializers.customer import CustomerSerializer
+
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_nested_forms.utils import NestedForm
 from oauthlib.oauth2.rfc6749.utils import list_to_scope
@@ -194,7 +197,10 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
     @action(detail=False, methods=[Http.HTTP_POST], url_path="login", permission_classes=[AllowAny], authentication_classes=[])
     def login(self, request, pk=None):
         try:
-            user_name = request.POST.get("username")
+            # user_name = request.POST.get("username")
+            user_name = request.data.get("username")  # đọc từ JSON
+            password = request.data.get("password")
+    
             user = User.objects.prefetch_related("employees").get(email=user_name)
         except User.DoesNotExist:
             return Response(
@@ -233,9 +239,11 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
         for k, v in headers.items():
             response[k] = v
         return response
+   
+
 
     @action(detail=False, methods=[Http.HTTP_POST], url_path="refresh-token", permission_classes=[AllowAny], authentication_classes=[])
-    def refeshToken(self, request):
+    def refreshToken(self, request):
         request.POST._mutable = True
         refresh_token =  request.POST.get("refresh_token")
         if not refresh_token or refresh_token == 'null':
@@ -351,16 +359,27 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             print(e)
             return Response({"message": _("An error occurred.")}, status=HTTP_500_INTERNAL_SERVER_ERROR)
     
+    # @action(detail=False, methods=[Http.HTTP_GET], url_path="userinfo", permission_classes=[IsAuthenticated])
+    # def userinfo(self, request, *args, **kwargs):
+    #     try:
+    #         id = request.auth.user.id
+    #         user = get_object_or_404(User.objects.all(), id=id)
+    #         user_serializer= UserShortSerializer(user)
+    #         user_data = user_serializer.data
+    #         return Response(user_data, status=HTTP_200_OK)
+    #     except Exception as e:
+    #         return Response({"message": _("Business not found.")}, status=HTTP_404_NOT_FOUND)
+    
     @action(detail=False, methods=[Http.HTTP_GET], url_path="userinfo", permission_classes=[IsAuthenticated])
     def userinfo(self, request, *args, **kwargs):
         try:
-            id = request.auth.user.id
-            user = get_object_or_404(User.objects.all(), id=id)
-            user_serializer= UserShortSerializer(user)
-            user_data = user_serializer.data
-            return Response(user_data, status=HTTP_200_OK)
+            user_id = request.auth.user.id
+            customer = get_object_or_404(Customer.objects.all(), user_id=user_id)
+            customer_serializer = CustomerSerializer(customer)
+            customer_data = customer_serializer.data
+            return Response(customer_data, status=HTTP_200_OK)
         except Exception as e:
-            return Response({"message": _("Business not found.")}, status=HTTP_404_NOT_FOUND)
+            return Response({"message": _("Customer not found.")}, status=HTTP_404_NOT_FOUND)
 
     @action(detail=False, methods=[Http.HTTP_GET], url_path="scopes", permission_classes=[IsAdministrator])
     def scopes(self, request, pk=None):

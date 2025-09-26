@@ -18,6 +18,7 @@
     "@pinia/nuxt": "^0.5.1",
     "@types/js-yaml": "^4.0.9",
     "@vueup/vue-quill": "^1.2.0",
+    "axios": "^1.12.2",
     "chart.js": "^4.4.4",
     "codemirror": "^5.65.19",
     "codemirror-editor-vue3": "^2.8.0",
