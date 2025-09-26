@@ -17,7 +17,8 @@ class EmployeeSerializer(WritableNestedSerializer):
                                                    queryset=Role.objects.all(),
                                                    source='roles')
     additional_information = EmployeeAdditionalInformationSerializer(many=True, required=False)
-
+    is_currently_active = serializers.SerializerMethodField()
+    current_status_text = serializers.SerializerMethodField()
     class Meta:
         model = Employee
         fields = [
@@ -46,6 +47,8 @@ class EmployeeSerializer(WritableNestedSerializer):
             'completed_orders_count',
             'salary',
             'total_hours_worked',
+            'is_currently_active',
+            'current_status_text'
         ]
         extra_kwargs = {
             'user': {'required': False},
@@ -70,6 +73,51 @@ class EmployeeSerializer(WritableNestedSerializer):
         }
         nested_create_fields = ["user"]
         nested_update_fields = ["additional_information"]
+    def get_is_currently_active(self, obj):
+        """Check if employee is currently active based on working hours"""
+        return self._calculate_current_status(obj)['is_active']
+    
+    def get_current_status_text(self, obj):
+        """Get current status text"""
+        return self._calculate_current_status(obj)['status_text']
+    
+    def _calculate_current_status(self, obj):
+        """Calculate current status based on working hours and current time"""
+        if not obj.working_start_time or not obj.working_end_time:
+            return {
+                'is_active': False,
+                'status_text': 'No working hours set'
+            }
+        
+        # Get current time in Vietnam timezone (or your local timezone)
+        vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
+        current_time = timezone.now().astimezone(vietnam_tz).time()
+        
+        # Convert working hours to time objects for comparison
+        start_time = obj.working_start_time
+        end_time = obj.working_end_time
+        
+        # Check if current time is within working hours
+        if start_time <= end_time:
+            # Normal case: start time is before end time (same day)
+            is_active = start_time <= current_time <= end_time
+        else:
+            # Handle overnight shifts (start time > end time)
+            is_active = current_time >= start_time or current_time <= end_time
+        
+        # Determine status text
+        if is_active:
+            status_text = 'Active - Working Hours'
+        else:
+            if current_time < start_time:
+                status_text = f'Offline - Starts at {start_time.strftime("%H:%M")}'
+            else:
+                status_text = f'Offline - Ended at {end_time.strftime("%H:%M")}'
+        
+        return {
+            'is_active': is_active,
+            'status_text': status_text
+        }
 
 class EmployeeShortSerializer(serializers.ModelSerializer):
     user = UserShortSerializer(required=False)

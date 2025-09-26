@@ -5,10 +5,10 @@ class EmployeeService extends BaseService {
     return 'employees';
   }
 
- async getEmployees(params = {}) {
+  async getEmployees(params = {}) {
     // Lọc bỏ empty parameters và search
     const cleanParams = {}
-    
+
     Object.entries(params).forEach(([key, value]) => {
       // Bỏ qua search parameter và empty values
       if (key === 'search') return
@@ -16,14 +16,14 @@ class EmployeeService extends BaseService {
         cleanParams[key] = value
       }
     })
-    
+
     console.log('Clean params sent to API:', cleanParams)
-    
+
     // Nếu không có params nào thì gọi không có params
     if (Object.keys(cleanParams).length === 0) {
       return this.gets()
     }
-    
+
     return this.gets(cleanParams)
   }
 
@@ -59,6 +59,16 @@ class EmployeeService extends BaseService {
   async updateEmployeeStatus(id, status) {
     // Để tạm method này (có thể cần custom endpoint)
     return this.request().patch(`${this.entity}/${id}`, { status })
+  }
+
+  async getMyProfile() {
+    // Sử dụng endpoint my-profile thay vì filter
+    return this.request().get(`${this.entity}/my-profile`)
+  }
+
+  async updateMyProfile(data) {
+    // Sử dụng endpoint update-my-profile
+    return this.request().patch(`${this.entity}/update-my-profile`, data)
   }
 }
 

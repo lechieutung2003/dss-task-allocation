@@ -39,13 +39,16 @@ const isEmployee = computed(() => {
 
 const isLoggedIn = computed(() => !!oauthStore.tokenInfo?.access_token);
 
+// redirect nếu là admin hoặc employee
 watchEffect(() => {
-  if (isLoggedIn.value) {
-    if (isAdmin.value || isEmployee.value || isStaff.value) {
-      router.push("/dss/dashboard");
-    } else if (isGuest.value) {
-      router.push("/dss/home");
-    }
+  if (isAdmin.value || isEmployee.value) {
+    router.push("/dss/dashboard");
+
+  } 
+  else if (isGuest.value) {
+    router.push("/dss/home");
+  } else if (isAdmin.value || isStaff.value) {
+    router.push("/dss/dashboard");
   }
 });
 
