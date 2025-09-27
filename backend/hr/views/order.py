@@ -137,19 +137,16 @@ class OrderViewSets(BaseViewSet):
             return Response(serializer.data)
             
         elif request.method == 'POST':
-            print("Received data:", request.data)  # Thêm log này
             created_assignments = []
             
             for assignment_data in request.data:
                 assignment_data['order'] = order.id
                 serializer = AssignmentSerializer(data=assignment_data)
                 
-                print("Validating data:", assignment_data)  # Thêm log này
                 if serializer.is_valid():
                     assignment = serializer.save()
                     created_assignments.append(assignment)
                 else:
-                    print("Validation errors:", serializer.errors)  # Thêm log này
                     return Response(
                         {
                             "detail": "Dữ liệu không hợp lệ",

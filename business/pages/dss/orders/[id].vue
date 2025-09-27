@@ -546,8 +546,6 @@ const saveAssignments = async () => {
         cost: 0 // Có thể tính dựa vào work_hours và đơn giá
       }));
     
-    console.log('Data gửi lên:', newAssignments); // Log để debug
-    
     if (newAssignments.length > 0) {
       await AssignmentService.createAssignments(orderId, newAssignments);
     }
@@ -555,8 +553,6 @@ const saveAssignments = async () => {
     ElMessage.success('Phân công nhân viên thành công!');
     await fetchAssignedEmployees();
   } catch (error) {
-    console.error('Lỗi khi lưu phân công:', error);
-    console.error('Chi tiết lỗi:', error.response?.data); // Log chi tiết lỗi
     ElMessage.error('Không thể lưu phân công nhân viên.');
   } finally {
     loading.value = false;
