@@ -53,6 +53,79 @@
       </div>
     </div>
 
+    <!-- Modal Hóa đơn -->
+    <div v-if="showInvoiceModal && selectedInvoice" class="modal-overlay" @click="closeInvoiceModal">
+      <div class="modal-content invoice-modal" @click.stop>
+        <div class="modal-header">
+          <h2>🧾 Hóa đơn dịch vụ</h2>
+          <button class="close-btn" @click="closeInvoiceModal">×</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="invoice-header">
+            <div class="invoice-title">HÓA ĐƠN DỊCH VỤ</div>
+            <div class="invoice-number">Số: {{ selectedInvoice.invoiceNumber }}</div>
+            <div class="invoice-date">
+              <div>Ngày xuất: {{ selectedInvoice.issueDate }}</div>
+              <div>Hạn thanh toán: {{ selectedInvoice.dueDate }}</div>
+            </div>
+          </div>
+
+          <div class="invoice-section">
+            <h4>Chi tiết dịch vụ</h4>
+            <div class="service-details">
+              <div class="info-row">
+                <span>Dịch vụ:</span>
+                <span>{{ selectedInvoice.orderInfo.serviceName }}</span>
+              </div>
+              <div class="info-row">
+                <span>Diện tích:</span>
+                <span>{{ selectedInvoice.orderInfo.area }} m²</span>
+              </div>
+              <div class="info-row">
+                <span>Thời gian bắt đầu:</span>
+                <span>{{ formatDateTime(selectedInvoice.orderInfo.startTime) }}</span>
+              </div>
+              <div class="info-row">
+                <span>Thời gian kết thúc:</span>
+                <span>{{ formatDateTime(selectedInvoice.orderInfo.endTime) }}</span>
+              </div>
+              <div class="info-row">
+                <span>Phương thức thanh toán:</span>
+                <span>{{ selectedInvoice.orderInfo.paymentMethod }}</span>
+              </div>
+              <div class="info-row" v-if="selectedInvoice.orderInfo.note !== 'Không có'">
+                <span>Ghi chú:</span>
+                <span>{{ selectedInvoice.orderInfo.note }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="invoice-section">
+            <h4>Thanh toán</h4>
+            <div class="pricing-details">
+              <div class="info-row">
+                <span>Tạm tính:</span>
+                <span>{{ selectedInvoice.pricing.subtotal.toLocaleString('vi-VN') }} VNĐ</span>
+              </div>
+              <div class="info-row">
+                <span>VAT (10%):</span>
+                <span>{{ selectedInvoice.pricing.tax.toLocaleString('vi-VN') }} VNĐ</span>
+              </div>
+              <div class="info-row total-amount">
+                <span><strong>Tổng cộng:</strong></span>
+                <span class="total-price"><strong>{{ selectedInvoice.pricing.total.toLocaleString('vi-VN') }} VNĐ</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-download" @click="downloadInvoice">� Tải xuống PDF</button>
+          <button class="btn-close" @click="closeInvoiceModal">Đóng</button>
+        </div>
+      </div>
+    </div>
     
   </div>
 </template>
