@@ -9,18 +9,10 @@ from .views import (
     HolidayViewSet,
     WorkSessionViewSet,
     UnitViewSet,
-<<<<<<< HEAD
-    UnitTypeViewSet
-)
-
-# Tách riêng imports cho API orders để rõ ràng hơn
-from .views.order import OrderViewSet, AssignmentViewSet, CustomerViewSet, ServiceTypeViewSet
-=======
     UnitTypeViewSet,
     AssignmentViewSet,
 )
-from .views.order import OrderViewSet, CustomerViewSet, ServiceTypeViewSet
->>>>>>> Features/employee-management
+from .views.order import OrderViewSets, CustomerViewSet, ServiceTypeViewSet
 
 app_name = "hr"
 router = base_routers.MutipleUpdateRouter(trailing_slash=False)
@@ -30,15 +22,10 @@ router.register(r'groups', GroupViewSet, basename="groups")
 router.register(r'offices', OfficeViewSet, basename="offices")
 router.register(r'units', UnitViewSet, basename="units")
 router.register(r'unit-types', UnitTypeViewSet, basename="unit-types")
-<<<<<<< HEAD
-
-# Đăng ký các ViewSets liên quan đến order
+router.register(r'assignments', AssignmentViewSet, basename="assignments")
+router.register(r'orders', OrderViewSets, basename="orders")
 router.register(r'customers', CustomerViewSet, basename="customers")
 router.register(r'service-types', ServiceTypeViewSet, basename="service-types")
-router.register(r'orders', OrderViewSet, basename="orders")
-=======
->>>>>>> Features/employee-management
-router.register(r'assignments', AssignmentViewSet, basename="assignments")
 
 # Đăng ký các router lồng nhau
 # 1. Đảm bảo đã đăng ký 'groups' trong router chính

@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-from base.views import BaseViewSet
-=======
-
->>>>>>> Features/employee-management
 from rest_framework import viewsets, permissions
 from ..models import Order, Assignment, DecisionLog
 from ..models.customer import Customer, ServiceType
@@ -29,8 +24,6 @@ class ServiceTypeViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-<<<<<<< HEAD
-=======
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
@@ -70,8 +63,7 @@ from rest_framework import status
 from common.constants.http import Http
 from django.db.models import Q
 
->>>>>>> Features/employee-management
-class OrderViewSet(BaseViewSet):
+class OrderViewSets(BaseViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     search_map = {
@@ -135,12 +127,39 @@ class OrderViewSet(BaseViewSet):
         # Use default scopes from BaseViewSet
         return super().get_permissions()
     
-    @action(methods=[Http.HTTP_GET], detail=True, url_path="assignments")
-    def get_assignments(self, request, pk=None):
+    @action(methods=[Http.HTTP_GET, Http.HTTP_POST], detail=True, url_path="assignments")
+    def assignments(self, request, pk=None):
         order = self.get_object()
-        assignments = Assignment.objects.filter(order=order)
-        serializer = AssignmentSerializer(assignments, many=True)
-        return Response(serializer.data)
+        
+        if request.method == 'GET':
+            assignments = Assignment.objects.filter(order=order)
+            serializer = AssignmentSerializer(assignments, many=True)
+            return Response(serializer.data)
+            
+        elif request.method == 'POST':
+            print("Received data:", request.data)  # Thêm log này
+            created_assignments = []
+            
+            for assignment_data in request.data:
+                assignment_data['order'] = order.id
+                serializer = AssignmentSerializer(data=assignment_data)
+                
+                print("Validating data:", assignment_data)  # Thêm log này
+                if serializer.is_valid():
+                    assignment = serializer.save()
+                    created_assignments.append(assignment)
+                else:
+                    print("Validation errors:", serializer.errors)  # Thêm log này
+                    return Response(
+                        {
+                            "detail": "Dữ liệu không hợp lệ",
+                            "errors": serializer.errors
+                        }, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            
+            result_serializer = AssignmentSerializer(created_assignments, many=True)
+            return Response(result_serializer.data, status=status.HTTP_201_CREATED)
 
 class AssignmentViewSet(BaseViewSet):
     queryset = Assignment.objects.all()
@@ -153,18 +172,3 @@ class AssignmentViewSet(BaseViewSet):
         "destroy": [["assignments:edit"]],
         "list": [["assignments:view"], ["assignments:edit"]],
     }
-<<<<<<< HEAD
-
-class DecisionLogViewSet(BaseViewSet):
-    queryset = DecisionLog.objects.all()
-    serializer_class = DecisionLogSerializer
-    
-    required_alternate_scopes = {
-        "create": [["decision-logs:edit"]],
-        "retrieve": [["decision-logs:view"], ["decision-logs:edit"]],
-        "update": [["decision-logs:edit"]],
-        "destroy": [["decision-logs:edit"]],
-        "list": [["decision-logs:view"], ["decision-logs:edit"]],
-    }
-=======
->>>>>>> Features/employee-management

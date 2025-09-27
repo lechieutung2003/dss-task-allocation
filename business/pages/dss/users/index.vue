@@ -1,7 +1,7 @@
 <template>
   <div class="p-6">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 mt-10">
       <button 
         @click="showCreateModal = true"
         class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
@@ -482,7 +482,7 @@ import EmployeeService from '@/services/dss/users/employees'
 import { debounce } from 'lodash-es'
 
 definePageMeta({
-  layout: 'default',
+  layout: 'dss',
   middleware: 'auth'
 })
 
@@ -633,7 +633,7 @@ const deleting = ref(false)
 
 // Pagination
 const currentPage = ref(1)
-const pageSize = ref(10)
+const pageSize = ref(4)
 const totalItems = ref(0)
 const totalPages = computed(() => Math.ceil(totalItems.value / pageSize.value))
 
