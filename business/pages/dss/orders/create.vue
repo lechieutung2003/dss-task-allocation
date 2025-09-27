@@ -9,6 +9,9 @@ const store = useOauthStore();
 const router = useRouter();
 
 // form data
+
+
+
 const order = ref({
   customer: store.user?.id || null,
   service_type: null,
@@ -17,9 +20,106 @@ const order = ref({
   preferred_start_time: '',
   preferred_end_time: '',
   estimated_hours: null,
-  status: 'pending', 
+  status: 'pending',
   note: ''
 });
+
+const productivity = ref<number | null>(null);
+
+const calcProductivity = () => {
+  const serviceId = order.value.service_type;
+  if (!serviceId) {
+    productivity.value = null;
+    return;
+  }
+  const service = serviceTypes.value.find(s => s.id === serviceId);
+  if (service) {
+    if (service.cleaning_rate_m2_per_h) {
+      productivity.value = Number(service.cleaning_rate_m2_per_h);
+    } else if (service.name?.toLowerCase().includes('regular')) {
+      productivity.value = 40;
+    } else if (service.name?.toLowerCase().includes('deep')) {
+      productivity.value = 35;
+    } else {
+      productivity.value = null;
+    }
+  } else {
+    productivity.value = null;
+  }
+};
+
+const calcEstimatedHours = () => {
+  const area = order.value.area_m2;
+  if (!area || !productivity.value || productivity.value <= 0) {
+    order.value.estimated_hours = null;
+    return;
+  }
+  order.value.estimated_hours = +(area / productivity.value).toFixed(2);
+};
+
+watch(() => [order.value.service_type], calcProductivity);
+watch(() => [order.value.area_m2, productivity.value], calcEstimatedHours);
+
+const calcRequestedHours = () => {
+  const start = order.value.preferred_start_time;
+  const end = order.value.preferred_end_time;
+  if (!start || !end) {
+    order.value.requested_hours = null;
+    return;
+  }
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const diffMs = endDate.getTime() - startDate.getTime();
+  if (diffMs > 0) {
+    order.value.requested_hours = +(diffMs / (1000 * 60 * 60)).toFixed(2);
+  } else {
+    order.value.requested_hours = null;
+  }
+};
+
+import { watch } from 'vue';
+watch(() => [order.value.preferred_start_time, order.value.preferred_end_time], calcRequestedHours);
+
+const estimatedPrice = ref<number | null>(null);
+
+const calcEstimatedPrice = () => {
+  const serviceId = order.value.service_type;
+  const area = order.value.area_m2;
+  if (!serviceId || !area || area <= 0) {
+    estimatedPrice.value = null;
+    return;
+  }
+  let pricePerM2 = 0;
+  // Tìm theo id dịch vụ
+  const service = serviceTypes.value.find(s => s.id === serviceId);
+  if (service) {
+    // Nếu có trường price_per_m2 thì dùng luôn
+    if (service.price_per_m2) {
+      pricePerM2 = Number(service.price_per_m2);
+    } else if (service.name?.toLowerCase().includes('deeplearning')) {
+      pricePerM2 = 30000;
+    } else if (service.name?.toLowerCase().includes('regularcleaning')) {
+      pricePerM2 = 155000;
+    }
+  }
+  let price = pricePerM2 > 0 ? pricePerM2 * area : null;
+  // Áp dụng hệ số nếu thời gian khách chọn < giờ ước tính
+  const requested = order.value.requested_hours;
+  const estimated = order.value.estimated_hours;
+  if (price && requested && estimated && requested < estimated) {
+    const diff = estimated - requested ;
+    let factor = 1;
+    if (diff > 0.1 && diff <= 1) factor = 1.2;
+    else if (diff > 1 && diff <= 2) factor = 1.3;
+    else if (diff > 2) factor = 1.5;
+    price = price * factor;
+  }
+  estimatedPrice.value = price;
+};
+
+// Theo dõi thay đổi dịch vụ, diện tích, requested_hours, estimated_hours để cập nhật giá
+import { watch } from 'vue';
+watch(() => [order.value.service_type, order.value.area_m2, order.value.requested_hours, order.value.estimated_hours], calcEstimatedPrice);
 
 type ServiceType = { id: string; name: string; [key: string]: any };
 const serviceTypes = ref<ServiceType[]>([]);
@@ -53,6 +153,17 @@ const submitOrder = async () => {
     alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
   }
 };
+// Format số giờ thập phân thành giờ và phút
+function formatHourMinute(hours: number|null) {
+  if (hours === null || isNaN(hours)) return '';
+  // Nếu nhỏ hơn 1 phút thì hiện 1 phút
+  if (hours > 0 && hours * 60 < 1) return '1 phút';
+  const h = Math.floor(hours);
+  let m = Math.round((hours - h) * 60);
+  if (h === 0) return `${m} phút`;
+  if (m === 0) return `${h} giờ`;
+  return `${h} giờ ${m} phút`;
+}
 onMounted(() => {
   fetchServiceTypes();
 });
@@ -86,9 +197,15 @@ onMounted(() => {
               </div>
             </div>
             <div class="form-group">
+              <label>Giá ước tính</label>
+              <div class="inputForm">
+                <input type="text" :value="estimatedPrice !== null ? estimatedPrice.toLocaleString('vi-VN') + ' VNĐ' : ''" class="input" disabled placeholder="Giá ước tính sẽ tự động tính" style="color:#ef4444;font-weight:700;" />
+              </div>
+            </div>
+            <div class="form-group">
               <label>Số giờ yêu cầu</label>
               <div class="inputForm">
-                <input v-model.number="order.requested_hours" type="number" class="input" min="0" step="0.01" placeholder="Nhập số giờ" required />
+                  <input type="text" :value="order.requested_hours !== null ? formatHourMinute(order.requested_hours) : ''" class="input" readonly placeholder="Số giờ yêu cầu sẽ tự động tính" style="color:#ef4444;font-weight:700;" />
               </div>
             </div>
             <div class="form-group">
@@ -109,12 +226,6 @@ onMounted(() => {
               <label>Thời gian kết thúc ưu tiên</label>
               <div class="inputForm">
                 <input v-model="order.preferred_end_time" type="datetime-local" class="input" required />
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Giờ ước tính</label>
-              <div class="inputForm">
-                <input v-model.number="order.estimated_hours" type="number" class="input" min="0" step="0.01" placeholder="Nhập giờ ước tính" required />
               </div>
             </div>
             <div class="form-group">

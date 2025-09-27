@@ -12,6 +12,7 @@ class Order(TimeStampedModel):
     preferred_start_time = models.DateTimeField()
     preferred_end_time = models.DateTimeField()
     estimated_hours = models.DecimalField(max_digits=5, decimal_places=2)
+    cost_confirm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     status = models.CharField(max_length=20)
     note = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
