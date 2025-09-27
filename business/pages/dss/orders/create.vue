@@ -21,7 +21,8 @@ const order = ref({
   preferred_end_time: '',
   estimated_hours: null,
   status: 'pending',
-  note: ''
+  note: '',
+  cost_confirm: ''
 });
 
 const productivity = ref<number | null>(null);
@@ -139,6 +140,10 @@ const fetchServiceTypes = async () => {
 const submitOrder = async () => {
   try {
     const payload = { ...order.value };
+    // Gán giá ước tính vào trường cost_confirm nếu có
+    if (estimatedPrice.value !== null) {
+      payload.cost_confirm = estimatedPrice.value;
+    }
     const response = await OrderService.createOrder(payload);
     console.log('API response:', response);
     if (response && response.id) {

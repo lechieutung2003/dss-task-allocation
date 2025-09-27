@@ -14,6 +14,12 @@ from django.db.models import Q
 from hr.permissions import IsAdmin, IsEmployee, IsCustomer
 
 class OrderViewSet(BaseViewSet):
+    # API lấy chi tiết đơn hàng theo id
+    @action(methods=[Http.HTTP_GET], detail=True, url_path="detail")
+    def detail(self, request, pk=None):
+        order = self.get_object()
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     search_map = {

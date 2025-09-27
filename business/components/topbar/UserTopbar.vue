@@ -3,7 +3,7 @@
     <div class="user-topbar-wrapper">
       <!-- Tên công ty ở GIỮA -->
       <div class="company-name" @click="goHome">
-        <h1>Công Ty Dọn Dẹp</h1>
+        <h1>Clean Go</h1>
       </div>
       <!-- Menu bên phải -->
       <nav class="nav-right">
@@ -22,6 +22,11 @@
           :class="{ active: selected === 'contact' }"
           @click="selectMenu('contact', goContact)"
         >Liên hệ</span>
+        <span
+          class="nav-link"
+          :class="{ active: selected === 'orders' }"
+          @click="selectMenu('orders', goOrders)"
+        >Đơn hàng của tôi</span>
         <span
           class="pill-btn"
           :class="{ active: selected === 'create' }"
@@ -76,6 +81,7 @@ const goHome = () => router.push('/dss/home')
 const goAbout = () => router.push('/dss/about')
 const goServices = () => router.push('/dss/services/customer')
 const goContact = () => router.push('/dss/contact')
+const goOrders = () => router.push('/dss/customer-orders')
 const goCreateOrder = () => router.push('/dss/orders/create')
 const goProfile = () => { showMenu.value = false; router.push('/dss/profile/client') }
 const logout = () => { showMenu.value = false; store.$reset(); router.push('/') }
