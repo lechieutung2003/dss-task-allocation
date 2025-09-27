@@ -58,7 +58,9 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
         "destroy": [["admin:employees:edit"], ["employees:edit"]],
         "invite": [["admin:employees:edit"], ["employees:edit"]],
         "list": [["admin:employees:view"], ["employees:view-mine"]],
-        "retrieve": [["admin:employees:view"], ["employees:view-mine"]]
+        "retrieve": [["admin:employees:view"], ["employees:view-mine"]],
+        "admin_update": [["admin:edit"], ["admin:view"]]  
+
     }
 
     # get_queryset để handle JWTUser
@@ -204,7 +206,7 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
-            print(f"❌ Error in employee list: {e}")
+            print(f"Error in employee list: {e}")
             import traceback
             traceback.print_exc()
             
@@ -377,7 +379,7 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
                     )
                 
         except Exception as e:
-            print(f"❌ Error in my_profile: {e}")
+            print(f"Error in my_profile: {e}")
             import traceback
             traceback.print_exc()
             
@@ -385,13 +387,15 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
                 {"detail": f"Error retrieving profile: {str(e)}"},
                 status=HTTP_500_INTERNAL_SERVER_ERROR
             )
-
+    
+    # ✅ Fix update_my_profile to be consistent
     @action(
         detail=False, 
-        methods=[Http.HTTP_PATCH], 
+        methods=["PATCH", "POST"], # Allow both PATCH and POST
         url_path="update-my-profile", 
         permission_classes=[IsAuthenticated]
     )
+    
     def update_my_profile(self, request, *args, **kwargs):
         """Update current user's employee profile"""
         try:
@@ -738,3 +742,65 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
         # default_scopes = [name for name in default_scopes if name in business_scopes]
         
         return Response({ "scopes" :all_scopes, "default_scopes": default_scopes }, status=HTTP_200_OK)
+    
+    @action(
+        detail=True,  # detail=True để có thể truyền ID trong URL
+        methods=["PATCH"], 
+        url_path="admin-update", 
+        permission_classes=[IsAuthenticated]
+    )
+    def admin_update(self, request, *args, **kwargs):
+        """Admin action to update employee information"""
+        try:
+            # Kiểm tra admin permissions
+            if hasattr(request, 'auth') and request.auth:
+                token_scopes = request.auth.scope.split() if request.auth.scope else []
+                
+                # Kiểm tra scope admin
+                required_scopes = ['admin:edit', 'admin:view']
+                has_admin_permission = any(scope in token_scopes for scope in required_scopes)
+                
+                if not has_admin_permission:
+                    return Response(
+                        {"detail": "You do not have admin permission to perform this action."},
+                        status=HTTP_403_FORBIDDEN
+                    )
+            
+            # Lấy employee instance
+            employee = self.get_object()
+            
+            # Fields mà admin được phép update
+            admin_allowed_fields = [
+                'first_name', 'last_name', 'personal_mail', 
+                'phone', 'gender', 'date_of_birth', 'area', 
+                'working_start_time', 'working_end_time',
+                'status', 'office_id'  # Admin có thể update thêm status và office
+            ]
+            
+            # Lọc data chỉ lấy các fields được phép
+            update_data = {}
+            for field in admin_allowed_fields:
+                if field in request.data:
+                    update_data[field] = request.data[field]
+            
+            
+            # Validate và update
+            serializer = self.get_serializer(employee, data=update_data, partial=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data, status=HTTP_200_OK)
+                
+        except Employee.DoesNotExist:
+            return Response(
+                {"detail": "Employee not found."},
+                status=HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            print(f"Error in admin_update: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            return Response(
+                {"detail": f"Error updating employee: {str(e)}"},
+                status=HTTP_500_INTERNAL_SERVER_ERROR
+            )

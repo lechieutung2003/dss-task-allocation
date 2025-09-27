@@ -631,6 +631,8 @@ const en = {
   connection_error: 'Connection error',
   server_error: 'Server error',
   invalid_data: 'Invalid data received',
+  both_start_end_time_required: 'Both start and end time are required',
+  employee_updated_successfully: 'Employee updated successfully',
 }
 
 export default en;

@@ -58,6 +58,11 @@ export default class Http {
     });
   }
 
+  patch(url, data) {
+    console.log(`PATCH ${url}`, data)
+    return this.api(url, { method: 'PATCH', body: data })
+  }
+
   delete(path, data=null) {
     return this.api(path, {
       method: "DELETE",

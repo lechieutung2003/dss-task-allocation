@@ -645,6 +645,9 @@ const vi = {
   connection_error: 'Lỗi kết nối',
   server_error: 'Lỗi máy chủ',
   invalid_data: 'Dữ liệu nhận được không hợp lệ',
+  search_by_name_email_area: 'Tìm kiếm theo tên, email hoặc khu vực',
+  both_start_end_time_required: 'Cần cả giờ bắt đầu và kết thúc',
+  employee_updated_successfully: 'Cập nhật thông tin nhân viên thành công'
 };
 
 export default vi;

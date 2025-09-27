@@ -385,25 +385,16 @@ const getActualStatus = () => {
 const getStatusBadgeClass = () => {
   const actualStatus = getActualStatus()
   
-  console.log('=== DEBUG STATUS ===')
-  console.log('Employee:', props.employee || editableEmployee.value)
-  console.log('Actual status:', actualStatus)
-  console.log('====================')
-  
   const baseClass = 'inline-flex px-2 py-1 text-xs font-semibold rounded-full'
   
   switch (actualStatus) {
     case 0: // No working hours - YELLOW
-      console.log('Applying YELLOW badge')
       return `${baseClass} bg-yellow-100 text-yellow-800`
     case 1: // Active - GREEN
-      console.log('Applying GREEN badge')
       return `${baseClass} bg-green-100 text-green-800`
     case 2: // Inactive - RED
-      console.log('Applying RED badge')
       return `${baseClass} bg-red-100 text-red-800`
     default:
-      console.log('Applying GRAY badge (unknown status)')
       return `${baseClass} bg-gray-100 text-gray-800`
   }
 }
@@ -411,9 +402,7 @@ const getStatusBadgeClass = () => {
 // Status card class function
 const getStatusCardClass = () => {
   const actualStatus = getActualStatus()
-  
-  console.log('Card status:', actualStatus)
-  
+    
   switch (actualStatus) {
     case 0: return 'border-yellow-200 bg-yellow-50'
     case 1: return 'border-green-200 bg-green-50'
@@ -424,10 +413,7 @@ const getStatusCardClass = () => {
 
 // Status text class function
 const getStatusTextClass = () => {
-  const actualStatus = getActualStatus()
-  
-  console.log('Text status:', actualStatus)
-  
+  const actualStatus = getActualStatus()  
   switch (actualStatus) {
     case 0: return 'text-yellow-700'
     case 1: return 'text-green-700'
@@ -439,9 +425,7 @@ const getStatusTextClass = () => {
 // Status icon class function
 const getStatusIconClass = () => {
   const actualStatus = getActualStatus()
-  
-  console.log('Icon status:', actualStatus)
-  
+    
   const baseClass = 'w-4 h-4 rounded-full'
   
   switch (actualStatus) {
