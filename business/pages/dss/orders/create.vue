@@ -206,7 +206,136 @@ watch(() => [order.value.preferred_start_time, order.value.preferred_end_time], 
 watch(() => [order.value.service_type, order.value.area_m2, order.value.requested_hours, order.value.estimated_hours], calcEstimatedPrice);
 watch(() => [order.value.requested_hours, minRequiredHours.value], validateRequestedTime);
 
+const openPaymentModal = () => {
+  if (!isTimeValid.value) {
+    alert('Không thể tạo đơn: ' + timeValidationMessage.value);
+    return;
+  }
+  
+  // Sử dụng QR code tĩnh từ assets cho học tập
+  const amount = estimatedPrice.value || 0;
+  const description = `Thanh toan don hang DSS - ${amount.toLocaleString('vi-VN')} VND`;
+  qrCodeData.value = bankInfo.qrCode; // Sử dụng QR tĩnh từ assets
+  
+  showPaymentModal.value = true;
+};
 
+const closePaymentModal = () => {
+  showPaymentModal.value = false;
+  paymentMethod.value = 'cash';
+  isSubmitting.value = false;
+};
+
+// 🆕 Hàm tạo hóa đơn
+const generateInvoice = (orderResponse: any) => {
+  const currentDate = new Date();
+  const invoiceNumber = `HD${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(currentDate.getDate()).padStart(2, '0')}${String(orderResponse.id).padStart(4, '0')}`;
+  
+  invoiceData.value = {
+    invoiceNumber,
+    orderInfo: {
+      id: orderResponse.id,
+      serviceName: serviceTypes.value.find(s => s.id === order.value.service_type)?.name || 'N/A',
+      area: order.value.area_m2,
+      workingHours: formatHourMinute(order.value.requested_hours),
+      startTime: order.value.preferred_start_time,
+      endTime: order.value.preferred_end_time,
+      note: order.value.note || 'Không có',
+      paymentMethod: paymentMethod.value === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'
+    },
+    customerInfo: {
+      name: store.user?.name || 'Khách hàng',
+      email: store.user?.email || '',
+      phone: store.user?.phone || ''
+    },
+    pricing: {
+      subtotal: estimatedPrice.value || 0,
+      tax: Math.round((estimatedPrice.value || 0) * 0.1), // VAT 10%
+      total: Math.round((estimatedPrice.value || 0) * 1.1)
+    },
+    issueDate: currentDate.toLocaleDateString('vi-VN'),
+    dueDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('vi-VN') // 7 ngày sau
+  };
+  
+  showInvoiceModal.value = true;
+};
+
+const closeInvoiceModal = () => {
+  showInvoiceModal.value = false;
+  invoiceData.value = null;
+};
+
+const downloadInvoice = () => {
+  // Tạo hóa đơn PDF
+  const invoice = invoiceData.value;
+  
+  // Tạo HTML content cho PDF
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Hóa đơn ${invoice.invoiceNumber}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; margin-bottom: 30px; background: #f8f9fa; padding: 20px; }
+        .title { font-size: 24px; font-weight: bold; color: #333; }
+        .invoice-number { font-size: 18px; margin: 10px 0; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .section h3 { margin: 0 0 15px 0; color: #555; }
+        .row { display: flex; justify-content: space-between; margin: 8px 0; }
+        .total { background: #e3f2fd; padding: 15px; font-weight: bold; font-size: 18px; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="title">HÓA ĐƠN DỊCH VỤ</div>
+        <div class="invoice-number">Số: ${invoice.invoiceNumber}</div>
+        <div>Ngày xuất: ${invoice.issueDate} | Hạn thanh toán: ${invoice.dueDate}</div>
+      </div>
+      
+      <div class="section">
+        <h3>Thông tin khách hàng</h3>
+        <div class="row"><span>Họ tên:</span><span>${invoice.customerInfo.name}</span></div>
+        ${invoice.customerInfo.email ? `<div class="row"><span>Email:</span><span>${invoice.customerInfo.email}</span></div>` : ''}
+        ${invoice.customerInfo.phone ? `<div class="row"><span>Số điện thoại:</span><span>${invoice.customerInfo.phone}</span></div>` : ''}
+      </div>
+      
+      <div class="section">
+        <h3>Chi tiết dịch vụ</h3>
+        <div class="row"><span>Dịch vụ:</span><span>${invoice.orderInfo.serviceName}</span></div>
+        <div class="row"><span>Diện tích:</span><span>${invoice.orderInfo.area} m²</span></div>
+        <div class="row"><span>Thời gian làm việc:</span><span>${invoice.orderInfo.workingHours}</span></div>
+        <div class="row"><span>Thời gian bắt đầu:</span><span>${new Date(invoice.orderInfo.startTime).toLocaleString('vi-VN')}</span></div>
+        <div class="row"><span>Thời gian kết thúc:</span><span>${new Date(invoice.orderInfo.endTime).toLocaleString('vi-VN')}</span></div>
+        <div class="row"><span>Phương thức thanh toán:</span><span>${invoice.orderInfo.paymentMethod}</span></div>
+        ${invoice.orderInfo.note !== 'Không có' ? `<div class="row"><span>Ghi chú:</span><span>${invoice.orderInfo.note}</span></div>` : ''}
+      </div>
+      
+      <div class="section">
+        <h3>Thanh toán</h3>
+        <div class="row"><span>Tạm tính:</span><span>${invoice.pricing.subtotal.toLocaleString('vi-VN')} VNĐ</span></div>
+        <div class="row"><span>VAT (10%):</span><span>${invoice.pricing.tax.toLocaleString('vi-VN')} VNĐ</span></div>
+        <div class="total"><span>Tổng cộng:</span><span>${invoice.pricing.total.toLocaleString('vi-VN')} VNĐ</span></div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px; color: #666;">
+        Cảm ơn bạn đã sử dụng dịch vụ!
+      </div>
+    </body>
+    </html>
+  `;
+  
+  // Tạo PDF từ HTML bằng cách in
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(htmlContent);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  
+  // Tự động đóng cửa sổ sau khi in
+  printWindow.onafterprint = () => printWindow.close();
+};
 
 const submitOrder = async () => {
   if (isSubmitting.value) return;
