@@ -175,6 +175,100 @@ const fetchOrders = async () => {
   }
 }
 
+// Hàm xem hóa đơn
+const viewInvoice = (order) => {
+  const currentDate = new Date(order.created_at || new Date())
+  const invoiceNumber = `HD${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(currentDate.getDate()).padStart(2, '0')}${String(order.id).padStart(4, '0')}`
+  
+  selectedInvoice.value = {
+    invoiceNumber,
+    orderInfo: {
+      serviceName: order.service_details?.name || 'N/A',
+      area: formatArea(order.area_m2),
+      startTime: order.preferred_start_time,
+      endTime: order.preferred_end_time,
+      note: order.note || 'Không có',
+      paymentMethod: order.payment_method === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'
+    },
+    pricing: {
+      subtotal: parseInt(order.cost_confirm) || 0,
+      tax: Math.round((parseInt(order.cost_confirm) || 0) * 0.1),
+      total: Math.round((parseInt(order.cost_confirm) || 0) * 1.1)
+    },
+    issueDate: currentDate.toLocaleDateString('vi-VN'),
+    dueDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('vi-VN')
+  }
+  
+  showInvoiceModal.value = true
+}
+
+const closeInvoiceModal = () => {
+  showInvoiceModal.value = false
+  selectedInvoice.value = null
+}
+
+const downloadInvoice = () => {
+  if (!selectedInvoice.value) return
+  
+  const invoice = selectedInvoice.value
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Hóa đơn ${invoice.invoiceNumber}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; margin-bottom: 30px; background: #f8f9fa; padding: 20px; }
+        .title { font-size: 24px; font-weight: bold; color: #333; }
+        .invoice-number { font-size: 18px; margin: 10px 0; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .section h3 { margin: 0 0 15px 0; color: #555; }
+        .row { display: flex; justify-content: space-between; margin: 8px 0; }
+        .total { background: #e3f2fd; padding: 15px; font-weight: bold; font-size: 18px; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="title">HÓA ĐƠN DỊCH VỤ</div>
+        <div class="invoice-number">Số: ${invoice.invoiceNumber}</div>
+        <div>Ngày xuất: ${invoice.issueDate} | Hạn thanh toán: ${invoice.dueDate}</div>
+      </div>
+      
+      <div class="section">
+        <h3>Chi tiết dịch vụ</h3>
+        <div class="row"><span>Dịch vụ:</span><span>${invoice.orderInfo.serviceName}</span></div>
+        <div class="row"><span>Diện tích:</span><span>${invoice.orderInfo.area} m²</span></div>
+        <div class="row"><span>Thời gian bắt đầu:</span><span>${formatDateTime(invoice.orderInfo.startTime)}</span></div>
+        <div class="row"><span>Thời gian kết thúc:</span><span>${formatDateTime(invoice.orderInfo.endTime)}</span></div>
+        <div class="row"><span>Phương thức thanh toán:</span><span>${invoice.orderInfo.paymentMethod}</span></div>
+        ${invoice.orderInfo.note !== 'Không có' ? `<div class="row"><span>Ghi chú:</span><span>${invoice.orderInfo.note}</span></div>` : ''}
+      </div>
+      
+      <div class="section">
+        <h3>Thanh toán</h3>
+        <div class="row"><span>Tạm tính:</span><span>${invoice.pricing.subtotal.toLocaleString('vi-VN')} VNĐ</span></div>
+        <div class="row"><span>VAT (10%):</span><span>${invoice.pricing.tax.toLocaleString('vi-VN')} VNĐ</span></div>
+        <div class="total"><span>Tổng cộng:</span><span>${invoice.pricing.total.toLocaleString('vi-VN')} VNĐ</span></div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px; color: #666;">
+        Cảm ơn bạn đã sử dụng dịch vụ!
+      </div>
+    </body>
+    </html>
+  `
+  
+  const printWindow = window.open('', '_blank')
+  if (printWindow) {
+    printWindow.document.write(htmlContent)
+    printWindow.document.close()
+    printWindow.focus()
+    printWindow.print()
+    printWindow.onafterprint = () => printWindow.close()
+  }
+}
+
 onMounted(fetchOrders)
 </script>
 
