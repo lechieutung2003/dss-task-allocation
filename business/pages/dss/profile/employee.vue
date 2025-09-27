@@ -22,7 +22,7 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import EmployeeService from '@/services/dss/users/employees'
-import EmployeeProfile from '@/components/EmployeeProfile.vue'
+import EmployeeProfile from '~/components/employee/EmployeeProfile.vue'
 
 definePageMeta({
   layout: 'dss',

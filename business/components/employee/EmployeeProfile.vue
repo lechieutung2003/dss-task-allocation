@@ -1,4 +1,3 @@
-<!-- filepath: e:\Learning\CDCN\dss-task-allocation\business\components\EmployeeProfile.vue -->
 <template>
   <div class="space-y-6">
     <!-- Loading State -->
