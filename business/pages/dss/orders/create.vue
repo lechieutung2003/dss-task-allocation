@@ -43,7 +43,7 @@ const submitOrder = async () => {
     console.log('API response:', response);
     if (response && response.id) {
       alert('Tạo đơn thành công!');
-      router.push('/dss/orders');
+      router.push('/dss/customer-orders');
     } else {
       alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
       console.error('Lỗi tạo đơn:', response);
