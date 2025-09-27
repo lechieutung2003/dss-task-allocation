@@ -4,17 +4,17 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('search') }}</label>
         <input
-          :model-value="filters.search"
-          @input="$emit('update:search', $event.target.value)"
+          :value="filters.search"
+          @input="handleSearchInput"
           type="text"
-          :placeholder="$t('search_employee')"
+          :placeholder="$t('search_by_name_email_area')"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('area') }}</label>
         <select
-          :model-value="filters.area"
+          :value="filters.area"
           @change="$emit('update:area', $event.target.value)"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
@@ -23,20 +23,22 @@
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('status') }}</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('working_status') }}</label>
         <select
-          :model-value="filters.status"
+          :value="filters.status"
           @change="$emit('update:status', $event.target.value)"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">{{ $t('all_status') }}</option>
-          <option value="1">{{ $t('active') }}</option>
-          <option value="0">{{ $t('inactive') }}</option>
+          <!-- Proper status options -->
+          <option value="active">{{ $t('active_working_hours') }}</option>
+          <option value="inactive">{{ $t('inactive_outside_hours') }}</option>
+          <option value="no_hours">{{ $t('no_working_hours_set') }}</option>
         </select>
       </div>
       <div class="flex items-end">
         <button
-          @click="$emit('reset')"
+          @click="handleReset"
           class="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
         >
           {{ $t('reset') }}
@@ -62,10 +64,21 @@ interface Props {
 
 defineProps<Props>()
 
-defineEmits<{
+const emit = defineEmits<{
   'update:search': [value: string]
-  'update:area': [value: string]  
+  'update:area': [value: string]
   'update:status': [value: string]
-  reset: []
+  'reset': []
 }>()
+
+// Handle search input
+const handleSearchInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  emit('update:search', target.value)
+}
+
+// Handle reset
+const handleReset = () => {
+  emit('reset')
+}
 </script>

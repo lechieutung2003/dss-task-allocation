@@ -90,27 +90,50 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             queryset = self.get_queryset()
             
             # Apply additional filters from query params
-            area = request.query_params.get('area')
-            status_filter = request.query_params.get('status')
             search = request.query_params.get('search')
+            if search:
+                queryset = queryset.filter(
+                    Q(first_name__icontains=search) |
+                    Q(last_name__icontains=search) |
+                    Q(work_mail__icontains=search) |
+                    Q(phone__icontains=search) |
+                    Q(area__icontains=search)
+                )
             
+            area = request.query_params.get('area')
             if area:
                 queryset = queryset.filter(area__icontains=area)
+            computed_status = request.query_params.get('computed_status')
+            if computed_status is not None and computed_status != '':
+                try:
+                    status_value = int(computed_status)
+                    
+                    if status_value == 0:
+                        # No working hours set
+                        queryset = queryset.filter(
+                            Q(working_start_time__isnull=True) | 
+                            Q(working_end_time__isnull=True)
+                        )
+                    elif status_value in [1, 2]:
+                        # Has working hours, filter by computed status
+                        # This will be handled by serializer computation
+                        queryset = queryset.filter(
+                            working_start_time__isnull=False,
+                            working_end_time__isnull=False
+                        )
+                        # Additional filtering will happen in serializer
+                        
+                except (ValueError, TypeError):
+                    pass
             
-            if status_filter is not None and status_filter != '':
+            status_filter = request.query_params.get('status')
+            if status_filter is not None and status_filter != '' and not computed_status:
                 try:
                     status_value = int(status_filter)
                     queryset = queryset.filter(status=status_value)
                 except (ValueError, TypeError):
-                    pass  # Ignore invalid status values
+                    pass
             
-            if search:
-                queryset = queryset.filter(
-                    Q(first_name__icontains=search) | 
-                    Q(last_name__icontains=search) |
-                    Q(work_mail__icontains=search) |
-                    Q(area__icontains=search)
-                )
             
             # Get pagination parameters
             try:
@@ -137,6 +160,17 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             try:
                 serializer = self.get_serializer(page_obj, many=True)
                 serialized_data = serializer.data
+                if computed_status is not None and computed_status != '':
+                    try:
+                        status_value = int(computed_status)
+                        if status_value in [1, 2]:
+                            # Filter serialized data by computed_status
+                            serialized_data = [
+                                item for item in serialized_data 
+                                if item.get('computed_status') == status_value
+                            ]
+                    except (ValueError, TypeError):
+                        pass
             except Exception as e:
                 print(f"Serialization error: {e}")
                 # Fallback: serialize without computed fields

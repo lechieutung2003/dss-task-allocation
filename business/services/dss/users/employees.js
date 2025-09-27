@@ -11,7 +11,21 @@ class EmployeeService extends BaseService {
 
     Object.entries(params).forEach(([key, value]) => {
       // Bỏ qua search parameter và empty values
-      if (key === 'search') return
+            if (key === 'search') {
+        if (value && value.trim() !== '') {
+          cleanParams[key] = value.trim()
+        }
+        return
+      }
+
+      if (key === 'computed_status') {
+        // Only exclude null/undefined, allow 0, 1, 2
+        if (value !== null && value !== undefined && value !== '') {
+          cleanParams[key] = value
+        }
+        return
+      }
+
       if (value !== null && value !== undefined && value !== '' && value !== 0) {
         cleanParams[key] = value
       }
