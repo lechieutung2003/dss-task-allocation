@@ -31,6 +31,23 @@ const minRequiredHours = ref<number | null>(null); // 🆕 thời gian tối thi
 const isTimeValid = ref<boolean>(true); // 🆕 kiểm tra thời gian hợp lệ
 const timeValidationMessage = ref<string>(''); // 🆕 thông báo lỗi thời gian
 
+// 🆕 Modal thanh toán
+const showPaymentModal = ref<boolean>(false);
+const paymentMethod = ref<'cash' | 'transfer'>('cash');
+const isSubmitting = ref<boolean>(false);
+
+// 🆕 Modal hóa đơn
+const showInvoiceModal = ref<boolean>(false);
+const invoiceData = ref<any>(null);
+
+// 🆕 Thông tin QR code cho chuyển khoản
+const qrCodeData = ref<string>('');
+const bankInfo = {
+  bankName: 'Vietcombank',
+  accountNumber: '1020567669',
+  accountHolder: 'VO THU THAO',
+  qrCode: qrImage // Sử dụng hình ảnh đã import
+};
 
 type ServiceType = { id: string; name: string; [key: string]: any };
 const serviceTypes = ref<ServiceType[]>([]);
