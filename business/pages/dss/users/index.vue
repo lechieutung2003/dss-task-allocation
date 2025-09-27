@@ -336,18 +336,11 @@
               </td>
 
               <!-- Status -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  :class="[
-                    'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
-                    employee.status === 1
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  ]"
-                >
-                  {{ employee.status === 1 ? $t('active') : $t('inactive') }}
-                </span>
-              </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+    <span :class="getStatusBadgeClass(employee)">
+      {{ getStatusText(employee) }}
+    </span>
+  </td>
 
               <!-- Actions -->
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -516,6 +509,53 @@ const newEmployee = ref({
   working_end_time: '',
   status: 1 // Default active
 })
+
+const getActualStatus = (employee: any) => {
+  // Force check: nếu không có working hours thì status = 0 (YELLOW)
+  if (!employee?.working_start_time || !employee?.working_end_time) {
+    return 0
+  }
+   // Có working hours, dùng status từ backend
+  return employee.computed_status ?? employee.status ?? 1
+}
+
+const getStatusBadgeClass = (employee: any) => {
+  const actualStatus = getActualStatus(employee)
+  
+  const baseClass = 'inline-flex px-2 py-1 text-xs font-semibold rounded-full'
+  
+  switch (actualStatus) {
+    case 0: // No working hours - YELLOW
+      return `${baseClass} bg-yellow-100 text-yellow-800`
+    case 1: // Active - GREEN
+      return `${baseClass} bg-green-100 text-green-800`
+    case 2: // Inactive - RED
+      return `${baseClass} bg-red-100 text-red-800`
+    default:
+      return `${baseClass} bg-gray-100 text-gray-800`
+  }
+}
+
+const getStatusText = (employee: any) => {
+  const actualStatus = getActualStatus(employee)
+  
+  // Use backend computed status text if available
+  if (employee?.status_text) {
+    return employee.status_text
+  }
+  
+  // Fallback based on actual status
+  switch (actualStatus) {
+    case 0:
+      return t('no_working_hours_set')
+    case 1:
+      return t('active')
+    case 2:
+      return t('inactive')
+    default:
+      return t('unknown')
+  }
+}
 
 const resetNewEmployee = () => {
   newEmployee.value = {

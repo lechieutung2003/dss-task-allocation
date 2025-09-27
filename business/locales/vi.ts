@@ -615,6 +615,18 @@ const vi = {
   offline_ended: "Ngoài giờ - Đã kết thúc",
   work_starts_at: "Bắt đầu làm việc lúc {time}",
   work_ended_at: "Kết thúc làm việc lúc {time}",
+  start_end_time_cannot_be_same: "Giờ bắt đầu và kết thúc không thể giống nhau",
+  shift_type: "Loại ca làm việc",
+  regular_shift: "Ca thường",
+  overnight_shift: "Ca đêm",
+  not_set: "Chưa thiết lập",
+  error_saving_employee: "Lỗi khi lưu nhân viên",
+  no_working_hours_set: "Chưa thiết lập giờ làm việc",
+  status_auto_calculated: "Trạng thái được tự động tính toán",
+  status_will_be_calculated: "Trạng thái sẽ được tính toán",
+  please_set_working_hours: "Vui lòng thiết lập giờ làm việc để hệ thống tự động tính trạng thái",
+  status_auto_updated_by_system: "Trạng thái được cập nhật tự động bởi hệ thống dựa trên giờ hiện tại",
+  working_status: "Trạng thái làm việc",
 };
 
 export default vi;

@@ -597,6 +597,18 @@ const en = {
   offline_ended: "Offline - Ended",
   work_starts_at: "Work starts at {time}",
   work_ended_at: "Work ended at {time}",
+  start_end_time_cannot_be_same: "Start and end time cannot be the same",
+  shift_type: "Shift Type",
+  regular_shift: "Regular Shift",
+  overnight_shift: "Overnight Shift",
+  not_set: "Not Set",
+  error_saving_employee: "Error saving employee",
+  no_working_hours_set: "No working hours set",
+  status_auto_calculated: "Status is auto-calculated based on working hours and current time",
+  status_will_be_calculated: "Status will be calculated",
+  please_set_working_hours: "Please set working hours to allow the system to automatically calculate status",
+  status_auto_updated_by_system: "Status is automatically updated by the system based on current time",
+  working_status: "Working Status",
 }
 
 export default en;

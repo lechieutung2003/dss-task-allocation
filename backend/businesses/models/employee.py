@@ -12,6 +12,19 @@ def avatar_file(instance, filename):
     return  "\\".join(['employees', str(instance.id), filename])
 
 
+class EmployeeWorkingStatus:
+    """Working status choices for employees"""
+    NO_WORKING_HOURS = 0
+    ACTIVE = 1
+    INACTIVE = 2
+    
+    CHOICES = [
+        (NO_WORKING_HOURS, 'No working hours set'),
+        (ACTIVE, 'Active'),
+        (INACTIVE, 'Inactive'),
+    ]
+
+
 class Employee(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="employees")
     first_name = models.CharField(max_length=50, blank=True)
@@ -25,8 +38,11 @@ class Employee(TimeStampedModel):
     avatar = models.ImageField(upload_to=avatar_file, max_length=255, blank=True, null=True)
     join_date = models.DateField(default=timezone.now)
     roles = models.ManyToManyField(Role, related_name="employees", null=True, blank=True)
-    status = models.SmallIntegerField(choices=AccountStatus.CHOICES, default=AccountStatus.DEACTIVE, blank=True)
-    
+    status = models.SmallIntegerField(
+        choices=EmployeeWorkingStatus.CHOICES, 
+        default=EmployeeWorkingStatus.NO_WORKING_HOURS, 
+        help_text="Auto-computed working status based on working hours and current time"
+    )    
     # Các trường mới được bổ sung
     area = models.CharField(max_length=100, null=True, blank=True, help_text="Khu vực làm việc của nhân viên")
     working_start_time = models.TimeField(null=True, blank=True, help_text="Giờ bắt đầu làm việc")

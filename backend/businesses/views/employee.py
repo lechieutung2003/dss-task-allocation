@@ -36,6 +36,9 @@ from oauth.permissions import IsAdministrator
 from ..models import Employee
 from ..serializers import EmployeeSerializer
 from ..services import EmployeeService
+from django.db.models import Q
+from django.core.paginator import Paginator
+from rest_framework import status
 
 User = get_user_model()
 AccessToken = get_access_token_model()
@@ -81,22 +84,106 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
 
     # Sửa indentation - đưa list ra ngoài create()
     def list(self, request, *args, **kwargs):
-        # Get filtered queryset
-        queryset = self.get_queryset()
-        
-        # Apply additional filters from query params
-        queryset = self.filter_queryset(queryset)
-        
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({
-            'count': queryset.count(),
-            'results': serializer.data
-        })
+        """Override list method to handle pagination and filtering properly"""
+        try:
+            # Get filtered queryset
+            queryset = self.get_queryset()
+            
+            # Apply additional filters from query params
+            area = request.query_params.get('area')
+            status_filter = request.query_params.get('status')
+            search = request.query_params.get('search')
+            
+            if area:
+                queryset = queryset.filter(area__icontains=area)
+            
+            if status_filter is not None and status_filter != '':
+                try:
+                    status_value = int(status_filter)
+                    queryset = queryset.filter(status=status_value)
+                except (ValueError, TypeError):
+                    pass  # Ignore invalid status values
+            
+            if search:
+                queryset = queryset.filter(
+                    Q(first_name__icontains=search) | 
+                    Q(last_name__icontains=search) |
+                    Q(work_mail__icontains=search) |
+                    Q(area__icontains=search)
+                )
+            
+            # Get pagination parameters
+            try:
+                page = int(request.query_params.get('page', 1))
+                page_size = int(request.query_params.get('page_size', 10))
+            except (ValueError, TypeError):
+                page = 1
+                page_size = 10
+            
+            # Ensure reasonable limits
+            page_size = min(max(page_size, 1), 100)  # Between 1 and 100
+            page = max(page, 1)  # At least 1
+            
+            # Apply pagination
+            paginator = Paginator(queryset, page_size)
+            
+            try:
+                page_obj = paginator.get_page(page)
+            except Exception as e:
+                print(f"Pagination error: {e}")
+                page_obj = paginator.get_page(1)  # Fallback to first page
+            
+            # Serialize data with error handling
+            try:
+                serializer = self.get_serializer(page_obj, many=True)
+                serialized_data = serializer.data
+            except Exception as e:
+                print(f"Serialization error: {e}")
+                # Fallback: serialize without computed fields
+                serialized_data = []
+                for employee in page_obj:
+                    try:
+                        emp_serializer = self.get_serializer(employee)
+                        serialized_data.append(emp_serializer.data)
+                    except Exception as emp_error:
+                        print(f"Error serializing employee {employee.id}: {emp_error}")
+                        # Add minimal employee data
+                        serialized_data.append({
+                            'id': str(employee.id),
+                            'first_name': employee.first_name or '',
+                            'last_name': employee.last_name or '',
+                            'work_mail': employee.work_mail or '',
+                            'area': employee.area or '',
+                            'status': employee.status,
+                            'is_currently_active': False,
+                            'current_status_text': 'Status unavailable'
+                        })
+            
+            return Response({
+                'results': serialized_data,
+                'count': paginator.count,
+                'num_pages': paginator.num_pages,
+                'current_page': page,
+                'page_size': page_size,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            print(f"❌ Error in employee list: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            return Response({
+                'results': [],
+                'count': 0,
+                'num_pages': 0,
+                'current_page': 1,
+                'page_size': 10,
+                'has_next': False,
+                'has_previous': False,
+                'error': f"Error loading employees: {str(e)}"
+            }, status=status.HTTP_200_OK) 
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
