@@ -142,15 +142,21 @@ onUnmounted(() => {
 
 <style scoped>
 :root { 
-  --clean-blue: #3b82f6; 
-  --clean-teal: #0d9488; 
-  --clean-green: #059669;
+  --primary: #3b82f6;
+  --secondary: #0d9488; 
+  --accent: #059669;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
+  --bg-light: #f8fafc;
+  --bg-card: #ffffff;
+  --shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 20px 40px -4px rgba(0, 0, 0, 0.15);
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --clean-gradient: linear-gradient(135deg, #3b82f6 0%, #0d9488 100%);
   --sparkle: #fbbf24;
   --soft-white: #fefefe;
   --soft-gray: #f8fafc;
-  --text-dark: #1e293b;
   --text-muted: #64748b;
-  --clean-gradient: linear-gradient(135deg, #3b82f6 0%, #0d9488 50%, #059669 100%);
   --clean-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
   --clean-glow: 0 0 20px rgba(59, 130, 246, 0.15);
 }
@@ -170,10 +176,10 @@ onUnmounted(() => {
 }
 
 .user-topbar.scrolled {
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.12);
-  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+  background: rgba(255,255,255,0.85); /* Trong suốt hơn khi scroll */
+  backdrop-filter: blur(15px) saturate(160%);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .user-topbar-wrapper {
@@ -188,10 +194,7 @@ onUnmounted(() => {
 
 /* Logo Design - Clean & Sparkly */
 .company-name {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  position: static;
   z-index: 10;
 }
 
@@ -218,12 +221,12 @@ onUnmounted(() => {
   margin: 0;
   font-size: 28px;
   font-weight: 900;
-  background: var(--clean-gradient);
+  background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%); /* Xanh đậm hơn */
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
-  text-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+  text-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
 }
 
 /* Sparkle Animation */
@@ -255,7 +258,6 @@ onUnmounted(() => {
   display: flex; 
   align-items: center; 
   gap: 8px;
-  margin-left: auto;
 }
 
 .nav-link {
@@ -289,16 +291,30 @@ onUnmounted(() => {
 }
 
 .nav-link:hover {
-  background: var(--soft-gray);
-  color: var(--clean-blue);
+  background: rgba(34, 197, 94, 0.1); /* Xanh lá cây nhẹ */
+  color: var(--accent);
   transform: translateY(-1px);
-  box-shadow: var(--clean-shadow);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .nav-link.active {
-  background: var(--clean-gradient);
-  color: white;
-  box-shadow: var(--clean-glow);
+  background: transparent;
+  color: #000000; /* Màu đen */
+  box-shadow: none;
+  position: relative;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: var(--accent); /* Gạch chân màu xanh */
+  border-radius: 2px;
 }
 
 .nav-icon {
@@ -316,8 +332,8 @@ onUnmounted(() => {
 }
 
 .orders-link {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); /* Xanh lá cây nhẹ */
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 /* CTA Button - Special Clean Design */
@@ -328,14 +344,15 @@ onUnmounted(() => {
   cursor: pointer;
   padding: 14px 24px;
   border-radius: 50px;
-  background: var(--clean-gradient);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%); /* Xanh đậm hơn */
   color: white;
   font-weight: 700;
   font-size: 15px;
-  box-shadow: var(--clean-glow);
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.4); /* Shadow đậm hơn */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   margin-left: 12px;
+  border: 2px solid rgba(5, 150, 105, 0.3); /* Thêm border để nổi bật */
 }
 
 .cta-btn::before {
@@ -357,8 +374,10 @@ onUnmounted(() => {
 }
 
 .cta-btn:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); /* Xanh đậm hơn khi hover */
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 32px rgba(22, 163, 74, 0.5); /* Shadow xanh đậm */
+  border-color: rgba(22, 163, 74, 0.5);
 }
 
 .cta-content {
@@ -408,14 +427,15 @@ onUnmounted(() => {
 
 .avatar-container:hover {
   transform: scale(1.1);
+  filter: drop-shadow(0 4px 12px rgba(5, 150, 105, 0.3)); /* Thêm drop-shadow xanh */
 }
 
 .avatar {
-  background: var(--clean-gradient) !important;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; /* Xanh đậm để nổi bật */
   color: white !important;
   font-weight: 800 !important;
-  box-shadow: var(--clean-shadow) !important;
-  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.4) !important; /* Shadow đậm hơn */
+  border: 3px solid rgba(255, 255, 255, 0.9) !important; /* Border trắng đậm hơn */
   transition: all 0.3s ease !important;
 }
 
@@ -427,7 +447,7 @@ onUnmounted(() => {
   bottom: -3px;
   border: 2px solid transparent;
   border-radius: 50%;
-  background: var(--clean-gradient);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%); /* Xanh đậm */
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: -1;
@@ -478,8 +498,8 @@ onUnmounted(() => {
 }
 
 .dropdown-item:hover {
-  background: var(--soft-gray);
-  color: var(--clean-blue);
+  background: rgba(34, 197, 94, 0.1); /* Xanh lá cây nhẹ */
+  color: var(--accent);
   transform: translateX(4px);
 }
 

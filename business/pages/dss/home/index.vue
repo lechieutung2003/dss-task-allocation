@@ -168,6 +168,12 @@ const goToCreateOrder = () => {
 </template>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root { 
   --primary: #3b82f6;
   --secondary: #0d9488; 
@@ -184,6 +190,9 @@ const goToCreateOrder = () => {
 
 .home-page {
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  margin-top: -1px; /* Loại bỏ khoảng trắng do border */
   /* Nền với hình ảnh */
   background: 
     linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(13, 148, 136, 0.1) 100%),
@@ -209,14 +218,16 @@ const goToCreateOrder = () => {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  margin-top: -80px; /* Kéo lên để che khoảng trắng, điều chỉnh theo chiều cao topbar */
+  padding-top: 80px; /* Bù lại padding để content không bị che */
 }
 
 .hero-background {
   position: absolute;
-  top: 0;
+  top: -80px; /* Mở rộng lên để che khoảng trắng */
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% + 80px); /* Tăng chiều cao tương ứng */
   z-index: -1;
 }
 
