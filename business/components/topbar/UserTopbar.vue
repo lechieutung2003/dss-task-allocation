@@ -1,51 +1,88 @@
 <template>
   <header :class="['user-topbar', { 'scrolled': isScrolled }]">
     <div class="user-topbar-wrapper">
-      <!-- Tên công ty ở GIỮA -->
+      <!-- Logo với hiệu ứng clean, sparkle -->
       <div class="company-name" @click="goHome">
-        <h1>Clean Go</h1>
+        <div class="logo">
+          <span class="logo-icon">✨</span>
+          <h1 class="logo-text">Clean Go</h1>
+          <div class="sparkle sparkle-1"></div>
+          <div class="sparkle sparkle-2"></div>
+          <div class="sparkle sparkle-3"></div>
+        </div>
       </div>
-      <!-- Menu bên phải -->
+      
+      <!-- Navigation với icon dọn dẹp -->
       <nav class="nav-right">
-        <span
-          class="nav-link"
-          :class="{ active: selected === 'about' }"
-          @click="selectMenu('about', goAbout)"
-        >Về chúng tôi</span>
-        <span
-          class="nav-link"
-          :class="{ active: selected === 'services' }"
-          @click="selectMenu('services', goServices)"
-        >Dịch vụ</span>
-        <span
-          class="nav-link"
-          :class="{ active: selected === 'contact' }"
-          @click="selectMenu('contact', goContact)"
-        >Liên hệ</span>
-        <span
-          class="nav-link"
-          :class="{ active: selected === 'orders' }"
-          @click="selectMenu('orders', goOrders)"
-        >Đơn hàng của tôi</span>
-        <span
-          class="pill-btn"
-          :class="{ active: selected === 'create' }"
-          @click="selectMenu('create', goCreateOrder)"
-        >Tạo đơn</span>
-        <!-- Avatar dropdown -->
-        <div class="profile-wrapper">
-          <el-avatar
-            class="avatar"
-            :size="36"
-            @click="toggleMenu"
-            style="cursor:pointer"
-          >
-            {{ initials }}
-          </el-avatar>
-          <div v-if="showMenu" class="dropdown-menu" @click.stop>
-            <div class="dropdown-item" @click="goProfile">Trang cá nhân</div>
-            <div class="dropdown-item" @click="logout">Đăng xuất</div>
+        <span class="nav-link" :class="{ active: selected === 'about' }" @click="selectMenu('about', goAbout)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span class="nav-text">Về chúng tôi</span>
+        </span>
+        
+        <span class="nav-link" :class="{ active: selected === 'services' }" @click="selectMenu('services', goServices)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18m-9 4.5L21 7.5M12 16.5L3 7.5"></path>
+          </svg>
+          <span class="nav-text">Dịch vụ</span>
+        </span>
+        
+        <span class="nav-link" :class="{ active: selected === 'contact' }" @click="selectMenu('contact', goContact)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <span class="nav-text">Liên hệ</span>
+        </span>
+        
+        <span class="nav-link orders-link" :class="{ active: selected === 'orders' }" @click="selectMenu('orders', goOrders)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
+            <path d="M9 11V5a2 2 0 0 1 4 0v6"></path>
+          </svg>
+          <span class="nav-text">Đơn hàng</span>
+        </span>
+        
+        <span class="cta-btn" :class="{ active: selected === 'create' }" @click="selectMenu('create', goCreateOrder)">
+          <div class="cta-content">
+            <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <span>Tạo đơn</span>
           </div>
+          <div class="cta-shine"></div>
+        </span>
+        
+        <!-- Avatar dropdown với hiệu ứng clean -->
+        <div class="profile-wrapper">
+          <div class="avatar-container" @click="toggleMenu">
+            <el-avatar class="avatar" :size="40">{{ initials }}</el-avatar>
+            <div class="avatar-ring"></div>
+          </div>
+          
+          <transition name="dropdown">
+            <div v-if="showMenu" class="dropdown-menu" @click.stop>
+              <div class="dropdown-item" @click="goProfile">
+                <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Trang cá nhân</span>
+              </div>
+              <div class="dropdown-item logout" @click="logout">
+                <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16,17 21,12 16,7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Đăng xuất</span>
+              </div>
+            </div>
+          </transition>
         </div>
       </nav>
     </div>
@@ -104,82 +141,456 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-:root{ --ink:#0f172a; --muted:#6b7280; --ring:#ecedec; }
-.user-topbar{
-  position: sticky; top: 0; z-index: 50;
-  width: 100%; display: flex; justify-content: center;
-  background: #fff;
-  transition: background 0.3s, box-shadow 0.3s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  backdrop-filter: none;
-}
-.user-topbar.scrolled {
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: saturate(140%) blur(6px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+:root { 
+  --clean-blue: #3b82f6; 
+  --clean-teal: #0d9488; 
+  --clean-green: #059669;
+  --sparkle: #fbbf24;
+  --soft-white: #fefefe;
+  --soft-gray: #f8fafc;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --clean-gradient: linear-gradient(135deg, #3b82f6 0%, #0d9488 50%, #059669 100%);
+  --clean-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
+  --clean-glow: 0 0 20px rgba(59, 130, 246, 0.15);
 }
 
-/* Wrapper chính */
-.user-topbar-wrapper{
-  width: 100%; max-width: 1100px;
-  padding: 10px 20px;
-  border-bottom: 1px solid #f0e7dc;
-  display: flex; align-items: center; justify-content: flex-end;
+.user-topbar {
+  position: sticky; 
+  top: 0; 
+  z-index: 1000;
+  width: 100%; 
+  display: flex; 
+  justify-content: center;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(248,250,252,0.95));
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--clean-shadow);
+}
+
+.user-topbar.scrolled {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.12);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.user-topbar-wrapper {
+  width: 100%; 
+  max-width: 1280px;
+  padding: 16px 32px;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between;
   position: relative;
 }
 
-/* Logo/Company — ở CHÍNH GIỮA thanh */
-.company-name{
-  position: absolute; left: 10%; transform: translateX(-50%);
+/* Logo Design - Clean & Sparkly */
+.company-name {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
 }
-.company-name h1{
+
+.logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.logo-icon {
+  font-size: 24px;
+  animation: sparkle 2s infinite;
+}
+
+.logo-text {
   margin: 0;
-  font-size: 18px; font-weight: 800; letter-spacing:.2px;
-  color: var(--ink); cursor: pointer;
+  font-size: 28px;
+  font-weight: 900;
+  background: var(--clean-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
 }
 
-/* Nav phải */
-.nav-right{ display: flex; align-items: center; gap: 18px; color: var(--ink); }
-
-.nav-link{
-  cursor: pointer; font-size: 15px; font-weight: 600;
-  padding: 6px 10px; border-radius: 8px; transition: .15s ease;
-  color: var(--ink);
-}
-.nav-link:hover{ background: rgba(0,0,0,.05); }
-.nav-link.active{ background:#111; color:#fff; }
-
-.pill-btn{
-  cursor:pointer; font-size:14px; font-weight:800;
-  padding: 8px 14px; border-radius: 999px;
-  background:#111; color:#fff; transition:.15s ease;
-  border:1px solid #111;
-}
-.pill-btn:hover{ filter: brightness(.95); }
-.pill-btn.active{ background:#000; color:#fff; }
-
-.profile-wrapper{ position: relative; }
-.avatar{
-  background:#111; color:#fff; font-weight: 800; border:1px solid #000;
+/* Sparkle Animation */
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--sparkle);
+  border-radius: 50%;
+  animation: float 3s infinite;
 }
 
-.dropdown-menu{
-  position:absolute; top:48px; right:0;
-  background:#fff; border:1.5px solid var(--ring);
-  border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.06);
-  min-width: 180px; z-index: 100;
-}
-.dropdown-item{
-  padding: 12px 16px; cursor:pointer; color:#222; font-size:14px;
-  transition: background .15s; border-bottom:1px solid #f4f4f4;
-}
-.dropdown-item:last-child{ border-bottom: none; }
-.dropdown-item:hover{ background:#f7f7f7; }
+.sparkle-1 { top: -5px; left: 10px; animation-delay: 0s; }
+.sparkle-2 { top: 5px; right: -5px; animation-delay: 1s; }
+.sparkle-3 { bottom: -5px; left: 50%; animation-delay: 2s; }
 
-@media (max-width: 720px){
-  .nav-right{ gap: 12px; }
-  .company-name h1{ font-size: 16px; }
-  .nav-link{ font-size:14px; padding:6px 8px; }
-  .pill-btn{ padding:7px 12px; }
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(180deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(0.8); opacity: 0.7; }
+  50% { transform: translateY(-8px) scale(1.2); opacity: 1; }
+}
+
+/* Navigation */
+.nav-right { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+  margin-left: auto;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: var(--text-dark);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.nav-link:hover::before {
+  left: 100%;
+}
+
+.nav-link:hover {
+  background: var(--soft-gray);
+  color: var(--clean-blue);
+  transform: translateY(-1px);
+  box-shadow: var(--clean-shadow);
+}
+
+.nav-link.active {
+  background: var(--clean-gradient);
+  color: white;
+  box-shadow: var(--clean-glow);
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover .nav-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.nav-text {
+  white-space: nowrap;
+}
+
+.orders-link {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* CTA Button - Special Clean Design */
+.cta-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 14px 24px;
+  border-radius: 50px;
+  background: var(--clean-gradient);
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: var(--clean-glow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  margin-left: 12px;
+}
+
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  transform: translate(-50%, -50%);
+}
+
+.cta-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+}
+
+.cta-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-icon {
+  width: 20px;
+  height: 20px;
+  transition: all 0.3s ease;
+}
+
+.cta-btn:hover .cta-icon {
+  transform: rotate(90deg) scale(1.1);
+}
+
+.cta-shine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.8s;
+}
+
+.cta-btn:hover .cta-shine {
+  transform: translateX(100%);
+}
+
+/* Avatar Design */
+.profile-wrapper {
+  position: relative;
+  margin-left: 20px;
+}
+
+.avatar-container {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.avatar-container:hover {
+  transform: scale(1.1);
+}
+
+.avatar {
+  background: var(--clean-gradient) !important;
+  color: white !important;
+  font-weight: 800 !important;
+  box-shadow: var(--clean-shadow) !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.3s ease !important;
+}
+
+.avatar-ring {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: var(--clean-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.avatar-container:hover .avatar-ring {
+  opacity: 0.3;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.1); opacity: 0.1; }
+  100% { transform: scale(1); opacity: 0.3; }
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+  min-width: 220px;
+  z-index: 1000;
+  overflow: hidden;
+  transform-origin: top right;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  color: var(--text-dark);
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.3);
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background: var(--soft-gray);
+  color: var(--clean-blue);
+  transform: translateX(4px);
+}
+
+.dropdown-item.logout:hover {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #dc2626;
+}
+
+.dropdown-icon {
+  width: 18px;
+  height: 18px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover .dropdown-icon {
+  transform: scale(1.1);
+}
+
+/* Transitions */
+.dropdown-enter-active, .dropdown-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-enter-from, .dropdown-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
+}
+
+.dropdown-enter-to, .dropdown-leave-from {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .user-topbar-wrapper {
+    padding: 12px 24px;
+    max-width: 100%;
+  }
+  
+  .logo-text {
+    font-size: 24px;
+  }
+  
+  .nav-right {
+    gap: 4px;
+  }
+  
+  .nav-link {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .nav-text {
+    display: none;
+  }
+  
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .cta-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .company-name {
+    position: static;
+    transform: none;
+    margin-right: auto;
+  }
+  
+  .logo-text {
+    font-size: 20px;
+  }
+  
+  .nav-right {
+    gap: 2px;
+  }
+  
+  .nav-link {
+    padding: 8px 10px;
+  }
+  
+  .cta-btn {
+    padding: 10px 16px;
+  }
+  
+  .cta-btn span {
+    display: none;
+  }
+}
+
+/* Clean Animations */
+@keyframes cleanSweep {
+  0% { transform: translateX(-100%) rotate(-45deg); }
+  100% { transform: translateX(400px) rotate(-45deg); }
+}
+
+.user-topbar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100px;
+  width: 100px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transform: skewX(-45deg);
+  animation: cleanSweep 8s infinite;
 }
 </style>
