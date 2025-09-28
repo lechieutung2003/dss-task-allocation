@@ -43,6 +43,8 @@ const dashboardData = reactive({
     activeTasks: 0,
     completedTasks: 0,
     totalEmployees: 0,
+    activeEmployees: 0,
+    employeesWithOrders: 0,
     todayRevenue: 0,
     customerSatisfaction: 0,
     avgCompletionTime: 0,
@@ -303,6 +305,9 @@ const getPriorityColor = (priority) => {
           text-class="text-white"
           icon-class="text-blue-200"
           :icon-component="Briefcase"
+          :subtitle="`${
+            dashboardData.overview.completedTasks || 0
+          } đã hoàn thành`"
         />
       </div>
 
@@ -316,6 +321,7 @@ const getPriorityColor = (priority) => {
           text-class="text-white"
           icon-class="text-amber-200"
           :icon-component="Calendar"
+          subtitle="Cần hoàn thành"
         />
       </div>
 
@@ -329,6 +335,7 @@ const getPriorityColor = (priority) => {
           text-class="text-white"
           icon-class="text-emerald-200"
           :icon-component="CircleCheckFilled"
+          :subtitle="`Tỷ lệ ${completionRate}%`"
         />
       </div>
 
@@ -342,6 +349,9 @@ const getPriorityColor = (priority) => {
           text-class="text-white"
           icon-class="text-violet-200"
           :icon-component="User"
+          :subtitle="`${
+            dashboardData.overview.activeEmployees || 0
+          } đang hoạt động`"
         />
       </div>
     </div>
@@ -423,7 +433,7 @@ const getPriorityColor = (priority) => {
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Urgent Tasks -->
-      <div>
+      <div class="w-full">
         <Card title="🚨 Nhiệm Vụ Ưu Tiên">
           <!-- Loading skeleton for tasks -->
           <div v-if="loadingStates.tasks" class="space-y-4">
@@ -512,66 +522,62 @@ const getPriorityColor = (priority) => {
       </div>
 
       <!-- Quick Actions -->
-      <div>
+      <div class="w-full">
         <Card title="⚡ Thao Tác Nhanh">
           <div class="grid grid-cols-1 gap-4">
+            <!-- Nút 1 -->
             <el-button
               type="primary"
               size="large"
-              class="h-16 hover:transform hover:scale-105 transition-all duration-200"
+              class="h-16 w-full flex items-center gap-3 !justify-start !px-4 hover:transform hover:scale-105 transition-all duration-200"
               @click="handleQuickAction('new-task')"
             >
-              <div class="flex items-center gap-3">
-                <el-icon size="20"><Plus /></el-icon>
-                <div class="text-left">
-                  <div class="font-semibold">Tạo Nhiệm Vụ Mới</div>
-                  <div class="text-xs opacity-80">Thêm công việc dọn dẹp</div>
-                </div>
+              <el-icon size="20"><Plus /></el-icon>
+              <div class="text-left">
+                <div class="font-semibold">Tạo Nhiệm Vụ Mới</div>
+                <div class="text-xs opacity-80">Thêm công việc dọn dẹp</div>
               </div>
             </el-button>
 
+            <!-- Nút 2 -->
             <el-button
               type="success"
               size="large"
-              class="h-16 hover:transform hover:scale-105 transition-all duration-200"
+              class="h-16 w-full flex items-center gap-3 !justify-start !px-4 hover:transform hover:scale-105 transition-all duration-200"
               @click="handleQuickAction('assign-employee')"
             >
-              <div class="flex items-center gap-3">
-                <el-icon size="20"><User /></el-icon>
-                <div class="text-left">
-                  <div class="font-semibold">Phân Công Nhân Viên</div>
-                  <div class="text-xs opacity-80">Giao việc cho team</div>
-                </div>
+              <el-icon size="20"><User /></el-icon>
+              <div class="text-left">
+                <div class="font-semibold">Phân Công Nhân Viên</div>
+                <div class="text-xs opacity-80">Giao việc cho team</div>
               </div>
             </el-button>
 
+            <!-- Nút 3 -->
             <el-button
               type="warning"
               size="large"
-              class="h-16 hover:transform hover:scale-105 transition-all duration-200"
+              class="h-16 w-full flex items-center gap-3 !justify-start !px-4 hover:transform hover:scale-105 transition-all duration-200"
               @click="handleQuickAction('view-reports')"
             >
-              <div class="flex items-center gap-3">
-                <el-icon size="20"><TrendCharts /></el-icon>
-                <div class="text-left">
-                  <div class="font-semibold">Xem Báo Cáo</div>
-                  <div class="text-xs opacity-80">Thống kê hiệu suất</div>
-                </div>
+              <el-icon size="20"><TrendCharts /></el-icon>
+              <div class="text-left">
+                <div class="font-semibold">Xem Báo Cáo</div>
+                <div class="text-xs opacity-80">Thống kê hiệu suất</div>
               </div>
             </el-button>
 
+            <!-- Nút 4 -->
             <el-button
               type="info"
               size="large"
-              class="h-16 hover:transform hover:scale-105 transition-all duration-200"
+              class="h-16 w-full flex items-center gap-3 !justify-start !px-4 hover:transform hover:scale-105 transition-all duration-200"
               @click="handleQuickAction('manage-customers')"
             >
-              <div class="flex items-center gap-3">
-                <el-icon size="20"><Star /></el-icon>
-                <div class="text-left">
-                  <div class="font-semibold">Quản Lý Khách Hàng</div>
-                  <div class="text-xs opacity-80">Danh sách và đánh giá</div>
-                </div>
+              <el-icon size="20"><Star /></el-icon>
+              <div class="text-left">
+                <div class="font-semibold">Quản Lý Khách Hàng</div>
+                <div class="text-xs opacity-80">Danh sách và đánh giá</div>
               </div>
             </el-button>
           </div>
@@ -593,5 +599,18 @@ const getPriorityColor = (priority) => {
   .grid {
     grid-template-columns: 1fr !important;
   }
+}
+
+/* Increase sidebar height for dashboard page only */
+:global(.layout-wrapper) {
+  min-height: 150vh !important;
+}
+
+:global(.sidebar-container) {
+  min-height: 150vh !important;
+}
+
+:global(.dss-layout .sidebar) {
+  min-height: 150vh !important;
 }
 </style>
