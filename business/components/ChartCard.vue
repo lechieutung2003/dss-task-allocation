@@ -198,8 +198,14 @@ const formatDate = (dateStr) => {
 };
 
 const getTaskTotal = (status) => {
-  if (!props.chartData?.tasks || !props.chartData.tasks[status]) return 0;
-  return props.chartData.tasks[status].reduce((sum, val) => sum + val, 0);
+  if (!props.chartData?.tasks || props.chartData.tasks[status] === undefined)
+    return 0;
+
+  // Handle both array and number formats
+  const value = props.chartData.tasks[status];
+  return Array.isArray(value)
+    ? value.reduce((sum, val) => sum + val, 0) // Array format
+    : value || 0; // Number format
 };
 
 const getTaskPercentage = (status) => {
