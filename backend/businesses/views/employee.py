@@ -547,8 +547,8 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             # user_name = request.POST.get("username")
             user_name = request.data.get("username")  # đọc từ JSON
             password = request.data.get("password")
-    
             user = User.objects.prefetch_related("employees").get(email=user_name)
+            
         except User.DoesNotExist:
             return Response(
                     {"error": _("The user does not exist.")},

@@ -1,10 +1,10 @@
 from django.urls import re_path, include, path
-from rest_framework_nested import routers as drf_nested_routers  # Đổi tên để rõ ràng
+from rest_framework_nested import routers as drf_nested_routers  
 from .views.employee_order import EmployeeOrdersAPIView
+from base import routers as base_routers  
+from hr.views.customer import RegisterCustomerAPIView  
+from hr.views.customer_order import SimpleCreateOrderAPIView
 from hr.views.customer_order import CustomerOrdersAPIView
-from base import routers as base_routers  # Đổi tên để rõ ràng
-from .views.register_customer import RegisterCustomerAPIView  # Di chuyển lên đầu
-from hr.views.create_order_api import SimpleCreateOrderAPIView
 from .views import (
     GroupViewSet,
     OfficeViewSet,
@@ -55,9 +55,10 @@ urlpatterns = [
     re_path(r'^api/v1/', include(router.urls)),
     re_path(r'^api/v1/', include(group_router.urls)),
     re_path(r'^api/v1/', include(office_router.urls)),
-    re_path(r'^api/v1/', include(office_router_non_group.urls)),
-    path('api/v1/register-customer', RegisterCustomerAPIView.as_view(), name='register-customer'),
-    path('api/v1/create-order', SimpleCreateOrderAPIView.as_view(), name='simple-create-order'),   
+    re_path(r'^api/v1/', include(office_router_non_group.urls)),  
     path('api/v1/employee-orders', EmployeeOrdersAPIView.as_view(), name='employee-orders'),
-    path('api/v1/customer-orders', CustomerOrdersAPIView.as_view(), name='customer-orders'),
+    # API customer
+    path('api/v1/register-customer', RegisterCustomerAPIView.as_view(), name='register-customer'),
+    path('api/v1/customer/orders', CustomerOrdersAPIView.as_view(), name='customer-orders'),
+    path('api/v1/customer/create-order', SimpleCreateOrderAPIView.as_view(), name='simple-create-order'),
 ]

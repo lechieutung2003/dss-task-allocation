@@ -22,7 +22,14 @@ class RegisterCustomerSerializer(serializers.Serializer):
         email = validated_data.get('email')
         first_name = validated_data.pop('first_name', '')
         last_name = validated_data.pop('last_name', '')
-        user = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
+        #user = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
+        user = User.objects.create(
+            email=email,
+            password=make_password(password),
+            first_name=first_name,
+            last_name=last_name,
+            is_guest=True
+        )
         user.is_guest = True
         user.save()
         # customer = Customer.objects.create(user=user, **validated_data)

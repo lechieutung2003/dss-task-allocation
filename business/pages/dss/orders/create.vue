@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import OrderService from '@/services/dss/order';
+import CreateOrderService from '@/services/dss/users/customer';
 import { useOauthStore } from '@/stores/oauth';
 import serviceTypesApi from '@/services/dss/serviceTypes';
 // Import hình ảnh QR
@@ -350,8 +350,8 @@ const submitOrder = async () => {
     
     // Thêm thông tin thanh toán
     payload.payment_method = paymentMethod.value;
-    
-    const response = await OrderService.createOrder(payload) as any;
+
+    const response = await CreateOrderService.createOrder(payload) as any;
     console.log('API response:', response);
     
     if (response && response.id) {

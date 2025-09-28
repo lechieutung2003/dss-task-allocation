@@ -32,7 +32,7 @@ const user = store.user;
             </div>
 
             <div class="form-group">
-              <label>Full Name</label>
+              <label>User Name</label>
               <div class="inputForm">
                 <span class="input">{{ user.name }}</span>
               </div>
