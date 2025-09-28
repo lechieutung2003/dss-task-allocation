@@ -4,15 +4,4 @@
 html, body, #app { margin:0 !important; padding:0 !important; }
 
 /* Nếu dùng Tailwind Typography */
-.prose :where(h1,h2,h3,h4):first-child { margin-top: 0 !important; }
 
-/* Chặn mọi collapse/gap giữa topbar và service-page */
-header.user-topbar + .service-page {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-header.user-topbar {
-  margin-bottom: 0 !important;
-  background: #fff7ee !important;         /* be */
-  border-bottom: 1px solid #e5ddd0 !important;
-}
