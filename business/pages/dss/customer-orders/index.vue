@@ -132,7 +132,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import CustomerOrderService from '@/services/dss/customerOrderService'
+import CustomerOrderService from '@/services/dss/users/customer'
 
 const orders = ref([])
 const loading = ref(false)
