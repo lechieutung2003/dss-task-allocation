@@ -78,6 +78,15 @@ class EmployeeService {
   }
 
   /**
+   * Get employee skills
+   * @param {string|number} id - Employee ID
+   * @returns {Promise} API response with skills
+   */
+  getSkills(id) {
+    return ApiService.get(`${this.baseUrl}/${id}/skills`);
+  }
+
+  /**
    * Update employee skills
    * @param {string|number} id - Employee ID
    * @param {Array} skills - Array of skill objects

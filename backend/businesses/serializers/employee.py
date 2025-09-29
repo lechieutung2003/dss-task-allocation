@@ -58,7 +58,7 @@ class EmployeeSerializer(WritableNestedSerializer):
             'salary',
             'total_hours_worked',
             'computed_status',
-            'status_text'
+            'status_text',
             'skills',
         ]
         extra_kwargs = {

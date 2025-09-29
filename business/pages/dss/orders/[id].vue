@@ -350,9 +350,13 @@ definePageMeta({
 
 // Lấy danh sách khu vực
 const availableAreas = computed(() => {
+  if (!Array.isArray(allEmployees.value)) {
+    return [];
+  }
+  
   const areas = new Set();
   allEmployees.value.forEach(emp => {
-    if (emp.area) {
+    if (emp?.area) {
       areas.add(emp.area);
     }
   });
@@ -378,12 +382,25 @@ const fetchOrderDetails = async () => {
 const fetchAllEmployees = async () => {
   loadingEmployees.value = true;
   try {
-    const data = await EmployeeService.getEmployees();
-    allEmployees.value = data || [];
+    const response = await EmployeeService.getEmployees({
+      page: 1,
+      page_size: 100 // Hoặc số lượng phù hợp
+    });
+    
+    // Kiểm tra và xử lý response
+    if (response && response.results) {
+      allEmployees.value = response.results;
+    } else {
+      allEmployees.value = [];
+      console.warn('Unexpected response format:', response);
+    }
+    
+    console.log('Fetched employees:', allEmployees.value);
     filterEmployees();
   } catch (error) {
     console.error('Lỗi khi tải danh sách nhân viên:', error);
     ElMessage.error('Không thể tải danh sách nhân viên.');
+    allEmployees.value = [];
   } finally {
     loadingEmployees.value = false;
   }
@@ -406,16 +423,21 @@ const fetchAssignedEmployees = async () => {
 
 // Lọc nhân viên
 const filterEmployees = (resetPage = false) => {
+  if (!Array.isArray(allEmployees.value)) {
+    console.warn('allEmployees.value không phải là mảng:', allEmployees.value);
+    filteredEmployees.value = [];
+    return;
+  }
+
   let result = [...allEmployees.value];
   
   // Lọc theo từ khóa
   if (employeeFilter.keyword) {
     const keyword = employeeFilter.keyword.toLowerCase();
     result = result.filter(emp => {
-      const fullName = `${emp.first_name} ${emp.last_name}`.toLowerCase();
-      const skills = (emp.skills || []).join(' ').toLowerCase();
-      return fullName.includes(keyword) || skills.includes(keyword) || 
-             (emp.email && emp.email.toLowerCase().includes(keyword));
+      const fullName = `${emp.first_name || ''} ${emp.last_name || ''}`.toLowerCase();
+      const workMail = (emp.work_mail || '').toLowerCase();
+      return fullName.includes(keyword) || workMail.includes(keyword);
     });
   }
   
@@ -426,12 +448,11 @@ const filterEmployees = (resetPage = false) => {
   
   // Lọc theo tình trạng khả dụng
   if (showOnlyAvailable.value) {
-    result = result.filter(emp => emp.available !== false);
+    result = result.filter(emp => emp.computed_status === 1); // 1 = Active
   }
   
   filteredEmployees.value = result;
   
-  // Reset trang về 1 khi lọc
   if (resetPage) {
     pagination.currentPage = 1;
   }
