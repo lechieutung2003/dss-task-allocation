@@ -24,12 +24,12 @@ const user = store.user;
               </div>
             </div>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label>Họ tên</label>
               <div class="inputForm">
                 <span class="input">{{ user.first_name }} {{ user.last_name }}</span>
               </div>
-            </div>
+            </div> -->
 
             <div class="form-group">
               <label>User Name</label>
