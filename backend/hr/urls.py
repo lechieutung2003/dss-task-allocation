@@ -14,8 +14,7 @@ from .views import (
     UnitTypeViewSet
 )
 
-from .views.order import OrderViewSet, AssignmentViewSet, CustomerViewSet, ServiceTypeViewSet
-
+from .views.order import OrderViewSet, AssignmentViewSet, CustomerViewSet, ServiceTypeViewSet,AssignmentViewSet
 
 app_name = "hr"
 router = base_routers.MutipleUpdateRouter(trailing_slash=False)
@@ -26,12 +25,12 @@ router.register(r'offices', OfficeViewSet, basename="offices")
 router.register(r'units', UnitViewSet, basename="units")
 router.register(r'unit-types', UnitTypeViewSet, basename="unit-types")
 
-
 # Đăng ký các ViewSets liên quan đến order
 router.register(r'customers', CustomerViewSet, basename="customers")
 router.register(r'service-types', ServiceTypeViewSet, basename="service-types")
 router.register(r'orders', OrderViewSet, basename="orders")
 router.register(r'assignments', AssignmentViewSet, basename="assignments")
+
 
 # Đăng ký các router lồng nhau
 # 1. Đảm bảo đã đăng ký 'groups' trong router chính

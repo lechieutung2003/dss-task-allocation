@@ -15,7 +15,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
     //   return navigateTo('/employee/info/EmployeeInfo'); // Trang chủ nhân viên
     // }
     
-
     console.log('tokenInfo.exp', tokenInfo.exp);
 
     if (to.path === '/') {

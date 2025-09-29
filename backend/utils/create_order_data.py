@@ -14,9 +14,12 @@ from hr.models import Order, Customer, ServiceType
 from django.db import transaction
 
 def create_sample_customers():
-    """Tạo dữ liệu khách hàng mẫu nếu chưa có"""
+    """Tạo dữ liệu khách hàng mẫu chỉ ở Đà Nẵng nếu chưa có"""
     if not Customer.objects.exists():
         print("Tạo dữ liệu khách hàng mẫu...")
+        districts = [
+            "Hải Châu", "Thanh Khê", "Sơn Trà", "Ngũ Hành Sơn", "Liên Chiểu"
+        ]
         customers = [
             Customer(
                 id=uuid.uuid4(),
@@ -24,7 +27,7 @@ def create_sample_customers():
                 phone=f"09{i+1}0000{i+1}00",
                 email=f"customer{i+1}@example.com",
                 password="password123",  # Nên hash trong thực tế
-                address=f"123 Đường {chr(65+i)}, Quận {i+1}, TP.HCM",
+                address=f"123 Đường {chr(65+i)}, Quận {districts[i % len(districts)]}, Đà Nẵng",
                 area=["urban", "suburban", "vip"][i % 3]
             ) for i in range(5)
         ]
@@ -160,6 +163,5 @@ if __name__ == "__main__":
     parser.add_argument('--reset', action='store_true')
     args = parser.parse_args()
 
-    if args.reset:
-        reset_data()
+    reset_data()
     create_sample_orders(args.count)

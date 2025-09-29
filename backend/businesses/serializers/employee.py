@@ -5,6 +5,7 @@ from django.utils import timezone
 import pytz
 from base.serializers import WritableNestedSerializer
 from ..models import Employee
+from hr.models.skill import EmployeeSkill
 from oauth.models import User, Role
 from oauth.serializers import UserShortSerializer, RoleShortSerializer
 from .employee_additional_information import EmployeeAdditionalInformationSerializer
@@ -21,11 +22,13 @@ class EmployeeSerializer(WritableNestedSerializer):
                                                    queryset=Role.objects.all(),
                                                    source='roles')
     additional_information = EmployeeAdditionalInformationSerializer(many=True, required=False)
-    
-    # Computed status fields
     computed_status = serializers.SerializerMethodField()
     status_text = serializers.SerializerMethodField()
-    
+    skills = serializers.SerializerMethodField()
+
+    def get_skills(self, obj):
+        return [es.skill.name for es in EmployeeSkill.objects.filter(employee=obj)]
+
     class Meta:
         model = Employee
         fields = [
@@ -54,9 +57,9 @@ class EmployeeSerializer(WritableNestedSerializer):
             'completed_orders_count',
             'salary',
             'total_hours_worked',
-            # Computed fields
             'computed_status',
             'status_text'
+            'skills',
         ]
         extra_kwargs = {
             'user': {'required': False},
