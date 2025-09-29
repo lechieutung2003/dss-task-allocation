@@ -155,8 +155,8 @@ class EmployeeService extends BaseService {
   async getMyProfile() {
     console.log('Getting my profile')
     try {
-      const response = await this.request().get(`${this.entity}/my-profile/`)
-      console.log('Profile fetched successfully:', response)
+      const response = await this.request().get(`${this.entity}/my-profile`)
+      // console.log('Profile fetched successfully:', response)
       return response.data || response
     } catch (error) {
       console.error('Error fetching profile:', error)
@@ -171,8 +171,9 @@ class EmployeeService extends BaseService {
       const cleanData = this.cleanEmployeeData(data)
       console.log('Clean profile data:', cleanData)
 
-      // ✅ Sử dụng PATCH method như backend expect
-      const response = await this.request().patch(`${this.entity}/update-my-profile/`, cleanData)
+      // Sử dụng PATCH method như backend expect
+      const response = await this.request().patch(`${this.entity}/update-my-profile`, cleanData)
+      console.log("response:", response)
 
       console.log('Profile updated successfully:', response)
       return response.data || response
@@ -180,7 +181,7 @@ class EmployeeService extends BaseService {
     } catch (error) {
       console.error('Error updating profile:', error)
       console.error('Profile error response:', error.response?.data)
-      
+
       // ✅ Thêm better error handling
       if (error.response?.status === 404) {
         throw new Error('Employee profile not found')
@@ -190,10 +191,10 @@ class EmployeeService extends BaseService {
         // Backend trả về validation errors
         throw error
       }
-      
+
       throw error
     }
-  } 
+  }
 
 }
 

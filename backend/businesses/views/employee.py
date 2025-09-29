@@ -391,58 +391,84 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
     # ✅ Fix update_my_profile to be consistent
     @action(
         detail=False, 
-        methods=["PATCH", "POST"], # Allow both PATCH and POST
+        methods=["PATCH"], # Allow both PATCH and POST
         url_path="update-my-profile", 
         permission_classes=[IsAuthenticated]
     )
-    
     def update_my_profile(self, request, *args, **kwargs):
-        """Update current user's employee profile"""
+        """Update current user's employee profile (chỉ cho phép sửa các trường cơ bản)"""
         try:
+            print("==> update_my_profile called")
             # Lấy User từ JWTUser
             jwt_user = request.auth.user
+            print(f"JWT user: {vars(jwt_user)}")
+            print(f"JWT user email: {getattr(jwt_user, 'email', None)}")
             real_user = User.objects.get(email=jwt_user.email)
-            
+            print(f"Real user: {real_user}")
+
             # Tìm employee bằng real User hoặc email
             try:
                 employee = Employee.objects.get(user=real_user)
+                print(f"Found employee by user: {employee}")
             except Employee.DoesNotExist:
+                print("Employee not found by user, try by work_mail")
                 # Fallback: tìm bằng email
                 employee = Employee.objects.get(work_mail=real_user.email)
+                print(f"Found employee by work_mail: {employee}")
                 # Link employee với user
                 employee.user = real_user
                 employee.save()
-            
+                print("Linked employee with user")
+
             # Chỉ cho phép update một số fields nhất định
             allowed_fields = [
                 'first_name', 'last_name', 'personal_mail', 
                 'phone', 'gender', 'date_of_birth',
                 'area', 'working_start_time', 'working_end_time',
             ]
-            
+            print(f"Request data: {request.data}")
             update_data = {}
             for field in allowed_fields:
                 if field in request.data:
                     update_data[field] = request.data[field]
-            
+            print(f"Update data: {update_data}")
+
             # Validate và update
             serializer = self.get_serializer(employee, data=update_data, partial=True)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data, status=HTTP_200_OK)
-                
-        except User.DoesNotExist:
+            try:
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    print("Profile updated successfully")
+                    return Response(serializer.data, status=HTTP_200_OK)
+            except Exception as e:
+                print(f"Serializer error: {e}")
+                import traceback
+                traceback.print_exc()
+                return Response(
+                    {"detail": f"Serializer error: {str(e)}"},
+                    status=HTTP_400_BAD_REQUEST
+                )
+
+        except User.DoesNotExist as e:
+            print(f"User.DoesNotExist: {e}")
+            import traceback
+            traceback.print_exc()
             return Response(
                 {"detail": "User not found."},
                 status=HTTP_404_NOT_FOUND
             )
-        except Employee.DoesNotExist:
+        except Employee.DoesNotExist as e:
+            print(f"Employee.DoesNotExist: {e}")
+            import traceback
+            traceback.print_exc()
             return Response(
                 {"detail": "Employee profile not found."},
                 status=HTTP_404_NOT_FOUND
             )
         except Exception as e:
             print(f"Error updating profile: {e}")
+            import traceback
+            traceback.print_exc()
             return Response(
                 {"detail": f"Error updating profile: {str(e)}"},
                 status=HTTP_500_INTERNAL_SERVER_ERROR
