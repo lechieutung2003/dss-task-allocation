@@ -1,101 +1,128 @@
 <template>
-  <div class="signup-container">
-    <div class="form-wrapper">
-      <form class="form" @submit.prevent="submitForm">
-        <!-- Tiêu đề -->
-        <div class="form-header">
-          <h1 class="form-title">{{ $t('Create your account') }}</h1>
-          <p class="form-subtitle">{{ $t('Sign up to get started') }}</p>
-        </div>
-
-        <!-- Hai cột -->
-        <div class="signup-columns">
-          <!-- Cột trái -->
-          <div class="signup-column">
-            <div class="form-group">
-              <label>First Name</label>
-              <div class="inputForm">
-                <input v-model="form.first_name" type="text" class="input" placeholder="First Name" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Last Name</label>
-              <div class="inputForm">
-                <input v-model="form.last_name" type="text" class="input" placeholder="Last Name" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Full Name</label>
-              <div class="inputForm">
-                <input v-model="form.name" type="text" class="input" placeholder="Full Name" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Email</label>
-              <div class="inputForm" :class="{ 'error-border': emailError }">
-                <input v-model="form.email" type="email" class="input" placeholder="Email" @blur="validateEmail" />
-              </div>
-              <span v-if="emailError" class="error-text">{{ emailError }}</span>
-            </div>
-          </div>
-
-          <!-- Cột phải -->
-          <div class="signup-column">
-            <div class="form-group">
-              <label>Password</label>
-              <div class="inputForm" :class="{ 'error-border': passwordError }">
-                <input v-model="form.password" type="password" class="input" placeholder="Password" @blur="validatePassword" />
-              </div>
-              <span v-if="passwordError" class="error-text">{{ passwordError }}</span>
-            </div>
-
-            <div class="form-group">
-              <label>Phone</label>
-              <div class="inputForm">
-                <input v-model="form.phone" type="text" class="input" placeholder="Phone" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Address</label>
-              <div class="inputForm">
-                <input v-model="form.address" type="text" class="input" placeholder="Address" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Area</label>
-              <div class="inputForm">
-                <select v-model="form.area" class="input">
-                  <option disabled value="">Select area</option>
-                  <option value="urban">Urban</option>
-                  <option value="suburban">Suburban</option>
-                  <option value="vip">Vip</option>
-                </select>
-              </div>
-            </div>
+  <div class="h-screen w-full flex justify-center items-center bg-gray-50">
+    <div class="form">
+      <div class="form-header">
+        <h1 class="form-title">{{ $t('create_account_title') }}</h1>
+        <p class="form-subtitle">{{ $t('create_account_subtitle') }}</p>
+      </div>
+      <form @submit.prevent="submitForm" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- First Name -->
+        <div class="flex-column">
+          <label>{{ $t('first_name') }}</label>
+          <div class="inputForm">
+            <input
+              v-model="form.first_name"
+              type="text"
+              class="input"
+              :placeholder="$t('first_name')"
+            />
           </div>
         </div>
 
-        <!-- Nút submit -->
-        <button type="submit" class="button-submit" :disabled="isLoading">
-          <span v-if="isLoading">Đang đăng ký...</span>
-          <span v-else>Đăng ký</span>
-        </button>
+        <!-- Last Name -->
+        <div class="flex-column">
+          <label>{{ $t('last_name') }}</label>
+          <div class="inputForm">
+            <input
+              v-model="form.last_name"
+              type="text"
+              class="input"
+              :placeholder="$t('last_name')"
+            />
+          </div>
+        </div>
 
-        <!-- Thông báo thành công -->
-        <p v-if="isSubmitted" class="p">
+        <!-- Email -->
+        <div class="flex-column">
+          <label>{{ $t('email') }}</label>
+          <div class="inputForm" :class="{ 'error-border': emailError }">
+            <input
+              v-model="form.email"
+              type="email"
+              class="input"
+              :placeholder="$t('email')"
+              @blur="validateEmail"
+            />
+          </div>
+          <span v-if="emailError" class="error-text">{{ emailError }}</span>
+        </div>
+
+        <!-- Password -->
+        <div class="flex-column">
+          <label>{{ $t('password') }}</label>
+          <div class="inputForm" :class="{ 'error-border': passwordError }">
+            <input
+              v-model="form.password"
+              type="password"
+              class="input"
+              :placeholder="$t('password')"
+              @blur="validatePassword"
+            />
+          </div>
+          <span v-if="passwordError" class="error-text">{{ passwordError }}</span>
+        </div>
+
+        <!-- Phone -->
+        <div class="flex-column">
+          <label>{{ $t('phone') }}</label>
+          <div class="inputForm">
+            <input
+              v-model="form.phone"
+              type="text"
+              class="input"
+              :placeholder="$t('phone')"
+            />
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="flex-column">
+          <label>{{ $t('Address') }}</label>
+          <div class="inputForm">
+            <input
+              v-model="form.address"
+              type="text"
+              class="input"
+              :placeholder="$t('Address')"
+            />
+          </div>
+        </div>
+
+        <!-- Area -->
+        <div class="flex-column col-span-2">
+          <label>{{ $t('area') }}</label>
+          <div class="inputForm">
+            <input
+              v-model="form.area"
+              type="text"
+              class="input"
+              :placeholder="$t('area_placeholder')"
+            />
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="col-span-2">
+          <button type="submit" class="button-submit" :disabled="isLoading">
+            <span v-if="isLoading">{{ $t('Registering') }}</span>
+            <span v-else>{{ $t('Register') }}</span>
+          </button>
+        </div>
+
+        <!-- Success Message -->
+        <p v-if="isSubmitted" class="p col-span-2">
           {{ $t('Account created for', { email: form.email }) }}
         </p>
 
-        <!-- Link đăng nhập -->
-        <p class="p">
-          Đã có tài khoản?
-          <NuxtLink to="/" class="link">Đăng nhập</NuxtLink>
-        </p>
+        <!-- Login Link -->
+        <div class="flex justify-center items-center col-span-2">
+          <p class="text-center">
+            {{ $t('have_an_account') }}
+            <NuxtLink to="/" class="span font-semibold">
+              {{ $t('Login') }}
+            </NuxtLink>
+          </p>
+        </div>
       </form>
     </div>
   </div>
@@ -106,6 +133,7 @@ import IconAmoz from '~/assets/icons/BigLogo.svg'
 import { ref } from 'vue'
 import { ElNotification } from 'element-plus'
 import OAuthService from '@/services/oauth'
+import '@/assets/css/form.css'
 
 definePageMeta({
   layout: 'anonymous'
@@ -178,142 +206,20 @@ const submitForm = async () => {
 }
 </script>
 <style scoped>
-.signup-container {
-  display: flex;
-  justify-content: center;
-  padding: 40px 20px;
-}
-
-.form-wrapper {
-  width: 100%;
-  max-width: 900px;
-  background-color: #fff;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  width: 70%;
+  max-width: 80%; 
+  height: 87%;
+  padding: 40px; 
+  background-color: #fff; 
+  border-radius: 10px; 
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+  margin-top: 5%;
 }
-
-.form-header {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.signup-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-
-.signup-column {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-
-.inputForm {
-  border: 1.5px solid #ecedec;
-  border-radius: 10px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  padding-left: 10px;
-  transition: 0.2s ease-in-out;
-}
-
 .input {
-  margin-left: 10px;
-  border-radius: 10px;
-  border: none;
-  width: 100%;
-  height: 100%;
-  background: transparent;
+  width: 400px; 
 }
-
-.input:focus {
-  outline: none;
-}
-
-.inputForm:focus-within {
-  border-color: #2d79f3;
-}
-
-.error-border {
-  border-color: #ef4444 !important;
-}
-
 .error-text {
-  color: #ef4444;
-  font-size: 12px;
-  margin-top: 3px;
+  margin-top: 0.25rem; 
 }
-
-.button-submit {
-  background-color: #151717;
-  border: none;
-  color: white;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 10px;
-  height: 50px;
-  width: 100%;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
-}
-
-.button-submit:hover {
-  background-color: #252727;
-}
-
-.button-submit:disabled {
-  background-color: #666;
-  cursor: not-allowed;
-}
-
-.p {
-  text-align: center;
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-.link {
-  color: #2d79f3;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-@media (max-width: 768px) {
-  .signup-columns {
-    grid-template-columns: 1fr;
-  }
-}
-.form-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #151717;
-  margin-bottom: 5px;
-}
-
-.form-subtitle {
-  font-size: 16px;
-  color: #6b7280; /* xám nhạt */
-  font-weight: 400;
-  margin: 0;
-}
-
 </style>

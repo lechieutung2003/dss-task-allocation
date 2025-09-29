@@ -631,6 +631,16 @@ const en = {
   connection_error: 'Connection error',
   server_error: 'Server error',
   invalid_data: 'Invalid data received',
+  both_start_end_time_required: 'Both start and end time are required',
+  employee_updated_successfully: 'Employee updated successfully',
+  set_day_off: "Set Day Off",
+  urban: 'Urban',
+  suburban: 'Suburban',
+  vip: 'VIP',
+  Registering: 'Registering...',
+  area_placeholder: 'e.g: Cam Le, Hai Chau, Thanh Khe...',
+  create_account_title: "Create your account",
+  create_account_subtitle: "Sign up to get started",
 }
 
 export default en;

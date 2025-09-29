@@ -232,7 +232,6 @@
                 >
                 <p class="text-xs text-gray-500 mt-1">{{ $t('status_auto_calculated') }}</p>
               </div>
-              
               <div>
                 <label class="block text-sm font-medium text-gray-700">
                   {{ $t('working_end_time') }}
@@ -246,6 +245,19 @@
                 >
                 <p class="text-xs text-gray-500 mt-1">{{ $t('status_auto_calculated') }}</p>
               </div>
+
+              <div class="col-span-1 md:col-span-2 flex justify-end">
+                  <button
+                    v-if="isEditMode"
+                    @click="setDayOff"
+                    class="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg shadow transition-all duration-150 mt-2"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"></path>
+                    </svg>
+                    {{ $t('set_day_off') }}
+                  </button>
+                </div>
             </div>
 
             <!-- Status Summary Card - Read-only -->
@@ -385,25 +397,16 @@ const getActualStatus = () => {
 const getStatusBadgeClass = () => {
   const actualStatus = getActualStatus()
   
-  console.log('=== DEBUG STATUS ===')
-  console.log('Employee:', props.employee || editableEmployee.value)
-  console.log('Actual status:', actualStatus)
-  console.log('====================')
-  
   const baseClass = 'inline-flex px-2 py-1 text-xs font-semibold rounded-full'
   
   switch (actualStatus) {
     case 0: // No working hours - YELLOW
-      console.log('Applying YELLOW badge')
       return `${baseClass} bg-yellow-100 text-yellow-800`
     case 1: // Active - GREEN
-      console.log('Applying GREEN badge')
       return `${baseClass} bg-green-100 text-green-800`
     case 2: // Inactive - RED
-      console.log('Applying RED badge')
       return `${baseClass} bg-red-100 text-red-800`
     default:
-      console.log('Applying GRAY badge (unknown status)')
       return `${baseClass} bg-gray-100 text-gray-800`
   }
 }
@@ -411,9 +414,7 @@ const getStatusBadgeClass = () => {
 // Status card class function
 const getStatusCardClass = () => {
   const actualStatus = getActualStatus()
-  
-  console.log('Card status:', actualStatus)
-  
+    
   switch (actualStatus) {
     case 0: return 'border-yellow-200 bg-yellow-50'
     case 1: return 'border-green-200 bg-green-50'
@@ -424,10 +425,7 @@ const getStatusCardClass = () => {
 
 // Status text class function
 const getStatusTextClass = () => {
-  const actualStatus = getActualStatus()
-  
-  console.log('Text status:', actualStatus)
-  
+  const actualStatus = getActualStatus()  
   switch (actualStatus) {
     case 0: return 'text-yellow-700'
     case 1: return 'text-green-700'
@@ -439,9 +437,7 @@ const getStatusTextClass = () => {
 // Status icon class function
 const getStatusIconClass = () => {
   const actualStatus = getActualStatus()
-  
-  console.log('Icon status:', actualStatus)
-  
+    
   const baseClass = 'w-4 h-4 rounded-full'
   
   switch (actualStatus) {
@@ -566,6 +562,11 @@ const validateWorkingHours = () => {
   }
   
   return true
+}
+
+const setDayOff = () => {
+  editableEmployee.value.working_start_time = null
+  editableEmployee.value.working_end_time = null
 }
 
 // Utility functions

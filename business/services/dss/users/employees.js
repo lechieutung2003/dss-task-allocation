@@ -1,8 +1,34 @@
-import BaseService from '@/services/base.js'
+import BaseService from '../../base'
 
 class EmployeeService extends BaseService {
   get entity() {
     return 'employees';
+  }
+
+  // Thêm method cleanEmployeeData để tái sử dụng trong các hàm update
+  cleanEmployeeData(data) {
+    const cleanData = { ...data }
+
+    // Remove computed/readonly fields
+    delete cleanData.computed_status
+    delete cleanData.status_text
+    delete cleanData.id // Don't send ID in body
+    delete cleanData.created_at
+    delete cleanData.updated_at
+    delete cleanData.completed_orders_count
+    delete cleanData.total_hours_worked
+
+    // Remove null fields that cause validation errors
+    if (cleanData.user === null || cleanData.user === undefined) {
+      delete cleanData.user
+    }
+
+    if (cleanData.office_id === null || cleanData.office_id === undefined) {
+      delete cleanData.office_id
+    }
+
+    console.log('Cleaned employee data:', cleanData)
+    return cleanData
   }
 
   async getEmployees(params = {}) {
@@ -11,7 +37,7 @@ class EmployeeService extends BaseService {
 
     Object.entries(params).forEach(([key, value]) => {
       // Bỏ qua search parameter và empty values
-            if (key === 'search') {
+      if (key === 'search') {
         if (value && value.trim() !== '') {
           cleanParams[key] = value.trim()
         }
@@ -31,8 +57,6 @@ class EmployeeService extends BaseService {
       }
     })
 
-    console.log('Clean params sent to API:', cleanParams)
-
     // Nếu không có params nào thì gọi không có params
     if (Object.keys(cleanParams).length === 0) {
       return this.gets()
@@ -49,41 +73,129 @@ class EmployeeService extends BaseService {
     }
     return this.gets(searchParams)
   }
+
   async getEmployee(id) {
-    // Sử dụng get(id) cho một item
-    return this.get(id)  // BaseService.get(id) 
+    try {
+      const response = await this.get(id)
+      console.log('Employee fetched successfully:', response)
+      return response
+    } catch (error) {
+      console.error('Error fetching employee:', error)
+      throw error
+    }
   }
 
   async createEmployee(data) {
-    // Sử dụng create() 
-    return this.create(data)  // BaseService.create()
+    console.log('Creating employee:', data)
+    try {
+      const response = await this.create(data)
+      console.log('Employee created successfully:', response)
+      return response
+    } catch (error) {
+      console.error('Error creating employee:', error)
+      throw error
+    }
   }
 
+  // Add updateEmployee method
   async updateEmployee(id, data) {
-    // Thêm id vào data và dùng update()
-    const updateData = { ...data, id }
-    return this.update(updateData)  // BaseService.update()
+
+    try {
+      const cleanData = this.cleanEmployeeData(data)
+
+      // ✅ Debug HTTP client
+      const httpClient = this.request()
+
+      if (typeof httpClient.patch !== 'function') {
+        throw new Error('HTTP client does not have patch method')
+      }
+
+      // ✅ Sử dụng admin-update endpoint
+      const response = await httpClient.patch(`${this.entity}/${id}/admin-update`, cleanData)
+
+      return response.data || response
+
+    } catch (error) {
+      console.error('Error updating employee:', error)
+      console.error('Error response:', error.response?.data)
+      console.error('Error status:', error.response?.status)
+
+      if (error.response?.data) {
+        console.error('Backend validation errors:', error.response.data)
+      }
+
+      throw error
+    }
   }
 
   async deleteEmployee(id) {
-    // Sử dụng delete(id)
-    return this.delete(id)  // BaseService.delete(id)
+    console.log('Deleting employee with ID:', id)
+    try {
+      const response = await this.delete(id)
+      console.log('Employee deleted successfully:', response)
+      return response
+    } catch (error) {
+      console.error('Error deleting employee:', error)
+      throw error
+    }
   }
 
   async updateEmployeeStatus(id, status) {
-    // Để tạm method này (có thể cần custom endpoint)
-    return this.request().patch(`${this.entity}/${id}`, { status })
+    console.log('Updating employee status:', { id, status })
+    try {
+      const response = await this.request().patch(`${this.entity}/${id}/`, { status })
+      console.log('Employee status updated successfully:', response)
+      return response.data || response
+    } catch (error) {
+      console.error('Error updating employee status:', error)
+      throw error
+    }
   }
 
   async getMyProfile() {
-    // Sử dụng endpoint my-profile thay vì filter
-    return this.request().get(`${this.entity}/my-profile`)
+    console.log('Getting my profile')
+    try {
+      const response = await this.request().get(`${this.entity}/my-profile`)
+      // console.log('Profile fetched successfully:', response)
+      return response.data || response
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+      throw error
+    }
   }
 
   async updateMyProfile(data) {
-    // Sử dụng endpoint update-my-profile
-    return this.request().patch(`${this.entity}/update-my-profile`, data)
+    console.log('Updating my profile:', data)
+
+    try {
+      const cleanData = this.cleanEmployeeData(data)
+      console.log('Clean profile data:', cleanData)
+
+      // Sử dụng PATCH method như backend expect
+      const response = await this.request().patch(`${this.entity}/update-my-profile`, cleanData)
+      console.log("response:", response)
+
+      console.log('Profile updated successfully:', response)
+      return response.data || response
+
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      console.error('Profile error response:', error.response?.data)
+
+      // ✅ Thêm better error handling
+      if (error.response?.status === 404) {
+        throw new Error('Employee profile not found')
+      } else if (error.response?.status === 403) {
+        throw new Error('You do not have permission to update this profile')
+      } else if (error.response?.data) {
+        // Backend trả về validation errors
+        throw error
+      }
+
+      throw error
+    }
   }
+
 }
 
 export default new EmployeeService()

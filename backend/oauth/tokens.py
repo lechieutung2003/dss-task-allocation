@@ -198,7 +198,8 @@ def signed_token_generator(private_pem, **kwargs):
                 "iat": timezone.now(),
                 "isStaff": request.user.is_staff,
                 "isSuperuser": request.user.is_superuser,
-                "isGuest": request.user.is_guest
+                "isGuest": request.user.is_guest,
+                "email": request.user.email
             },
         )
         return generate_signed_token(private_pem, request)
@@ -215,6 +216,7 @@ class JWTUser():
         self.is_superuser = kwargs.get("is_superuser", False)
         self.USERNAME_FIELD = "email"
         self.guest = kwargs.get("is_guest", False)
+        
     def get_username(self):
         """Return the username for this User."""
         return getattr(self, self.USERNAME_FIELD)

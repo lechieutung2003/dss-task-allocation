@@ -58,7 +58,9 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
         "destroy": [["admin:employees:edit"], ["employees:edit"]],
         "invite": [["admin:employees:edit"], ["employees:edit"]],
         "list": [["admin:employees:view"], ["employees:view-mine"]],
-        "retrieve": [["admin:employees:view"], ["employees:view-mine"]]
+        "retrieve": [["admin:employees:view"], ["employees:view-mine"]],
+        "admin_update": [["admin:edit"], ["admin:view"]]  
+
     }
 
     # get_queryset để handle JWTUser
@@ -204,7 +206,7 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
-            print(f"❌ Error in employee list: {e}")
+            print(f"Error in employee list: {e}")
             import traceback
             traceback.print_exc()
             
@@ -377,7 +379,7 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
                     )
                 
         except Exception as e:
-            print(f"❌ Error in my_profile: {e}")
+            print(f"Error in my_profile: {e}")
             import traceback
             traceback.print_exc()
             
@@ -385,60 +387,88 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
                 {"detail": f"Error retrieving profile: {str(e)}"},
                 status=HTTP_500_INTERNAL_SERVER_ERROR
             )
-
+    
+    # ✅ Fix update_my_profile to be consistent
     @action(
         detail=False, 
-        methods=[Http.HTTP_PATCH], 
+        methods=["PATCH"], # Allow both PATCH and POST
         url_path="update-my-profile", 
         permission_classes=[IsAuthenticated]
     )
     def update_my_profile(self, request, *args, **kwargs):
-        """Update current user's employee profile"""
+        """Update current user's employee profile (chỉ cho phép sửa các trường cơ bản)"""
         try:
+            print("==> update_my_profile called")
             # Lấy User từ JWTUser
             jwt_user = request.auth.user
+            print(f"JWT user: {vars(jwt_user)}")
+            print(f"JWT user email: {getattr(jwt_user, 'email', None)}")
             real_user = User.objects.get(email=jwt_user.email)
-            
+            print(f"Real user: {real_user}")
+
             # Tìm employee bằng real User hoặc email
             try:
                 employee = Employee.objects.get(user=real_user)
+                print(f"Found employee by user: {employee}")
             except Employee.DoesNotExist:
+                print("Employee not found by user, try by work_mail")
                 # Fallback: tìm bằng email
                 employee = Employee.objects.get(work_mail=real_user.email)
+                print(f"Found employee by work_mail: {employee}")
                 # Link employee với user
                 employee.user = real_user
                 employee.save()
-            
+                print("Linked employee with user")
+
             # Chỉ cho phép update một số fields nhất định
             allowed_fields = [
                 'first_name', 'last_name', 'personal_mail', 
                 'phone', 'gender', 'date_of_birth',
                 'area', 'working_start_time', 'working_end_time',
             ]
-            
+            print(f"Request data: {request.data}")
             update_data = {}
             for field in allowed_fields:
                 if field in request.data:
                     update_data[field] = request.data[field]
-            
+            print(f"Update data: {update_data}")
+
             # Validate và update
             serializer = self.get_serializer(employee, data=update_data, partial=True)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data, status=HTTP_200_OK)
-                
-        except User.DoesNotExist:
+            try:
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    print("Profile updated successfully")
+                    return Response(serializer.data, status=HTTP_200_OK)
+            except Exception as e:
+                print(f"Serializer error: {e}")
+                import traceback
+                traceback.print_exc()
+                return Response(
+                    {"detail": f"Serializer error: {str(e)}"},
+                    status=HTTP_400_BAD_REQUEST
+                )
+
+        except User.DoesNotExist as e:
+            print(f"User.DoesNotExist: {e}")
+            import traceback
+            traceback.print_exc()
             return Response(
                 {"detail": "User not found."},
                 status=HTTP_404_NOT_FOUND
             )
-        except Employee.DoesNotExist:
+        except Employee.DoesNotExist as e:
+            print(f"Employee.DoesNotExist: {e}")
+            import traceback
+            traceback.print_exc()
             return Response(
                 {"detail": "Employee profile not found."},
                 status=HTTP_404_NOT_FOUND
             )
         except Exception as e:
             print(f"Error updating profile: {e}")
+            import traceback
+            traceback.print_exc()
             return Response(
                 {"detail": f"Error updating profile: {str(e)}"},
                 status=HTTP_500_INTERNAL_SERVER_ERROR
@@ -738,3 +768,65 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
         # default_scopes = [name for name in default_scopes if name in business_scopes]
         
         return Response({ "scopes" :all_scopes, "default_scopes": default_scopes }, status=HTTP_200_OK)
+    
+    @action(
+        detail=True,  # detail=True để có thể truyền ID trong URL
+        methods=["PATCH"], 
+        url_path="admin-update", 
+        permission_classes=[IsAuthenticated]
+    )
+    def admin_update(self, request, *args, **kwargs):
+        """Admin action to update employee information"""
+        try:
+            # Kiểm tra admin permissions
+            if hasattr(request, 'auth') and request.auth:
+                token_scopes = request.auth.scope.split() if request.auth.scope else []
+                
+                # Kiểm tra scope admin
+                required_scopes = ['admin:edit', 'admin:view']
+                has_admin_permission = any(scope in token_scopes for scope in required_scopes)
+                
+                if not has_admin_permission:
+                    return Response(
+                        {"detail": "You do not have admin permission to perform this action."},
+                        status=HTTP_403_FORBIDDEN
+                    )
+            
+            # Lấy employee instance
+            employee = self.get_object()
+            
+            # Fields mà admin được phép update
+            admin_allowed_fields = [
+                'first_name', 'last_name', 'personal_mail', 
+                'phone', 'gender', 'date_of_birth', 'area', 
+                'working_start_time', 'working_end_time',
+                'status', 'office_id'  # Admin có thể update thêm status và office
+            ]
+            
+            # Lọc data chỉ lấy các fields được phép
+            update_data = {}
+            for field in admin_allowed_fields:
+                if field in request.data:
+                    update_data[field] = request.data[field]
+            
+            
+            # Validate và update
+            serializer = self.get_serializer(employee, data=update_data, partial=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data, status=HTTP_200_OK)
+                
+        except Employee.DoesNotExist:
+            return Response(
+                {"detail": "Employee not found."},
+                status=HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            print(f"Error in admin_update: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            return Response(
+                {"detail": f"Error updating employee: {str(e)}"},
+                status=HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -75,13 +75,14 @@
                         <span v-else>{{ $t('Login') }}</span>
                     </button>
 
-                    <p>
-                        Chưa có tài khoản?
-                        <NuxtLink to="/signup" class="link">
-                            Đăng ký
-                        </NuxtLink>
+                    <div class="flex justify-center items-center mt-4">
+                        <p class="text-center">
+                            {{ $t('dont_have_account') }}
+                            <NuxtLink to="/signup" class="span font-semibold">
+                                {{ $t('Register') }}
+                            </NuxtLink>
                         </p>
-
+                    </div>
                 </form>
             </div>
         </main>
@@ -92,6 +93,7 @@
 import OAuthService from '@/services/oauth';
 import { useOauthStore } from '~/stores/oauth';
 import { getErrorMessage } from '@/utils/error';
+import '@/assets/css/form.css'
 
 const props = defineProps({
     redirectTo: {
@@ -182,201 +184,3 @@ const login = async () => {
     }
 }
 </script>
-
-<style scoped>
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background-color: #ffffff;
-    padding: 30px;
-    width: 450px;
-    border-radius: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-::placeholder {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.form-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.form-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: #151717;
-    margin: 0 0 8px 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.form-subtitle {
-    font-size: 16px;
-    color: #666;
-    margin: 0;
-    font-weight: 400;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.form button {
-    align-self: flex-end;
-}
-
-.flex-column {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.flex-column > label {
-    color: #151717;
-    font-weight: 600;
-}
-
-.inputForm {
-    border: 1.5px solid #ecedec;
-    border-radius: 10px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    transition: 0.2s ease-in-out;
-    position: relative;
-}
-
-.input {
-    margin-left: 10px;
-    border-radius: 10px;
-    border: none;
-    width: 85%;
-    height: 100%;
-    background: transparent;
-}
-
-.input:focus {
-    outline: none;
-}
-
-.inputForm:focus-within {
-    border: 1.5px solid #2d79f3;
-}
-
-.input:-webkit-autofill,
-.input:-webkit-autofill:hover,
-.input:-webkit-autofill:focus,
-.input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #e7f3ff inset !important;
-    -webkit-text-fill-color: #000 !important;
-    border-radius: 10px;
-    transition: background-color 5000s ease-in-out 0s;
-}
-
-.inputForm:has(.input:-webkit-autofill) {
-    background-color: #e7f3ff;
-    border-color: #2d79f3;
-}
-
-.inputForm.autofill {
-    background-color: #e7f3ff;
-    border-color: #2d79f3;
-}
-
-.inputForm:focus-within {
-    border: 1.5px solid #2d79f3;
-}
-
-.error-border {
-    border: 1.5px solid #ef4444 !important;
-}
-
-.error-text {
-    color: #ef4444;
-    font-size: 12px;
-    margin-top: -5px;
-}
-
-.password-toggle {
-    cursor: pointer;
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-}
-
-.flex-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    justify-content: space-between;
-}
-
-.flex-row > div > label {
-    font-size: 14px;
-    color: black;
-    font-weight: 400;
-}
-
-.span {
-    font-size: 14px;
-    margin-left: 5px;
-    color: #2d79f3;
-    font-weight: 500;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.button-submit {
-    margin: 20px 0 10px 0;
-    background-color: #151717;
-    border: none;
-    color: white;
-    font-size: 15px;
-    font-weight: 500;
-    border-radius: 10px;
-    height: 50px;
-    width: 100%;
-    cursor: pointer;
-}
-
-.button-submit:hover {
-    background-color: #252727;
-}
-
-.button-submit:disabled {
-    background-color: #666;
-    cursor: not-allowed;
-}
-
-.p {
-    text-align: center;
-    color: black;
-    font-size: 14px;
-    margin: 5px 0;
-}
-
-.btn {
-    margin-top: 10px;
-    width: 100%;
-    height: 50px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 500;
-    gap: 10px;
-    border: 1px solid #ededef;
-    background-color: white;
-    cursor: pointer;
-    transition: 0.2s ease-in-out;
-}
-
-.btn:hover {
-    border: 1px solid #2d79f3;
-}
-
-a {
-    text-decoration: none;
-}
-</style>

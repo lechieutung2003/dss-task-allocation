@@ -64,10 +64,6 @@ console.log("tokenInfo:", oauthStore.tokenInfo);
   <div class="center-container">
     <div style="width:100%;max-width:500px;">
       <LoginForm v-if="!isLoggedIn" />
-      <div v-if="!isLoggedIn" class="welcome-text" style="text-align:center;margin-top:24px;color:#444;font-size:16px;">
-        Chào mừng bạn đến với hệ thống quản lý dịch vụ!<br>
-        Vui lòng đăng nhập để sử dụng các chức năng đặt dịch vụ, quản lý đơn hàng và xem thông tin cá nhân.
-      </div>
       <GuestInfo v-else-if="isGuest" />
     </div>
   </div>
