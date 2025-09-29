@@ -1,116 +1,111 @@
+<!-- filepath: e:\Learning\CDCN\dss-task-allocation\business\pages\forgot-password.vue -->
 <template>
-  <NuxtLoadingIndicator></NuxtLoadingIndicator>
-  <div class="h-screen w-full flex justify-center items-center">
-      <div class="lg:pt-7 pt-3 lg:px-12 px-6 lg:w-2/3 w-full lg:min-w-[800px] bg-white rounded-lg drop-shadow-md">
-          <main class="w-full">
-              <div class="w-full md:max-w-[550px] max-w-[360px] mx-auto min-h-[256px]">
-                  <div class="flex text-center justify-center text-primary">
-                      <IconAmoz style="width: auto; height: 100px" />
-                  </div>
-                  <div v-if="isSubmitted" class="mt-5 pb-5 ">
-                      <p class="text-center">{{ $t('Password reset link sent to', { email: forgotPasswordForm.email }) }}</p>
-                  </div>
-                  <div v-else class="mt-5">
-                      <h3 class="lg:text-2xl text-xl text-center font-bold">
-                          {{ $t('Forgot your password?') }}
-                      </h3>
-                      <el-form class="mt-12 gap-2" ref="forgotPasswordFormRef" label-width="auto" :model="forgotPasswordForm"
-                          :size="formSize" :rules="rules">
-                          <el-form-item prop="email">
-                              <el-input placeholder="Email" v-model="forgotPasswordForm.email" type="email" />
-                          </el-form-item>
-                          <div class="flex justify-center items-center mt-10">
-                              <el-button @click="sendLink(forgotPasswordFormRef)" :class="isDisabled ? 'disabled-btn' : ''" v-loading="isLoading" :disabled="isDisabled"
-                                  class="flex rounded-lg h-[32px] p-5 font-bold border bg-primary hover:bg-white text-white hover:text-primary hover:border-primary justify-center items-center">
-                                  {{ $t('Send reset link') }}
-                              </el-button>
-                          </div>
-                      </el-form>
-                  </div>
-                  <div class="flex justify-center pt-12 mb-5">
-                      <NuxtLink to="/" class="text-primary underline">
-                          {{ $t('Back to login') }}
-                      </NuxtLink>
-                  </div>
-              </div>
-          </main>
+  <NuxtLoadingIndicator />
+  <div class="h-screen w-full flex justify-center items-center bg-gray-50">
+    <div class="form drop-shadow-md">
+      <div class="form-header">
+        <h1 class="form-title">{{ $t('Forgot your password?') }}</h1>
+        <p class="form-subtitle" v-if="isSubmitted">
+          {{ $t('Password reset link sent to', { email: forgotPasswordForm.email }) }}
+        </p>
       </div>
+      <form @submit.prevent="sendLink">
+        <div class="flex-column">
+          <label for="email">{{ $t('Email') }}</label>
+        </div>
+        <div class="inputForm" :class="{ 'error-border': emailError }">
+          <svg height="20" viewBox="0 0 32 32" width="20" xmlns="http://www.w3.org/2000/svg">
+            <g id="Layer_3" data-name="Layer 3">
+              <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path>
+            </g>
+          </svg>
+          <input
+            id="email"
+            v-model="forgotPasswordForm.email"
+            type="email"
+            class="input"
+            :placeholder="$t('Email')"
+            required
+            @blur="validateEmail"
+            @input="validateEmail"
+          />
+        </div>
+        <div v-if="emailError" class="error-text">{{ emailError }}</div>
+        <div class="flex-row mt-4">
+          <NuxtLink to="/" class="span">
+            {{ $t('Back to login') }}
+          </NuxtLink>
+        </div>
+        <button
+          type="submit"
+          class="button-submit"
+          :disabled="isLoading || !isFormValid"
+        >
+          <span v-if="isLoading">{{ $t('Sending...') }}</span>
+          <span v-else>{{ $t('Send reset link') }}</span>
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import IconAmoz from '~/assets/icons/BigLogo.svg'
-import OAuthService from '@/services/oauth';
+import OAuthService from '@/services/oauth'
 import { ElNotification } from 'element-plus'
 import { ref, watch } from 'vue'
+import '@/assets/css/form.css'
 
 definePageMeta({
   layout: 'anonymous'
 })
 
-import type { ComponentSize, FormInstance, FormRules } from 'element-plus'
-const formSize = ref<ComponentSize>('default')
-const forgotPasswordFormRef = ref<FormInstance>()
 const forgotPasswordForm = ref({
   email: ''
 })
 
-const rules = reactive<FormRules>({
-  email: [
-      { required: true, message: 'Please enter your email', trigger: 'blur' },
-      { type: 'email', message: 'Invalid email format', trigger: ['blur', 'change'] },
-  ]
-})
-
-const isFormValid = ref(false)
-const isDisabled = ref(true)
-const validateForm = () => {
-  forgotPasswordFormRef.value?.validate((valid) => {
-      isDisabled.value = !valid
-  })
-  return true
-}
-watch(forgotPasswordForm, validateForm, { deep: true })
-validateForm()
 const isSubmitted = ref(false)
 const isLoading = ref(false)
+const emailError = ref('')
+const isFormValid = ref(false)
 
-const sendLink = async (formInstance: FormInstance | undefined) => {
-  if (!formInstance) return
-  await formInstance.validate(async (valid, fields) => {
-      if (valid) {
-          isLoading.value = true
-          try {
-              await OAuthService.forgotPassword({ email: forgotPasswordForm.value.email })
-              isSubmitted.value = true
-              ElNotification({
-                  title: 'Success',
-                  message: 'Password reset link sent successfully',
-                  type: 'success',
-                  duration: 5000
-              })
-          } catch (error) {
-              ElNotification({
-                  title: 'Error',
-                  message: 'Email does not exist or there was an error sending the reset link',
-                  type: 'error',
-                  duration: 5000
-              })
-          } finally {
-              isLoading.value = false
-          }
-      } else {
-          console.log('error submit!', fields)
-      }
-  })
+function validateEmail() {
+  const email = forgotPasswordForm.value.email
+  if (!email) {
+    emailError.value = 'Please enter your email'
+    isFormValid.value = false
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    emailError.value = 'Invalid email format'
+    isFormValid.value = false
+  } else {
+    emailError.value = ''
+    isFormValid.value = true
+  }
+}
+
+watch(() => forgotPasswordForm.value.email, validateEmail)
+
+const sendLink = async () => {
+  validateEmail()
+  if (!isFormValid.value) return
+  isLoading.value = true
+  try {
+    await OAuthService.forgotPassword({ email: forgotPasswordForm.value.email })
+    isSubmitted.value = true
+    ElNotification({
+      title: 'Success',
+      message: 'Password reset link sent successfully',
+      type: 'success',
+      duration: 5000
+    })
+  } catch (error) {
+    ElNotification({
+      title: 'Error',
+      message: 'Email does not exist or there was an error sending the reset link',
+      type: 'error',
+      duration: 5000
+    })
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
-
-<style scoped>
-a {
-  text-decoration: none;
-}
-.disabled-btn {
-  @apply border-surface-dim bg-surface-dim text-white hover:bg-surface-dim hover:text-white
-}
-</style>
