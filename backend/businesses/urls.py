@@ -4,7 +4,8 @@ from base.routers import NestedMutipleUpdateRouter
 from .views import (
     EmployeeCustomFieldViewSet,
     EmployeeViewSet,
-    EmployeeAdditionalInformationViewSet
+    EmployeeAdditionalInformationViewSet,
+    recommendation
 )
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -15,5 +16,8 @@ employee_router.register(r'additional-information', EmployeeAdditionalInformatio
 
 urlpatterns = [
     path(r'api/v1/', include(router.urls)),
-    path(r'api/v1/', include(employee_router.urls))
+    path(r'api/v1/', include(employee_router.urls)),
+     path('orders/<str:order_id>/recommendations/', 
+         recommendation.get_recommendations,
+         name='order-recommendations'),
 ]
