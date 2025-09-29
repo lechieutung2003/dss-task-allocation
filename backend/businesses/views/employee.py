@@ -736,27 +736,16 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             print(e)
             return Response({"message": _("An error occurred.")}, status=HTTP_500_INTERNAL_SERVER_ERROR)
     
-    # @action(detail=False, methods=[Http.HTTP_GET], url_path="userinfo", permission_classes=[IsAuthenticated])
-    # def userinfo(self, request, *args, **kwargs):
-    #     try:
-    #         id = request.auth.user.id
-    #         user = get_object_or_404(User.objects.all(), id=id)
-    #         user_serializer= UserShortSerializer(user)
-    #         user_data = user_serializer.data
-    #         return Response(user_data, status=HTTP_200_OK)
-    #     except Exception as e:
-    #         return Response({"message": _("Business not found.")}, status=HTTP_404_NOT_FOUND)
-    
     @action(detail=False, methods=[Http.HTTP_GET], url_path="userinfo", permission_classes=[IsAuthenticated])
     def userinfo(self, request, *args, **kwargs):
         try:
-            user_id = request.auth.user.id
-            customer = get_object_or_404(Customer.objects.all(), user_id=user_id)
-            customer_serializer = CustomerSerializer(customer)
-            customer_data = customer_serializer.data
-            return Response(customer_data, status=HTTP_200_OK)
+            id = request.auth.user.id
+            user = get_object_or_404(User.objects.all(), id=id)
+            user_serializer= UserShortSerializer(user)
+            user_data = user_serializer.data
+            return Response(user_data, status=HTTP_200_OK)
         except Exception as e:
-            return Response({"message": _("Customer not found.")}, status=HTTP_404_NOT_FOUND)
+            return Response({"message": _("Business not found.")}, status=HTTP_404_NOT_FOUND)
 
     @action(detail=False, methods=[Http.HTTP_GET], url_path="scopes", permission_classes=[IsAdministrator])
     def scopes(self, request, pk=None):
