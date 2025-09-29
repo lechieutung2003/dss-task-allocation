@@ -1,4 +1,3 @@
-<!-- filepath: e:\Learning\CDCN\dss-task-allocation\business\pages\forgot-password.vue -->
 <template>
   <NuxtLoadingIndicator />
   <div class="h-screen w-full flex justify-center items-center bg-gray-50">

@@ -1,139 +1,166 @@
 <template>
-  <div class="h-screen w-full flex justify-center items-center">
-    <div class="lg:pt-7 pt-3 lg:px-12 px-6 lg:w-2/3 w-full lg:min-w-[800px] bg-white rounded-lg drop-shadow-md">
-      <main class="w-full">
-        <div class="w-full md:max-w-[550px] max-w-[360px] mx-auto min-h-[256px]">
-          <h3 class="lg:text-2xl text-xl text-center font-bold">
-            {{ $t('Change Your Password') }}
-          </h3>
-          <el-form
-            class="mt-12 gap-2"
-            ref="changePasswordFormRef"
-            label-width="auto"
-            :model="changePasswordForm"
-            :size="formSize"
-            :rules="rules"
-          >
-            <el-form-item prop="currentPassword">
-              <el-input
-                placeholder="Current Password"
-                v-model="changePasswordForm.currentPassword"
-                type="password"
-              />
-            </el-form-item>
-            <el-form-item prop="newPassword">
-              <el-input
-                placeholder="New Password"
-                v-model="changePasswordForm.newPassword"
-                type="password"
-              />
-            </el-form-item>
-            <el-form-item prop="confirmNewPassword">
-              <el-input
-                placeholder="Confirm New Password"
-                v-model="changePasswordForm.confirmNewPassword"
-                type="password"
-              />
-            </el-form-item>
-            <div class="flex justify-center items-center mt-10">
-              <el-button
-                @click="changePassword"
-                :class="isDisabled ? 'disabled-btn' : ''"
-                v-loading="isLoading"
-                :disabled="isDisabled"
-                class="flex rounded-lg h-[32px] p-5 font-bold border bg-primary hover:bg-white text-white hover:text-primary hover:border-primary justify-center items-center"
-              >
-                {{ $t('Change Password') }}
-              </el-button>
-            </div>
-          </el-form>
+  <div class="h-screen w-full flex justify-center items-center bg-gray-50">
+    <div class="form drop-shadow-md">
+      <div class="form-header">
+        <h1 class="form-title">{{ $t('Change Your Password') }}</h1>
+      </div>
+      <form @submit.prevent="changePassword">
+        <div class="flex-column">
+          <label for="currentPassword">{{ $t('Current Password') }}</label>
         </div>
-      </main>
+        <div class="inputForm" :class="{ 'error-border': currentPasswordError }">
+          <svg height="20" viewBox="0 0 32 32" width="20">
+            <g><path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm0 26C9.383 28 4 22.617 4 16S9.383 4 16 4s12 5.383 12 12-5.383 12-12 12zm0-18a2 2 0 100 4 2 2 0 000-4zm1 6h-2v8h2v-8z"/></g>
+          </svg>
+          <input
+            id="currentPassword"
+            v-model="form.currentPassword"
+            type="password"
+            class="input"
+            :placeholder="$t('Current Password')"
+            @blur="validateCurrentPassword"
+            @input="validateCurrentPassword"
+            required
+          />
+        </div>
+        <div v-if="currentPasswordError" class="error-text">{{ currentPasswordError }}</div>
+
+        <div class="flex-column">
+          <label for="newPassword">{{ $t('New Password') }}</label>
+        </div>
+        <div class="inputForm" :class="{ 'error-border': newPasswordError }">
+          <svg height="20" viewBox="0 0 32 32" width="20">
+            <g><path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm0 26C9.383 28 4 22.617 4 16S9.383 4 16 4s12 5.383 12 12-5.383 12-12 12zm0-18a2 2 0 100 4 2 2 0 000-4zm1 6h-2v8h2v-8z"/></g>
+          </svg>
+          <input
+            id="newPassword"
+            v-model="form.newPassword"
+            type="password"
+            class="input"
+            :placeholder="$t('New Password')"
+            @blur="validateNewPassword"
+            @input="validateNewPassword"
+            required
+          />
+        </div>
+        <div v-if="newPasswordError" class="error-text">{{ newPasswordError }}</div>
+
+        <div class="flex-column">
+          <label for="confirmNewPassword">{{ $t('Confirm New Password') }}</label>
+        </div>
+        <div class="inputForm" :class="{ 'error-border': confirmNewPasswordError }">
+          <svg height="20" viewBox="0 0 32 32" width="20">
+            <g><path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm0 26C9.383 28 4 22.617 4 16S9.383 4 16 4s12 5.383 12 12-5.383 12-12 12zm0-18a2 2 0 100 4 2 2 0 000-4zm1 6h-2v8h2v-8z"/></g>
+          </svg>
+          <input
+            id="confirmNewPassword"
+            v-model="form.confirmNewPassword"
+            type="password"
+            class="input"
+            :placeholder="$t('Confirm New Password')"
+            @blur="validateConfirmNewPassword"
+            @input="validateConfirmNewPassword"
+            required
+          />
+        </div>
+        <div v-if="confirmNewPasswordError" class="error-text">{{ confirmNewPasswordError }}</div>
+
+        <div class="flex-row mt-4">
+          <NuxtLink to="/" class="span">
+            {{ $t('Back to login') }}
+          </NuxtLink>
+        </div>
+        <button
+          type="submit"
+          class="button-submit"
+          :disabled="isLoading || !isFormValid"
+        >
+          <span v-if="isLoading">{{ $t('Changing...') }}</span>
+          <span v-else>{{ $t('Change Password') }}</span>
+        </button>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ElNotification } from 'element-plus'
-import { ref, reactive, watch } from 'vue'
-import type { ComponentSize, FormInstance, FormRules } from 'element-plus'
+import { ref, watch } from 'vue'
+import '@/assets/css/form.css'
 
-const formSize = ref<ComponentSize>('default')
-const changePasswordFormRef = ref<FormInstance>()
-const changePasswordForm = ref({
+const form = ref({
   currentPassword: '',
   newPassword: '',
   confirmNewPassword: ''
 })
 
-const rules = reactive<FormRules>({
-  currentPassword: [
-    { required: true, message: 'Please enter your current password', trigger: 'blur' }
-  ],
-  newPassword: [
-    { required: true, message: 'Please enter your new password', trigger: 'blur' },
-    { min: 6, message: 'The new password must be at least 6 characters long', trigger: 'blur' }
-  ],
-  confirmNewPassword: [
-    { required: true, message: 'Please confirm your new password', trigger: 'blur' },
-    { validator: validateConfirmNewPassword, trigger: 'blur' }
-  ]
-})
-
-const isDisabled = ref(true)
 const isLoading = ref(false)
+const isFormValid = ref(false)
+const currentPasswordError = ref('')
+const newPasswordError = ref('')
+const confirmNewPasswordError = ref('')
 
-function validateConfirmNewPassword(rule: any, value: string, callback: (error?: Error) => void) {
-  if (value !== changePasswordForm.value.newPassword) {
-    callback(new Error('Passwords do not match'))
+function validateCurrentPassword() {
+  currentPasswordError.value = form.value.currentPassword ? '' : 'Please enter your current password'
+  checkFormValid()
+}
+function validateNewPassword() {
+  if (!form.value.newPassword) {
+    newPasswordError.value = 'Please enter your new password'
+  } else if (form.value.newPassword.length < 6) {
+    newPasswordError.value = 'The new password must be at least 6 characters long'
   } else {
-    callback()
+    newPasswordError.value = ''
   }
+  checkFormValid()
+}
+function validateConfirmNewPassword() {
+  if (!form.value.confirmNewPassword) {
+    confirmNewPasswordError.value = 'Please confirm your new password'
+  } else if (form.value.confirmNewPassword !== form.value.newPassword) {
+    confirmNewPasswordError.value = 'Passwords do not match'
+  } else {
+    confirmNewPasswordError.value = ''
+  }
+  checkFormValid()
+}
+function checkFormValid() {
+  isFormValid.value =
+    !currentPasswordError.value &&
+    !newPasswordError.value &&
+    !confirmNewPasswordError.value &&
+    form.value.currentPassword &&
+    form.value.newPassword &&
+    form.value.confirmNewPassword
 }
 
-const validateForm = () => {
-  changePasswordFormRef.value?.validate((valid: boolean) => {
-    isDisabled.value = !valid
-  })
-}
-watch(changePasswordForm, validateForm, { deep: true })
-validateForm()
+watch(() => form.value.currentPassword, validateCurrentPassword)
+watch(() => form.value.newPassword, validateNewPassword)
+watch(() => form.value.confirmNewPassword, validateConfirmNewPassword)
 
 const changePassword = async () => {
-  await changePasswordFormRef.value?.validate(async (valid: boolean, fields: any) => {
-    if (valid) {
-      isLoading.value = true
-      try {
-        // Thực hiện thao tác thay đổi mật khẩu ở đây nếu cần
-        ElNotification({
-          title: 'Success',
-          message: 'Your password has been changed successfully',
-          type: 'success',
-          duration: 5000
-        })
-      } catch (error) {
-        ElNotification({
-          title: 'Error',
-          message: 'There was an error changing your password',
-          type: 'error',
-          duration: 5000
-        })
-      } finally {
-        isLoading.value = false
-      }
-    } else {
-      console.log('Validation failed:', fields)
-    }
-  })
+  validateCurrentPassword()
+  validateNewPassword()
+  validateConfirmNewPassword()
+  if (!isFormValid.value) return
+  isLoading.value = true
+  try {
+    // Thực hiện thao tác thay đổi mật khẩu ở đây nếu cần
+    ElNotification({
+      title: 'Success',
+      message: 'Your password has been changed successfully',
+      type: 'success',
+      duration: 5000
+    })
+  } catch (error) {
+    ElNotification({
+      title: 'Error',
+      message: 'There was an error changing your password',
+      type: 'error',
+      duration: 5000
+    })
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
-
-
-<style scoped>
-a {
-  text-decoration: none;
-}
-.disabled-btn {
-  @apply border-surface-dim bg-surface-dim text-white hover:bg-surface-dim hover:text-white
-}
-</style>
