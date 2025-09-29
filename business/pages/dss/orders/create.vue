@@ -340,42 +340,67 @@ const downloadInvoice = () => {
   }
 };
 
+// const submitOrder = async () => {
+//   if (isSubmitting.value) return;
+  
+//   try {
+//     isSubmitting.value = true;
+//     const payload = { ...order.value };
+    
+//     if (estimatedPrice.value !== null) {
+//       payload.cost_confirm = String(estimatedPrice.value);
+//     }
+    
+//     // Thêm thông tin thanh toán
+//     payload.payment_method = paymentMethod.value;
+
+//     const response = await CreateOrderService.createOrder(payload) as any;
+//     console.log('API response:', response);
+    
+//     if (response && response.id) {
+//       closePaymentModal();
+      
+//       // Tạo hóa đơn sau khi đặt đơn thành công
+//       generateInvoice(response);
+      
+//       // Không chuyển trang ngay mà cho người dùng xem hóa đơn trước
+//       // router.push('/dss/customer-orders');
+//     } else {
+//       alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
+//     }
+//   } catch (error: any) {
+//     console.error('Failed to create order', error?.response?.data || error);
+//     alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
+//   } finally {
+//     isSubmitting.value = false;
+//   }
+// };
+
+
 const submitOrder = async () => {
   if (isSubmitting.value) return;
-  
   try {
     isSubmitting.value = true;
     const payload = { ...order.value };
-    
     if (estimatedPrice.value !== null) {
       payload.cost_confirm = String(estimatedPrice.value);
     }
-    
-    // Thêm thông tin thanh toán
     payload.payment_method = paymentMethod.value;
+
+    // Thêm log payload ở đây
+    console.log('Payload gửi lên:', payload);
 
     const response = await CreateOrderService.createOrder(payload) as any;
     console.log('API response:', response);
-    
-    if (response && response.id) {
-      closePaymentModal();
-      
-      // Tạo hóa đơn sau khi đặt đơn thành công
-      generateInvoice(response);
-      
-      // Không chuyển trang ngay mà cho người dùng xem hóa đơn trước
-      // router.push('/dss/customer-orders');
-    } else {
-      alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
-    }
+    // ...existing code...
   } catch (error: any) {
-    console.error('Failed to create order', error?.response?.data || error);
-    alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
-  } finally {
+  // Log chi tiết lỗi trả về từ backend
+  console.error('Lỗi chi tiết từ backend:', error?.response?.data || error);
+  alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
+} finally {
     isSubmitting.value = false;
   }
 };
-
 function formatHourMinute(hours: number|null) {
   if (hours === null || isNaN(hours)) return '';
   if (hours > 0 && hours * 60 < 1) return '1 phút';
