@@ -75,13 +75,14 @@
                         <span v-else>{{ $t('Login') }}</span>
                     </button>
 
-                    <p>
-                        Chưa có tài khoản?
-                        <NuxtLink to="/signup" class="link">
-                            Đăng ký
-                        </NuxtLink>
+                    <div class="flex justify-center items-center mt-4">
+                        <p class="text-center">
+                            {{ $t('dont_have_account') }}
+                            <NuxtLink to="/signup" class="span font-semibold">
+                                {{ $t('Register') }}
+                            </NuxtLink>
                         </p>
-
+                    </div>
                 </form>
             </div>
         </main>

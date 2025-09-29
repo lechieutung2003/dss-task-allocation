@@ -649,6 +649,10 @@ const vi = {
   both_start_end_time_required: 'Cần cả giờ bắt đầu và kết thúc',
   employee_updated_successfully: 'Cập nhật thông tin nhân viên thành công',
   set_day_off: "Nghỉ phép hôm nay",
+  phone: "Số điện thoại",
+  area_placeholder: "Ví dụ: Cẩm Lệ, Hải Châu, Thanh Khê...",
+  create_account_title: "Tạo tài khoản của bạn",
+  create_account_subtitle: "Đăng ký để bắt đầu",
 };
 
 export default vi;
