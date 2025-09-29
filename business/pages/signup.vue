@@ -92,12 +92,19 @@
         <div class="flex-column col-span-2">
           <label>{{ $t('area') }}</label>
           <div class="inputForm">
-            <input
+            <select
               v-model="form.area"
-              type="text"
               class="input"
-              :placeholder="$t('area_placeholder')"
-            />
+              required
+            >
+              <option value="" disabled>{{ $t('choice_area') }}</option>
+              <option value="Hải Châu">{{ $t('haichau') }}</option>
+              <option value="Ngũ Hành Sơn">{{ $t('nguhanhson') }}</option>
+              <option value="Liên Chiểu">{{ $t('lienchieu') }}</option>
+              <option value="Sơn Trà">{{ $t('sontra') }}</option>
+              <option value="Cẩm Lệ">{{ $t('camle') }}</option>
+              <option value="Thanh Khê">{{ $t('thanhkhe') }}</option>
+            </select>
           </div>
         </div>
 
@@ -144,7 +151,7 @@ const form = ref({
   password: '',
   first_name: '',
   last_name: '',
-  name: '',
+  // name sẽ tự động tạo từ first_name + last_name ở backend
   phone: '',
   address: '',
   area: ''

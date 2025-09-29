@@ -12,11 +12,14 @@ class Customer(TimeStampedModel):
     password = models.CharField(max_length=128)
     address = models.CharField(max_length=255)
     AREA_CHOICES = [
-        ("urban", "Urban"),
-        ("suburban", "Suburban"),
-        ("vip", "VIP"),
+        ("Hải Châu", "Hải Châu"),
+        ("Ngũ Hành Sơn", "Ngũ Hành Sơn"),
+        ("Liên Chiểu", "Liên Chiểu"),
+        ("Sơn Trà", "Sơn Trà"),
+        ("Cẩm Lệ", "Cẩm Lệ"),   
+        ("Thanh Khê", "Thanh Khê"),
     ]
-    area = models.CharField(max_length=10, choices=AREA_CHOICES)
+    area = models.CharField(max_length=20, choices=AREA_CHOICES)
 
     class Meta:
         db_table = "hr_customer"
