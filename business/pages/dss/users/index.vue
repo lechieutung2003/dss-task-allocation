@@ -75,7 +75,7 @@ import DeleteConfirmation from '@/components/employee/DeleteConfirmation.vue'
 
 // IMPORT: Composables
 import { useEmployeeManagement } from '@/composables/useEmployeeManagement'
-import { useEmployeeCrud } from '@/composables/useEmployeeCrud'
+import { useEmployeeCrud } from '@/composables/useEmployeeCRUD'
 
 definePageMeta({
   layout: 'dss',

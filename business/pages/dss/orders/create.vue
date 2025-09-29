@@ -328,13 +328,16 @@ const downloadInvoice = () => {
   
   // Tạo PDF từ HTML bằng cách in
   const printWindow = window.open('', '_blank');
-  printWindow.document.write(htmlContent);
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
-  
-  // Tự động đóng cửa sổ sau khi in
-  printWindow.onafterprint = () => printWindow.close();
+  if (printWindow) {
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    // Tự động đóng cửa sổ sau khi in
+    printWindow.onafterprint = () => printWindow.close();
+  } else {
+    alert('Không thể mở cửa sổ in hóa đơn. Vui lòng kiểm tra trình duyệt của bạn.');
+  }
 };
 
 const submitOrder = async () => {

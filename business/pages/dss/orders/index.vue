@@ -1,7 +1,7 @@
 <template>
   <div class="order-list-container p-4">
     <!-- Tiêu đề trang -->
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex justify-between items-center mt-12">
       <h1 class="text-2xl font-bold">Danh sách/Lịch sử đơn hàng</h1>
       <el-button type="primary" size="large" @click="handleCreateOrder">
         <i class="el-icon-plus mr-1"></i> Tạo đơn mới
@@ -63,10 +63,14 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Thao tác" width="250">
+        <el-table-column label="Thao tác" width="330">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="viewOrderDetail(row.id)">
               Chi tiết
+            </el-button>
+            <el-button type="warning" size="small" @click="navigateToOrderAssignment(row.id)"
+                      v-if="row.status !== 'cancelled'">
+              Phân công
             </el-button>
             <el-button type="success" size="small" @click="handleUpdateStatus(row)" 
                       v-if="row.status !== 'completed' && row.status !== 'cancelled'">
@@ -93,53 +97,6 @@
         />
       </div>
     </el-card>
-
-    <!-- Dialog xem chi tiết đơn hàng -->
-    <el-dialog v-model="orderDetailDialog.visible" title="Chi tiết đơn hàng" width="70%">
-      <div v-if="selectedOrder">
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <h3 class="text-lg font-medium mb-2">Thông tin đơn hàng</h3>
-            <p><strong>Mã đơn:</strong> {{ selectedOrder.id }}</p>
-            <p><strong>Ngày tạo:</strong> {{ formatDate(selectedOrder.created_at) }}</p>
-            <p><strong>Trạng thái:</strong> {{ getStatusLabel(selectedOrder.status) }}</p>
-            <p><strong>Diện tích:</strong> {{ selectedOrder.area_m2 }} m²</p>
-            <p><strong>Thời gian yêu cầu:</strong> {{ selectedOrder.requested_hours }} giờ</p>
-            <p><strong>Thời gian ước tính:</strong> {{ selectedOrder.estimated_hours }} giờ</p>
-            <p><strong>Ghi chú:</strong> {{ selectedOrder.note || 'Không có' }}</p>
-          </div>
-          <div>
-            <h3 class="text-lg font-medium mb-2">Thông tin khách hàng</h3>
-            <p><strong>Tên khách hàng:</strong> {{ selectedOrder.customer_name }}</p>
-            <p v-if="selectedOrder.customer_details"><strong>Số điện thoại:</strong> {{ selectedOrder.customer_details.phone }}</p>
-            <p v-if="selectedOrder.customer_details"><strong>Email:</strong> {{ selectedOrder.customer_details.email }}</p>
-            <p v-if="selectedOrder.customer_details"><strong>Địa chỉ:</strong> {{ selectedOrder.customer_details.address }}</p>
-          </div>
-        </div>
-        
-        <h3 class="text-lg font-medium my-4">Chi tiết dịch vụ</h3>
-        <div class="bg-gray-50 p-4 rounded">
-          <p><strong>Loại dịch vụ:</strong> {{ selectedOrder.service_details?.name }}</p>
-          <p><strong>Giá mỗi m²:</strong> {{ formatCurrency(selectedOrder.service_details?.price_per_m2 || 0) }}</p>
-          <p><strong>Tổng diện tích:</strong> {{ selectedOrder.area_m2 }} m²</p>
-          <p><strong>Tổng giá tiền:</strong> {{ formatCurrency(calculateTotalAmount(selectedOrder)) }}</p>
-        </div>
-        
-        <h3 class="text-lg font-medium my-4">Thời gian dự kiến</h3>
-        <div class="bg-gray-50 p-4 rounded">
-          <p><strong>Bắt đầu:</strong> {{ formatDateTime(selectedOrder.preferred_start_time) }}</p>
-          <p><strong>Kết thúc:</strong> {{ formatDateTime(selectedOrder.preferred_end_time) }}</p>
-        </div>
-      </div>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="orderDetailDialog.visible = false">Đóng</el-button>
-          <el-button type="primary" @click="handlePrintOrder" v-if="selectedOrder">
-            In đơn hàng
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -148,10 +105,15 @@ import { ref, reactive, onMounted } from 'vue';
 import OrderService from '../../../services/dss/order';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useRouter } from 'vue-router';
+import { formatCurrency, formatDate, formatDateTime } from '../../../utils/formatters';
 
 const router = useRouter();
 const loading = ref(false);
 const orderList = ref([]);
+
+definePageMeta({
+  layout: "dss",
+});
 
 // Bộ lọc
 const filters = reactive({
@@ -164,15 +126,9 @@ const filters = reactive({
 // Phân trang
 const pagination = reactive({
   currentPage: 1,
-  pageSize: 10,
+  pageSize: 3,
   total: 0
 });
-
-// Chi tiết đơn hàng
-const orderDetailDialog = reactive({
-  visible: false
-});
-const selectedOrder = ref(null);
 
 // Hàm lấy danh sách đơn hàng
 const fetchOrders = async () => {
@@ -186,7 +142,6 @@ const fetchOrders = async () => {
     
     orderList.value = response.results || [];
     pagination.total = response.count || 0;
-    console.log('Dữ liệu đơn hàng:', orderList.value);
   } catch (error) {
     console.error('Lỗi khi tải danh sách đơn hàng:', error);
     ElMessage.error('Không thể tải danh sách đơn hàng. Vui lòng thử lại sau.');
@@ -222,19 +177,13 @@ const handleCurrentChange = (page) => {
 };
 
 // Xem chi tiết đơn hàng
-const viewOrderDetail = async (orderId) => {
-  try {
-    loading.value = true;
-    const order = await OrderService.getOrder(orderId);
-    selectedOrder.value = order;
-    orderDetailDialog.visible = true;
-    console.log('Chi tiết đơn hàng:', order);
-  } catch (error) {
-    console.error('Lỗi khi tải chi tiết đơn hàng:', error);
-    ElMessage.error('Không thể tải thông tin đơn hàng.');
-  } finally {
-    loading.value = false;
-  }
+const viewOrderDetail = (orderId) => {
+  router.push(`/dss/orders/${orderId}`);
+};
+
+// Chuyển đến trang phân công
+const navigateToOrderAssignment = (orderId) => {
+  router.push(`/dss/orders/${orderId}?tab=assignment`);
 };
 
 // Tính tổng số tiền dựa trên diện tích và giá
@@ -243,35 +192,6 @@ const calculateTotalAmount = (order) => {
   const area = parseFloat(order.area_m2);
   const pricePerM2 = order.service_details.price_per_m2 || 0;
   return area * pricePerM2;
-};
-
-// Định dạng tiền tệ
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
-};
-
-// Định dạng ngày
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('vi-VN', { 
-    year: 'numeric', 
-    month: '2-digit', 
-    day: '2-digit' 
-  }).format(date);
-};
-
-// Định dạng ngày giờ đầy đủ
-const formatDateTime = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('vi-VN', { 
-    year: 'numeric', 
-    month: '2-digit', 
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date);
 };
 
 // Lấy nhãn trạng thái
@@ -352,91 +272,6 @@ const handleCancelOrder = (order) => {
   }).catch(() => {
     // Người dùng đã hủy thao tác
   });
-};
-
-// Xử lý in đơn hàng
-const handlePrintOrder = () => {
-  if (!selectedOrder.value) return;
-  
-  // Tạo nội dung để in
-  const printContent = `
-    <html>
-    <head>
-      <title>Đơn hàng ${selectedOrder.value.id}</title>
-      <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { text-align: center; }
-        .info-section { margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .total { font-weight: bold; margin-top: 20px; text-align: right; }
-      </style>
-    </head>
-    <body>
-      <h1>CHI TIẾT ĐƠN HÀNG</h1>
-      
-      <div class="info-section">
-        <h2>Thông tin đơn hàng</h2>
-        <p><strong>Mã đơn:</strong> ${selectedOrder.value.id}</p>
-        <p><strong>Ngày tạo:</strong> ${formatDate(selectedOrder.value.created_at)}</p>
-        <p><strong>Trạng thái:</strong> ${getStatusLabel(selectedOrder.value.status)}</p>
-      </div>
-      
-      <div class="info-section">
-        <h2>Thông tin khách hàng</h2>
-        <p><strong>Tên:</strong> ${selectedOrder.value.customer_name}</p>
-        ${selectedOrder.value.customer_details ? `
-        <p><strong>Số điện thoại:</strong> ${selectedOrder.value.customer_details.phone}</p>
-        <p><strong>Email:</strong> ${selectedOrder.value.customer_details.email}</p>
-        <p><strong>Địa chỉ:</strong> ${selectedOrder.value.customer_details.address}</p>
-        ` : ''}
-      </div>
-      
-      <h2>Chi tiết dịch vụ</h2>
-      <table>
-        <tr>
-          <th>Dịch vụ</th>
-          <th>Diện tích (m²)</th>
-          <th>Đơn giá</th>
-          <th>Thành tiền</th>
-        </tr>
-        <tr>
-          <td>${selectedOrder.value.service_details?.name || ''}</td>
-          <td>${selectedOrder.value.area_m2}</td>
-          <td>${formatCurrency(selectedOrder.value.service_details?.price_per_m2 || 0)}</td>
-          <td>${formatCurrency(calculateTotalAmount(selectedOrder.value))}</td>
-        </tr>
-      </table>
-      
-      <div class="total">
-        <p>Tổng tiền: ${formatCurrency(calculateTotalAmount(selectedOrder.value))}</p>
-      </div>
-      
-      <div class="info-section">
-        <h2>Thời gian dự kiến</h2>
-        <p><strong>Bắt đầu:</strong> ${formatDateTime(selectedOrder.value.preferred_start_time)}</p>
-        <p><strong>Kết thúc:</strong> ${formatDateTime(selectedOrder.value.preferred_end_time)}</p>
-        <p><strong>Tổng thời gian yêu cầu:</strong> ${selectedOrder.value.requested_hours} giờ</p>
-        <p><strong>Ghi chú:</strong> ${selectedOrder.value.note || 'Không có'}</p>
-      </div>
-    </body>
-    </html>
-  `;
-  
-  // Tạo cửa sổ in mới
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(printContent);
-  printWindow.document.close();
-  printWindow.focus();
-  
-  // In sau khi tài nguyên đã tải xong
-  printWindow.onload = function() {
-    printWindow.print();
-    printWindow.onafterprint = function() {
-      printWindow.close();
-    };
-  };
 };
 
 // Xử lý tạo đơn mới

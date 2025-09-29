@@ -28,6 +28,9 @@
             <el-menu-item index="/dss/services" v-if="isAdmin">
               <span>Quản lý Dịch vụ</span>
             </el-menu-item>
+            <el-menu-item index="/dss/orders" v-if="isAdmin || isStaff">
+              <span>Quản lý Đơn hàng</span>
+            </el-menu-item>
             <el-menu-item index="/dss/users" v-if="isAdmin">
               <span>Quản lý Nhân viên</span>
             </el-menu-item>
