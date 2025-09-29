@@ -232,7 +232,6 @@
                 >
                 <p class="text-xs text-gray-500 mt-1">{{ $t('status_auto_calculated') }}</p>
               </div>
-              
               <div>
                 <label class="block text-sm font-medium text-gray-700">
                   {{ $t('working_end_time') }}
@@ -246,6 +245,19 @@
                 >
                 <p class="text-xs text-gray-500 mt-1">{{ $t('status_auto_calculated') }}</p>
               </div>
+
+              <div class="col-span-1 md:col-span-2 flex justify-end">
+                  <button
+                    v-if="isEditMode"
+                    @click="setDayOff"
+                    class="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg shadow transition-all duration-150 mt-2"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"></path>
+                    </svg>
+                    {{ $t('set_day_off') }}
+                  </button>
+                </div>
             </div>
 
             <!-- Status Summary Card - Read-only -->
@@ -550,6 +562,11 @@ const validateWorkingHours = () => {
   }
   
   return true
+}
+
+const setDayOff = () => {
+  editableEmployee.value.working_start_time = null
+  editableEmployee.value.working_end_time = null
 }
 
 // Utility functions

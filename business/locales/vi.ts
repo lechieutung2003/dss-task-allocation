@@ -647,7 +647,8 @@ const vi = {
   invalid_data: 'Dữ liệu nhận được không hợp lệ',
   search_by_name_email_area: 'Tìm kiếm theo tên, email hoặc khu vực',
   both_start_end_time_required: 'Cần cả giờ bắt đầu và kết thúc',
-  employee_updated_successfully: 'Cập nhật thông tin nhân viên thành công'
+  employee_updated_successfully: 'Cập nhật thông tin nhân viên thành công',
+  set_day_off: "Nghỉ phép hôm nay",
 };
 
 export default vi;
