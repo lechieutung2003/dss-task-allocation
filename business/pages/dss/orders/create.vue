@@ -10,14 +10,18 @@ import qrImage from '@/assets/images/qr.jpg';
 const store = useOauthStore();
 const router = useRouter();
 
+// Thông tin customer từ hr_customer
+const customerInfo = ref<any>(null);
+const loadingCustomer = ref(true);
+
 const order = ref({
-  customer: store.user?.id || null,
+  customer: null as string | null, // Sẽ được cập nhật sau khi lấy thông tin customer
   service_type: null,
   area_m2: null,
-  requested_hours: null,
+  requested_hours: null as number | null,
   preferred_start_time: '',
   preferred_end_time: '',
-  estimated_hours: null,
+  estimated_hours: null as number | null,
   status: 'pending',
   note: '',
   cost_confirm: '',
@@ -51,6 +55,32 @@ const bankInfo = {
 
 type ServiceType = { id: string; name: string; [key: string]: any };
 const serviceTypes = ref<ServiceType[]>([]);
+
+// Hàm lấy thông tin customer từ hr_customer
+const fetchCustomerInfo = async () => {
+  try {
+    loadingCustomer.value = true;
+    console.log('Loading customer info...');
+    
+    const response = await CreateOrderService.getUser();
+    console.log('Customer API response:', response);
+    
+    const customer = response.data || response;
+    customerInfo.value = customer;
+    
+    // Cập nhật customer ID vào order
+    order.value.customer = customer.id;
+    
+    console.log('Customer info loaded:', customer);
+    console.log('Order customer updated:', order.value.customer);
+    
+  } catch (error) {
+    console.error('Error loading customer info:', error);
+    alert('Không thể tải thông tin khách hàng. Vui lòng đăng nhập lại.');
+  } finally {
+    loadingCustomer.value = false;
+  }
+};
 
 // Computed property để lấy giá dịch vụ được chọn
 const selectedServicePrice = computed(() => {
@@ -244,9 +274,9 @@ const generateInvoice = (orderResponse: any) => {
       paymentMethod: paymentMethod.value === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'
     },
     customerInfo: {
-      name: store.user?.name || 'Khách hàng',
-      email: store.user?.email || '',
-      phone: store.user?.phone || ''
+      name: customerInfo.value?.name || 'Khách hàng',
+      email: customerInfo.value?.email || '',
+      phone: customerInfo.value?.phone || ''
     },
     pricing: {
       subtotal: estimatedPrice.value || 0,
@@ -340,42 +370,86 @@ const downloadInvoice = () => {
   }
 };
 
+// const submitOrder = async () => {
+//   if (isSubmitting.value) return;
+  
+//   try {
+//     isSubmitting.value = true;
+//     const payload = { ...order.value };
+    
+//     if (estimatedPrice.value !== null) {
+//       payload.cost_confirm = String(estimatedPrice.value);
+//     }
+    
+//     // Thêm thông tin thanh toán
+//     payload.payment_method = paymentMethod.value;
+
+//     const response = await CreateOrderService.createOrder(payload) as any;
+//     console.log('API response:', response);
+    
+//     if (response && response.id) {
+//       closePaymentModal();
+      
+//       // Tạo hóa đơn sau khi đặt đơn thành công
+//       generateInvoice(response);
+      
+//       // Không chuyển trang ngay mà cho người dùng xem hóa đơn trước
+//       // router.push('/dss/customer-orders');
+//     } else {
+//       alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
+//     }
+//   } catch (error: any) {
+//     console.error('Failed to create order', error?.response?.data || error);
+//     alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
+//   } finally {
+//     isSubmitting.value = false;
+//   }
+// };
+
+
 const submitOrder = async () => {
   if (isSubmitting.value) return;
-  
   try {
     isSubmitting.value = true;
-    const payload = { ...order.value };
     
+    // Tạo payload với format giống Postman
+    const payload: any = {
+      customer: order.value.customer, // ID từ hr_customer
+      service_type: order.value.service_type,
+      area_m2: order.value.area_m2,
+      requested_hours: order.value.requested_hours,
+      preferred_start_time: order.value.preferred_start_time,
+      preferred_end_time: order.value.preferred_end_time,
+      estimated_hours: order.value.estimated_hours,
+      status: order.value.status,
+      note: order.value.note || "",
+    };
+    
+    // Thêm cost_confirm nếu có
     if (estimatedPrice.value !== null) {
       payload.cost_confirm = String(estimatedPrice.value);
     }
-    
-    // Thêm thông tin thanh toán
-    payload.payment_method = paymentMethod.value;
+
+    // Log payload để kiểm tra
+    console.log('Payload gửi lên (format Postman):', payload);
 
     const response = await CreateOrderService.createOrder(payload) as any;
     console.log('API response:', response);
     
     if (response && response.id) {
       closePaymentModal();
-      
-      // Tạo hóa đơn sau khi đặt đơn thành công
       generateInvoice(response);
-      
-      // Không chuyển trang ngay mà cho người dùng xem hóa đơn trước
-      // router.push('/dss/customer-orders');
+      // Có thể chuyển trang sau khi xem hóa đơn
     } else {
       alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
     }
   } catch (error: any) {
-    console.error('Failed to create order', error?.response?.data || error);
+    console.error('Lỗi chi tiết từ backend:', error?.response?.data || error);
     alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
   } finally {
     isSubmitting.value = false;
   }
 };
-
 function formatHourMinute(hours: number|null) {
   if (hours === null || isNaN(hours)) return '';
   if (hours > 0 && hours * 60 < 1) return '1 phút';
@@ -388,6 +462,7 @@ function formatHourMinute(hours: number|null) {
 
 onMounted(() => {
   fetchServiceTypes();
+  fetchCustomerInfo();
 });
 </script>
 
@@ -398,6 +473,32 @@ onMounted(() => {
         <div class="form-header">
           <h1 class="form-title">Tạo đơn mới</h1>
           <p class="form-subtitle">Nhập thông tin để tạo đơn dịch vụ</p>
+          
+          <!-- Customer info display -->
+          <div v-if="loadingCustomer" class="customer-info loading">
+            <p>Đang tải thông tin khách hàng...</p>
+          </div>
+          <div v-else-if="customerInfo" class="customer-info">
+            <h3>Thông tin khách hàng</h3>
+            <div class="customer-details">
+              <div class="customer-item">
+                <span class="label">Tên:</span>
+                <span class="value">{{ customerInfo.name }}</span>
+              </div>
+              <div class="customer-item">
+                <span class="label">Email:</span>
+                <span class="value">{{ customerInfo.email }}</span>
+              </div>
+              <div class="customer-item" v-if="customerInfo.phone">
+                <span class="label">SĐT:</span>
+                <span class="value">{{ customerInfo.phone }}</span>
+              </div>
+              <div class="customer-item" v-if="customerInfo.address">
+                <span class="label">Địa chỉ:</span>
+                <span class="value">{{ customerInfo.address }}</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="signup-columns">
           <div class="signup-column">
@@ -775,6 +876,53 @@ onMounted(() => {
   color: #6b7280;
   font-weight: 400;
   margin: 0;
+}
+
+/* Customer info styles */
+.customer-info {
+  background-color: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.customer-info.loading {
+  text-align: center;
+  color: #6b7280;
+}
+
+.customer-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 15px 0;
+  text-align: center;
+}
+
+.customer-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.customer-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.customer-item .label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b5563;
+  min-width: 60px;
+}
+
+.customer-item .value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
 }
 
 /* Divider styles */
