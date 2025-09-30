@@ -125,6 +125,107 @@
               </div>
             </div>
 
+            <div class="mb-6">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-md font-medium">Danh sách nhân viên</h4>
+                <div class="flex items-center space-x-4">
+                  <el-switch
+                    v-model="showOnlyAvailable"
+                    active-text="Chỉ hiện nhân viên khả dụng"
+                    @change="() => filterEmployees(true)"
+                  />
+                  <el-tooltip content="Sử dụng hệ thống gợi ý thông minh" placement="top">
+                    <el-button 
+                      :type="useDSS ? 'primary' : 'default'" 
+                      @click="toggleDSS"
+                      size="small"
+                      :icon="useDSS ? 'el-icon-magic-stick' : 'el-icon-user'"
+                    >
+                      {{ useDSS ? 'Đang sử dụng DSS' : 'Gợi ý thông minh' }}
+                    </el-button>
+                  </el-tooltip>
+                </div>
+              </div>
+              
+              <!-- Phần hiển thị khuyến nghị khi bật DSS -->
+              <div v-if="useDSS" class="bg-blue-50 p-4 rounded mb-4">
+                <div class="flex justify-between items-center">
+                  <span class="font-medium">Nhân viên được đề xuất dựa trên AI</span>
+                  <el-button
+                    type="primary"
+                    size="small"
+                    @click="getRecommendations"
+                    :loading="loadingRecommendations"
+                  >
+                    Tìm nhân viên phù hợp
+                  </el-button>
+                </div>
+                
+                <el-table
+                  v-if="recommendations.length > 0"
+                  :data="recommendations"
+                  style="width: 100%"
+                  class="mt-4"
+                >
+                  <el-table-column label="Nhân viên" min-width="200">
+                    <template #default="{ row }">
+                      <div class="flex items-center">
+                        <el-avatar 
+                          :size="32" 
+                          :src="row.employee.avatar_url" 
+                          class="mr-2"
+                        />
+                        <div>
+                          <div>{{ row.employee.first_name }} {{ row.employee.last_name }}</div>
+                          <div class="text-gray-500 text-sm">{{ row.employee.area }}</div>
+                        </div>
+                      </div>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="Độ phù hợp" width="150">
+                    <template #default="{ row }">
+                      <el-progress 
+                        :percentage="row.score"
+                        :color="getMatchColor(row.score)"
+                      />
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="Lý do phù hợp" min-width="300">
+                    <template #default="{ row }">
+                      <ul class="list-disc list-inside">
+                        <li v-for="(reason, index) in row.reasons" 
+                            :key="index" 
+                            class="text-sm text-gray-600"
+                        >
+                          {{ reason }}
+                        </li>
+                      </ul>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="Thao tác" width="120" align="center">
+                    <template #default="{ row }">
+                      <el-button
+                        type="primary"
+                        size="small"
+                        @click="assignEmployee(row.employee)"
+                        :disabled="isEmployeeAssigned(row.employee.id)"
+                      >
+                        Phân công
+                      </el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                
+                <el-empty 
+                  v-else-if="!loadingRecommendations"
+                  description="Chưa có đề xuất nào"
+                />
+              </div>
+            </div>
+
             <!-- Bảng danh sách nhân viên -->
             <div class="mb-6">
               <div class="flex justify-between items-center mb-2">
@@ -172,10 +273,10 @@
                 <el-table-column label="Trạng thái" width="120">
                   <template #default="{ row }">
                     <el-tag 
-                      :type="row.available ? 'success' : 'danger'" 
+                      :type="getEmployeeAvailability(row) ? 'success' : 'danger'" 
                       size="small"
                     >
-                      {{ row.available ? 'Sẵn sàng' : 'Bận' }}
+                      {{ getEmployeeAvailability(row) ? 'Sẵn sàng' : 'Bận' }}
                     </el-tag>
                   </template>
                 </el-table-column>
@@ -312,6 +413,41 @@ import AssignmentService from '../../../services/dss/order-assignment';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useRouter, useRoute } from 'vue-router';
 import { formatCurrency, formatDate, formatDateTime } from '../../../utils/formatters';
+import RecommendationService from '../../../services/dss/recommendationService';
+
+// Thêm các reactive states
+const useDSS = ref(false);
+const loadingRecommendations = ref(false);
+const recommendations = ref([]);
+
+// Thêm methods
+const toggleDSS = () => {
+  useDSS.value = !useDSS.value;
+  
+  if (useDSS.value && recommendations.value.length === 0) {
+    getRecommendations();
+  }
+};
+
+const getRecommendations = async () => {
+  loadingRecommendations.value = true;
+  
+  try {
+    const response = await RecommendationService.getRecommendations(route.params.id);
+    recommendations.value = response;
+  } catch (error) {
+    console.error('Lỗi khi lấy đề xuất:', error);
+    ElMessage.error('Không thể lấy danh sách đề xuất.');
+  } finally {
+    loadingRecommendations.value = false;
+  }
+};
+
+const getMatchColor = (score) => {
+  if (score >= 80) return '#67c23a';  // Xanh lá
+  if (score >= 60) return '#e6a23c';  // Cam
+  return '#f56c6c';  // Đỏ
+};
 
 const router = useRouter();
 const route = useRoute();
@@ -350,14 +486,97 @@ definePageMeta({
 
 // Lấy danh sách khu vực
 const availableAreas = computed(() => {
+  if (!Array.isArray(allEmployees.value)) {
+    return [];
+  }
+  
   const areas = new Set();
   allEmployees.value.forEach(emp => {
-    if (emp.area) {
+    if (emp?.area) {
       areas.add(emp.area);
     }
   });
   return [...areas].sort();
 });
+
+const getEmployeeAvailability = (employee) => {
+  try {
+    console.log('Checking availability for employee:', {
+      id: employee.id,
+      name: `${employee.first_name} ${employee.last_name}`,
+      working_hours: `${employee.working_start_time} - ${employee.working_end_time}`
+    });
+
+    // 1. Kiểm tra working hours
+    if (!employee.working_start_time || !employee.working_end_time) {
+      console.warn('Employee has no working hours set');
+      return false;
+    }
+
+    // 2. Kiểm tra thời gian đơn hàng
+    if (!order.value?.preferred_start_time) {
+      console.warn('Order has no start time');
+      return false;
+    }
+
+    // 3. Parse và chuẩn hóa thời gian đơn hàng 
+    const orderDateTime = new Date(order.value.preferred_start_time);
+    const orderStartHour = orderDateTime.getHours();
+    const orderStartMin = orderDateTime.getMinutes();
+    const orderEndHour = orderStartHour + 2; // Cộng thêm 2 tiếng
+    const orderEndMin = orderStartMin;
+
+    // 4. Parse thời gian làm việc của nhân viên
+    const [empStartHour, empStartMin] = employee.working_start_time.split(':');
+    const [empEndHour, empEndMin] = employee.working_end_time.split(':');
+    
+    console.log('Time comparison:', {
+      order: {
+        start: `${orderStartHour}:${orderStartMin}`,
+        end: `${orderEndHour}:${orderEndMin}`
+      },
+      employee: {
+        start: `${empStartHour}:${empStartMin}`,
+        end: `${empEndHour}:${empEndMin}`
+      }
+    });
+
+    // 5. Chuyển tất cả về phút để so sánh
+    const orderStartMins = orderStartHour * 60 + orderStartMin;
+    const orderEndMins = orderEndHour * 60 + orderEndMin;
+    const empStartMins = parseInt(empStartHour) * 60 + parseInt(empStartMin);
+    const empEndMins = parseInt(empEndHour) * 60 + parseInt(empEndMin);
+
+    // 6. So sánh thời gian
+    if (empStartMins <= empEndMins) {
+      // Ca làm việc bình thường (không qua đêm)
+      const isAvailable = orderStartMins >= empStartMins && orderEndMins <= empEndMins;
+      console.log('Normal shift check:', {
+        isAvailable,
+        orderStart: `${orderStartHour}:${orderStartMin}`,
+        orderEnd: `${orderEndHour}:${orderEndMin}`,
+        empStart: `${empStartHour}:${empStartMin}`,
+        empEnd: `${empEndHour}:${empEndMin}`
+      });
+      return isAvailable;
+    } else {
+      // Ca làm việc qua đêm
+      const isAvailable = (orderStartMins >= empStartMins) || (orderEndMins <= empEndMins);
+      console.log('Overnight shift check:', {
+        isAvailable,
+        orderStart: `${orderStartHour}:${orderStartMin}`,
+        orderEnd: `${orderEndHour}:${orderEndMin}`,
+        empStart: `${empStartHour}:${empStartMin}`,
+        empEnd: `${empEndHour}:${empEndMin}`
+      });
+      return isAvailable;
+    }
+
+  } catch (error) {
+    console.error('Error in getEmployeeAvailability:', error);
+    return false;
+  }
+};
 
 // Fetch order details
 const fetchOrderDetails = async () => {
@@ -378,12 +597,25 @@ const fetchOrderDetails = async () => {
 const fetchAllEmployees = async () => {
   loadingEmployees.value = true;
   try {
-    const data = await EmployeeService.getEmployees();
-    allEmployees.value = data || [];
+    const response = await EmployeeService.getEmployees({
+      page: 1,
+      page_size: 100 // Hoặc số lượng phù hợp
+    });
+    
+    // Kiểm tra và xử lý response
+    if (response && response.results) {
+      allEmployees.value = response.results;
+    } else {
+      allEmployees.value = [];
+      console.warn('Unexpected response format:', response);
+    }
+    
+    console.log('Fetched employees:', allEmployees.value);
     filterEmployees();
   } catch (error) {
     console.error('Lỗi khi tải danh sách nhân viên:', error);
     ElMessage.error('Không thể tải danh sách nhân viên.');
+    allEmployees.value = [];
   } finally {
     loadingEmployees.value = false;
   }
@@ -406,16 +638,21 @@ const fetchAssignedEmployees = async () => {
 
 // Lọc nhân viên
 const filterEmployees = (resetPage = false) => {
+  if (!Array.isArray(allEmployees.value)) {
+    console.warn('allEmployees.value không phải là mảng:', allEmployees.value);
+    filteredEmployees.value = [];
+    return;
+  }
+
   let result = [...allEmployees.value];
   
   // Lọc theo từ khóa
   if (employeeFilter.keyword) {
     const keyword = employeeFilter.keyword.toLowerCase();
     result = result.filter(emp => {
-      const fullName = `${emp.first_name} ${emp.last_name}`.toLowerCase();
-      const skills = (emp.skills || []).join(' ').toLowerCase();
-      return fullName.includes(keyword) || skills.includes(keyword) || 
-             (emp.email && emp.email.toLowerCase().includes(keyword));
+      const fullName = `${emp.first_name || ''} ${emp.last_name || ''}`.toLowerCase();
+      const workMail = (emp.work_mail || '').toLowerCase();
+      return fullName.includes(keyword) || workMail.includes(keyword);
     });
   }
   
@@ -426,12 +663,11 @@ const filterEmployees = (resetPage = false) => {
   
   // Lọc theo tình trạng khả dụng
   if (showOnlyAvailable.value) {
-    result = result.filter(emp => emp.available !== false);
+    result = result.filter(emp => getEmployeeAvailability(emp));
   }
   
   filteredEmployees.value = result;
   
-  // Reset trang về 1 khi lọc
   if (resetPage) {
     pagination.currentPage = 1;
   }
@@ -593,14 +829,6 @@ const showEmployeeSchedule = async (employee) => {
   } finally {
     scheduleDialog.loading = false;
   }
-};
-
-// Màu cho độ phù hợp
-const getMatchColor = (match) => {
-  if (!match) return '#909399';
-  if (match >= 80) return '#67c23a';
-  if (match >= 60) return '#e6a23c';
-  return '#f56c6c';
 };
 
 // Handle current change for pagination

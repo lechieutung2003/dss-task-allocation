@@ -2,6 +2,11 @@ import ApiService from "@/services/api";
 
 const baseUrl = "http://127.0.0.1:8008/api/v1/customer";
 const customerApi = {
+	// Lấy thông tin chi tiết customer
+	async getUser() {
+		return ApiService.get(baseUrl + "/info");
+	},
+
 	// Lấy danh sách đơn hàng của customer
 	async getOrders(params) {
 		return ApiService.get(baseUrl + "/orders", { params });
