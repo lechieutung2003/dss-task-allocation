@@ -100,7 +100,7 @@
               <div class="grid grid-cols-2 gap-4">
                 <el-input 
                   v-model="employeeFilter.keyword" 
-                  placeholder="Tìm theo tên, kỹ năng..." 
+                  placeholder="Tìm theo tên" 
                   clearable
                   @input="() => filterEmployees(true)"
                 >
@@ -125,15 +125,18 @@
               </div>
             </div>
 
-            <div class="mb-6">
-              <div class="flex justify-between items-center mb-2">
-                <h4 class="text-md font-medium">Danh sách nhân viên</h4>
+            <div class="flex justify-between items-center mb-2">
+              <h4 class="text-md font-medium">Danh sách nhân viên</h4>
+              <!-- <div>
+                <el-switch
+                v-model="showOnlyAvailable"
+                active-text="Chỉ hiện nhân viên khả dụng"
+                @change="() => filterEmployees(true)"
+                />
+              </div> -->
+              <div class="flex justify-between items-center">
+                <h4 class="text-md font-medium"></h4>
                 <div class="flex items-center space-x-4">
-                  <el-switch
-                    v-model="showOnlyAvailable"
-                    active-text="Chỉ hiện nhân viên khả dụng"
-                    @change="() => filterEmployees(true)"
-                  />
                   <el-tooltip content="Sử dụng hệ thống gợi ý thông minh" placement="top">
                     <el-button 
                       :type="useDSS ? 'primary' : 'default'" 
@@ -141,12 +144,14 @@
                       size="small"
                       :icon="useDSS ? 'el-icon-magic-stick' : 'el-icon-user'"
                     >
-                      {{ useDSS ? 'Đang sử dụng DSS' : 'Gợi ý thông minh' }}
+                      {{ useDSS ? 'Hiển thị toàn bộ nhân viên' : 'Gợi ý thông minh' }}
                     </el-button>
                   </el-tooltip>
                 </div>
               </div>
-              
+            </div>
+
+            <div class="mb-2">
               <!-- Phần hiển thị khuyến nghị khi bật DSS -->
               <div v-if="useDSS" class="bg-blue-50 p-4 rounded mb-4">
                 <div class="flex justify-between items-center">
@@ -225,22 +230,13 @@
                   v-else-if="!loadingRecommendations"
                   description="Chưa có đề xuất nào"
                 />
+                
               </div>
             </div>
 
             <!-- Bảng danh sách nhân viên -->
-            <div class="mb-6">
-              <div class="flex justify-between items-center mb-2">
-                <h4 class="text-md font-medium">Danh sách nhân viên</h4>
-                <div>
-                  <el-switch
-                    v-model="showOnlyAvailable"
-                    active-text="Chỉ hiện nhân viên khả dụng"
-                    @change="() => filterEmployees(true)"
-                  />
-                </div>
-              </div>
-              
+            <div class="mb-6" v-if="!useDSS">
+                           
               <el-table 
                 :data="paginatedEmployees" 
                 border 

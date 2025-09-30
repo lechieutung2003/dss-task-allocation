@@ -1,7 +1,7 @@
 <template>
-  <div class="order-list-container p-4">
+  <div class="order-list-container p-6">
     <!-- Tiêu đề trang -->
-    <div class="mb-6 flex justify-between items-center mt-12">
+    <div class="mb-6 flex justify-between items-center">
       <h1 class="text-2xl font-bold">Danh sách/Lịch sử đơn hàng</h1>
       <el-button type="primary" size="large" @click="handleCreateOrder">
         <i class="el-icon-plus mr-1"></i> Tạo đơn mới

@@ -1,5 +1,5 @@
 <template>
-  <div class="customer-list-container p-4 pt-20">
+  <div class="customer-list-container p-6">
     <div class="mb-4 flex justify-between items-center">
       <h1 class="text-xl font-bold">Quản lý Khách hàng</h1>
       <el-button type="primary" @click="router.push('/dss/customers/create')">

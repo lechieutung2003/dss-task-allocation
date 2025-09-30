@@ -14,7 +14,7 @@
     </div>
     <div v-else class="absolute w-full">
       <TopbarNav />
-      <div class="flex flex-row">
+      <div class="flex flex-row-content">
         <aside>
           <Sidebar>
             <template #header>

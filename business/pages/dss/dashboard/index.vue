@@ -255,7 +255,7 @@ const getPriorityColor = (priority) => {
 </script>
 
 <template>
-  <div class="flex-auto pt-20 p-6 bg-gray-50 min-h-screen">
+  <div class="flex-auto pt-6 p-6 bg-gray-50 min-h-screen">
     <!-- Header with Refresh Button -->
     <div class="mb-8 flex items-center justify-between">
       <div>
