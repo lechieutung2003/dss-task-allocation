@@ -653,6 +653,8 @@ const vi = {
   area_placeholder: "Ví dụ: Cẩm Lệ, Hải Châu, Thanh Khê...",
   create_account_title: "Tạo tài khoản của bạn",
   create_account_subtitle: "Đăng ký để bắt đầu",
+  skills: "Kỹ năng",
+  select_skills: "Chọn kỹ năng",
 };
 
 export default vi;

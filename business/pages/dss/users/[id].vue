@@ -1,10 +1,11 @@
 <template>
-  <div class="p-6">
+  <div class="p-6 mt-7">
     <!-- Back Button -->
-    <div class="mb-6">
+    <div class="mb-15">
       <BackButton @click="$router.push('/dss/users')" />
     </div>
 
+    <div class="mt-10">
     <!-- Employee Profile Component -->
     <EmployeeProfile
       :employee="employee"
@@ -15,6 +16,7 @@
       @save="saveEmployee"
       @cancel="cancelEdit"
     />
+    </div>
   </div>
 </template>
 

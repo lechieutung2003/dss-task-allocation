@@ -641,6 +641,8 @@ const en = {
   area_placeholder: 'e.g: Cam Le, Hai Chau, Thanh Khe...',
   create_account_title: "Create your account",
   create_account_subtitle: "Sign up to get started",
+  skills: 'Skills',
+  select_skills: 'Select skills',
 }
 
 export default en;
