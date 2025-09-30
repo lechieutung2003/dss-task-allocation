@@ -6,7 +6,7 @@
     </NuxtLink>
     <div class="flex flex-row items-center gap-2">
       <slot name="right" />
-      <Services v-if="authenticated" />
+      <!-- <Services v-if="authenticated" /> -->
       <CurrentUser v-if="authenticated" />
       <LanguageSelector />
     </div>
@@ -15,7 +15,7 @@
 
 <script lang="ts" setup>
 import AmozLogo from "~/assets/icons/Logo.svg";
-import Services from './Services.vue';
+// import Services from './Services.vue';
 import CurrentUser from './CurrentUser.vue';
 import LanguageSelector from './LanguageSelector.vue'
 import { useOauthStore } from '@/stores/oauth';

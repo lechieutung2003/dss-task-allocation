@@ -24,7 +24,9 @@
           <EmployeeForm
             :employee="newEmployee"
             :available-areas="availableAreas"
+            :skills-list="skillsList"
             :loading="loading"
+            :skills-loading="skillsLoading"
             @submit="$emit('create', $event)"
             @cancel="$emit('close')"
           />
@@ -37,8 +39,25 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import SkillService from '@/services/dss/users/skill'
 
 const { t } = useI18n()
+const skillsList = ref<any[]>([])
+const skillsLoading = ref(false)
+
+onMounted(async () => {
+  skillsLoading.value = true
+  try {
+    const result = await SkillService.getSkills()
+    console.log('[EmployeeCreateModal] SkillService.getSkills result:', result)
+    skillsList.value = Array.isArray(result.results) ? result.results : (Array.isArray(result) ? result : [])
+    console.log('[EmployeeCreateModal] skillsList.value:', skillsList.value)
+  } catch (e) {
+    console.error('[EmployeeCreateModal] Error loading skills:', e)
+    skillsList.value = []
+  }
+  skillsLoading.value = false
+})
 
 interface Props {
   show: boolean

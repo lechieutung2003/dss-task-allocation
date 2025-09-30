@@ -25,6 +25,7 @@ export const useEmployeeCrud = () => {
         date_of_birth: '',
         join_date: '',
         area: '',
+        skills: [],
         salary: '',
         working_start_time: '',
         working_end_time: '',
@@ -120,6 +121,7 @@ export const useEmployeeCrud = () => {
                 ...(employeeData.salary && { salary: parseFloat(employeeData.salary) }),
                 ...(employeeData.working_start_time && { working_start_time: employeeData.working_start_time }),
                 ...(employeeData.working_end_time && { working_end_time: employeeData.working_end_time }),
+                ...(employeeData.skills && employeeData.skills.length > 0 && { skills: employeeData.skills }),
                 status: 1
             }
 

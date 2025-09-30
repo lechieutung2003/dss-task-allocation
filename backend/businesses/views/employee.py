@@ -63,6 +63,15 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
 
     }
 
+    def update(self, request, *args, **kwargs):
+        # Kiểm tra quyền admin
+        if not request.user.is_superuser:  # Hoặc kiểm tra scope admin
+            return Response(
+                {"detail": "You do not have permission to update skills."},
+                status=HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
+    
     # get_queryset để handle JWTUser
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -223,16 +232,22 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
+        print("Create Employee with data:", data)
         origin = request.META.get("HTTP_ORIGIN")
+        print("Origin:", origin)
         content_type = request.content_type
+        print("Content-Type:", content_type)
         if content_type is not None and 'form-data' in content_type:
             form = NestedForm(request.data)
             if form.is_nested():
                 data = form.data
 
         email = data.get("work_mail")
+        print("Employee email:", email)
         first_name = data.get("first_name")
+        print("Employee first name:", first_name)
         last_name = data.get("last_name")
+        print("Employee last name:", last_name)
         user = data.get("user", None)
         # only create user after they verify their email
         if user is not None:
@@ -244,6 +259,7 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
         
         serializer = self.get_serializer(data=data)
         if serializer.is_valid(raise_exception=True):
+            instance = serializer.save() 
             self.perform_create(serializer)
             self.clear_querysets_cache()
             try:
@@ -259,6 +275,7 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             except Exception as e:
                 print(e)
                 Response({"message": _("There is an error occur.")}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+            response_serializer = self.get_serializer(instance)
             return Response(serializer.data, status=HTTP_201_CREATED)
 
     def retrieve(self, request, *args, **kwargs):
@@ -767,14 +784,16 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
     def admin_update(self, request, *args, **kwargs):
         """Admin action to update employee information"""
         try:
+            print("==> admin_update called")
+            print("Request data:", request.data)
             # Kiểm tra admin permissions
             if hasattr(request, 'auth') and request.auth:
                 token_scopes = request.auth.scope.split() if request.auth.scope else []
-                
+                print("Token scopes:", token_scopes)
                 # Kiểm tra scope admin
                 required_scopes = ['admin:edit', 'admin:view']
                 has_admin_permission = any(scope in token_scopes for scope in required_scopes)
-                
+                print("Has admin permission:", has_admin_permission)
                 if not has_admin_permission:
                     return Response(
                         {"detail": "You do not have admin permission to perform this action."},
@@ -783,13 +802,14 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             
             # Lấy employee instance
             employee = self.get_object()
-            
+            print("Employee instance:", employee)
+
             # Fields mà admin được phép update
             admin_allowed_fields = [
                 'first_name', 'last_name', 'personal_mail', 
                 'phone', 'gender', 'date_of_birth', 'area', 
-                'working_start_time', 'working_end_time',
-                'status', 'office_id'  # Admin có thể update thêm status và office
+                'working_start_time', 'working_end_time', 
+                'skills','status', 'office_id'
             ]
             
             # Lọc data chỉ lấy các fields được phép
@@ -797,15 +817,19 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             for field in admin_allowed_fields:
                 if field in request.data:
                     update_data[field] = request.data[field]
-            
+            print("Update data:", update_data)
             
             # Validate và update
             serializer = self.get_serializer(employee, data=update_data, partial=True)
+            print("Serializer initial data:", serializer.initial_data)
             if serializer.is_valid(raise_exception=True):
+                print("Serializer validated data:", serializer.validated_data)
                 serializer.save()
+                print("Employee updated successfully")
                 return Response(serializer.data, status=HTTP_200_OK)
                 
         except Employee.DoesNotExist:
+            print("Employee.DoesNotExist")
             return Response(
                 {"detail": "Employee not found."},
                 status=HTTP_404_NOT_FOUND
@@ -814,7 +838,6 @@ class EmployeeViewSet(OAuthLibMixin, BaseViewSet):
             print(f"Error in admin_update: {e}")
             import traceback
             traceback.print_exc()
-            
             return Response(
                 {"detail": f"Error updating employee: {str(e)}"},
                 status=HTTP_500_INTERNAL_SERVER_ERROR
