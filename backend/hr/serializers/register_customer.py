@@ -12,19 +12,28 @@ class RegisterCustomerSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
     first_name = serializers.CharField(max_length=50, required=False, allow_blank=True)
     last_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
-    name = serializers.CharField(max_length=100)
+    # name sẽ tự động được tạo từ first_name và last_name, không cần nhập từ frontend
     phone = serializers.CharField(max_length=20)
     address = serializers.CharField(max_length=255)
-    area = serializers.ChoiceField(choices=[("urban", "Urban"), ("suburban", "Suburban"), ("vip", "VIP")])
+    area = serializers.ChoiceField(choices=Customer.AREA_CHOICES)
 
     def create(self, validated_data):
         password = validated_data.pop('password')
         email = validated_data.get('email')
         first_name = validated_data.pop('first_name', '')
         last_name = validated_data.pop('last_name', '')
-        user = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
+        name = f"{first_name} {last_name}".strip()
+        #user = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
+        user = User.objects.create(
+            email=email,
+            password=make_password(password),
+            first_name=first_name,
+            last_name=last_name,
+            is_guest=True
+        )
         user.is_guest = True
         user.save()
+        validated_data['name'] = name
         # customer = Customer.objects.create(user=user, **validated_data)
         customer = Customer.objects.create(user=user, password=make_password(password), **validated_data)
         return customer

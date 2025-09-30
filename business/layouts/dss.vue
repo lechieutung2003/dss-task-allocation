@@ -13,7 +13,7 @@
       </LoginForm>
     </div>
     <div v-else class="absolute w-full">
-      <TopbarNav  />
+      <TopbarNav />
       <div class="flex flex-row">
         <aside>
           <Sidebar>
@@ -28,6 +28,9 @@
             <el-menu-item index="/dss/services" v-if="isAdmin">
               <span>Quản lý Dịch vụ</span>
             </el-menu-item>
+            <el-menu-item index="/dss/orders" v-if="isAdmin || isStaff">
+              <span>Quản lý Đơn hàng</span>
+            </el-menu-item>
             <el-menu-item index="/dss/users" v-if="isAdmin">
               <span>Quản lý Nhân viên</span>
             </el-menu-item>
@@ -40,10 +43,10 @@
 
             <!-- Admin + Staff đơn hàng -->
             <el-menu-item
-              :index="isStaff ? '/dss/employee-orders' : '/dss/orders'"
+              :index="isAdmin ? '/dss/orders' : '/dss/employee-orders'"
               v-if="isAdmin || isStaff"
             >
-              <span>{{ isStaff ? "Đơn của tôi" : "Quản lý Đơn hàng" }}</span>
+              <span>{{ isAdmin ? "Quản lý Đơn hàng" : "Đơn của tôi" }}</span>
             </el-menu-item>
 
             <!-- Thông tin cá nhân luôn hiển thị -->

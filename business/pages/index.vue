@@ -7,6 +7,7 @@ import { computed, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { useOauthStore } from "@/stores/oauth";
 import GuestInfo from "@/components/GuestInfo.vue";
+import LoginForm from "@/components/LoginForm.vue";
 
 const router = useRouter();
 const oauthStore = useOauthStore();
@@ -31,7 +32,14 @@ const isGuest = computed(() => {
     !oauthStore.hasOneOfScopes(["employees:view", "roles:view"])
   );
 });
+const isEmployee = computed(() => {
+  return oauthStore.hasOneOfScopes(["employees:view"]);
+});
 
+
+const isLoggedIn = computed(() => !!oauthStore.tokenInfo?.access_token);
+
+// redirect nếu là admin hoặc employee
 watchEffect(() => {
   if (isAdmin.value || isEmployee.value) {
     router.push("/dss/dashboard");
@@ -53,7 +61,24 @@ console.log("tokenInfo:", oauthStore.tokenInfo);
 </script>
 
 <template>
-  <!-- Guest sẽ hiển thị component riêng -->
-  <GuestInfo v-if="isGuest" />
-  <!-- Admin/Staff sẽ redirect nên không cần hiển thị gì ở đây -->
+  <div class="center-container">
+    <div style="width:100%;max-width:500px;">
+      <LoginForm v-if="!isLoggedIn" />
+      <GuestInfo v-else-if="isGuest" />
+    </div>
+  </div>
 </template>
+<style scoped>
+.center-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.welcome-text {
+  margin-top: 24px;
+  color: #444;
+  font-size: 16px;
+  text-align: center;
+}
+</style>

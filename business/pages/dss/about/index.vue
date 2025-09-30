@@ -8,34 +8,41 @@ const goContact = () => router.push('/dss/contact');
 <template>
   <div class="about-page">
 
-    <!-- HERO (TRẮNG) -->
-    <section class="stripe beige">
-      <div class="container hero">
-        <p class="eyebrow">Về chúng tôi</p>
-        <h1 class="title">Công Ty Dọn Dẹp – <span>tận tâm</span> & <span>chuẩn mực</span> từ năm 19xx</h1>
-        <p class="sub">
-          Chúng tôi bắt đầu từ một đội ngũ nhỏ với niềm tin: vệ sinh chất lượng không chỉ sạch
-          mà còn mang lại sự an tâm. Hơn nhiều thập kỷ, giá trị ấy vẫn không đổi.
-        </p>
-        <div class="cta-row">
-          <button class="btn" @click="goToCreateOrder">Đặt dịch vụ</button>
-          <button class="btn ghost" @click="goContact">Liên hệ tư vấn</button>
-        </div>
+    <!-- HERO với background image như customer.css -->
+    <section class="hero-section">
+      <div class="hero-background">
+        <img src="@/assets/images/bg.png" alt="Background" class="hero-bg-image" />
+      </div>
+      <div class="hero-overlay"></div>
+      
+      <div class="hero-content">
+        <div class="hero-text">
+          <p class="eyebrow">Về chúng tôi</p>
+          <h1 class="title">Công Ty Dọn Dẹp – <span>tận tâm</span> & <span>chuẩn mực</span> từ năm 19xx</h1>
+          <p class="sub">
+            Chúng tôi bắt đầu từ một đội ngũ nhỏ với niềm tin: vệ sinh chất lượng không chỉ sạch
+            mà còn mang lại sự an tâm. Hơn nhiều thập kỷ, giá trị ấy vẫn không đổi.
+          </p>
+          <div class="cta-row">
+            <button class="btn" @click="goToCreateOrder">Đặt dịch vụ</button>
+            <button class="btn ghost" @click="goContact">Liên hệ tư vấn</button>
+          </div>
 
-        <!-- Logos/Badges (tùy) -->
-        <ul class="badges">
-          <li>ISO 9001</li>
-          <li>ISO 14001</li>
-          <li>Trusted Service</li>
-        </ul>
+          <!-- Logos/Badges -->
+          <ul class="badges">
+            <li>ISO 9001</li>
+            <li>ISO 14001</li>
+            <li>Trusted Service</li>
+          </ul>
+        </div>
       </div>
     </section>
 
     <!-- LỊCH SỬ (BE) -->
     <section class="stripe white">
-      <div class="container timeline">
+      <div class="container">
         <h2>Lịch sử lâu đời</h2>
-        <p class="lead">Những cột mốc đánh dấu hành trình lớn mạnh và chuyên nghiệp hóa.</p>
+        <p class="section-subtitle">Những cột mốc đánh dấu hành trình lớn mạnh và chuyên nghiệp hóa.</p>
 
         <div class="timeline-grid">
           <div class="t-item">
@@ -101,7 +108,7 @@ const goContact = () => router.push('/dss/contact');
     <section class="stripe white">
       <div class="container stats">
         <h2>Năng lực đã được chứng minh</h2>
-        <p class="lead">Sự tin tưởng của khách hàng thể hiện qua những con số biết nói.</p>
+        <p class="section-subtitle">Sự tin tưởng của khách hàng thể hiện qua những con số biết nói.</p>
 
         <div class="stats-grid">
           <div class="s-card">
@@ -128,7 +135,7 @@ const goContact = () => router.push('/dss/contact');
     <section class="stripe beige">
       <div class="container team">
         <h2>Đội ngũ lãnh đạo</h2>
-        <p class="lead">Những người dẫn dắt tầm nhìn và chất lượng dịch vụ.</p>
+        <p class="section-subtitle">Những người dẫn dắt tầm nhìn và chất lượng dịch vụ.</p>
 
         <div class="team-grid">
           <div class="member">
@@ -179,83 +186,5 @@ const goContact = () => router.push('/dss/contact');
 </template>
 
 <style scoped>
-:root{ --be:#fff7ee; --ink:#000; --muted:#6b7280; }
-
-/* Stripes */
-.about-page{ background:transparent; color:var(--ink); }
-.stripe{ width:100%; }
-.stripe.white{ background:#fff; }
-.stripe.beige{ background:var(--be); }
-.container{ max-width:1100px; margin:0 auto; padding:40px 20px; }
-
-/* Hero */
-.hero{ text-align:center; }
-.eyebrow{ font:500 14px/1 ui-sans-serif,system-ui; letter-spacing:.06em; text-transform:uppercase; color:#444; margin:0 0 8px; }
-.title{ font:800 40px/1.1 ui-sans-serif,system-ui; margin:0 0 12px; }
-.title span{ font-weight:900; }
-.sub{ max-width:720px; margin:0 auto 18px; color:var(--muted); }
-.cta-row{ display:flex; gap:12px; justify-content:center; margin-top:8px; }
-.btn{ background:#000; color:#fff; border:1px solid #000; border-radius:999px; padding:10px 16px; font-weight:800; cursor:pointer; }
-.btn:hover{ filter:brightness(.92); }
-.btn.ghost{ background:#fff; color:#000; border-color:#ddd; }
-
-/* Badges */
-.badges{ list-style:none; padding:0; margin:18px 0 0; display:flex; gap:16px; justify-content:center; color:#111; opacity:.8;}
-.badges li{ background:#f2f2f2; border:1px solid #e9e9e9; padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px;}
-
-/* Timeline */
-.timeline h2{ font-size:32px; font-weight:900; margin:0 0 6px; }
-.timeline .lead{ color:var(--muted); margin:0 0 18px; }
-.timeline-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:18px; }
-.t-item{ display:grid; grid-template-columns:100px 1fr; gap:14px; align-items:start; }
-.t-year{ font-weight:900; font-size:28px; line-height:1; }
-.t-card{ background:#fff; border:1px solid #eee; border-radius:14px; padding:14px; }
-.t-card h3{ margin:0 0 6px; font-size:18px; font-weight:800; }
-
-/* VMV */
-.vmv h2{ font-size:32px; font-weight:900; margin:0 0 10px; text-align:center; }
-.vmv-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
-.vmv .card{ background:#fff; border:1px solid #eee; border-radius:14px; padding:18px; }
-.vmv .bullets{ margin:8px 0 0; padding-left:18px; }
-
-/* Stats */
-.stats h2{ font-size:32px; font-weight:900; margin:0 0 6px; }
-.stats .lead{ color:var(--muted); margin:0 0 16px; }
-.stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
-.s-card{ background:#fff; border:1px solid #eee; border-radius:14px; padding:18px; text-align:center; }
-.s-num{ font-weight:900; font-size:32px; line-height:1; }
-.s-label{ color:#333; }
-
-/* Team */
-.team h2{ font-size:32px; font-weight:900; margin:0 0 6px; }
-.team .lead{ color:var(--muted); margin:0 0 16px; }
-.team-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
-.member{ background:#fff; border:1px solid #eee; border-radius:14px; padding:14px; text-align:center; }
-.member img{ width:100%; height:220px; object-fit:cover; border-radius:10px; margin-bottom:10px; }
-.member h3{ margin:4px 0 2px; font-size:18px; font-weight:800; }
-.member .role{ color:#444; font-size:14px; }
-
-/* Certs */
-.certs h2{ font-size:32px; font-weight:900; margin:0 0 10px; }
-.certs-row{ display:flex; gap:12px; flex-wrap:wrap; }
-.cert{ background:#fff; border:1px solid #eee; padding:10px 14px; border-radius:999px; font-weight:800; }
-
-/* Final CTA */
-.final-cta{ text-align:center; }
-.final-cta h2{ font-size:32px; font-weight:900; margin:0 0 6px; }
-.final-cta p{ color:var(--muted); margin:0 0 12px; }
-
-/* Responsive */
-@media (max-width:1024px){
-  .timeline-grid{ grid-template-columns:1fr; }
-  .vmv-grid{ grid-template-columns:1fr; }
-  .stats-grid{ grid-template-columns:repeat(2,1fr); }
-  .team-grid{ grid-template-columns:1fr 1fr; }
-}
-@media (max-width:640px){
-  .title{ font-size:32px; }
-  .member img{ height:200px; }
-  .stats-grid{ grid-template-columns:1fr; }
-  .team-grid{ grid-template-columns:1fr; }
-}
+/* Styles đã được chuyển sang customer.css */
 </style>

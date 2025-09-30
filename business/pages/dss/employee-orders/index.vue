@@ -1,5 +1,5 @@
 <template>
-  <div class="order-list-container p-2">
+  <div class="order-list-container p-4 pt-16">
     <!-- Tiêu đề trang -->
     <div class="mb-4">
       <h1 class="text-xl font-bold">Danh sách/Lịch sử đơn hàng</h1>
@@ -309,9 +309,14 @@ onMounted(() => {
   margin-bottom: 0;
 }
 .order-table {
-  min-height: 300px;
+  min-height: 150px;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
 }
 .el-table {
   font-size: 0.875rem;
+}
+:deep(.el-card__body) {
+  padding: 12px;
 }
 </style>
