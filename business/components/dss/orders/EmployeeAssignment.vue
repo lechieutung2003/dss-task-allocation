@@ -82,7 +82,7 @@
         >
           <el-table-column label="Xếp hạng" width="80" type="index" :index="1" />
           
-          <el-table-column label="Nhân viên" min-width="200">
+          <el-table-column label="Nhân viên" width="300">
             <template #default="{ row }">
               <div class="flex items-center">
                 <el-avatar 
@@ -100,14 +100,24 @@
 
           <el-table-column label="Độ phù hợp" width="150">
             <template #default="{ row }">
-              <el-progress 
-                :percentage="row.score || 0"
-                :color="getMatchColor(row.score || 0)"
-              />
+              <div>
+                <!-- Hiển thị thanh progress không có text -->
+                <el-progress 
+                  :percentage="(row.score || 0)"
+                  :color="getMatchColor((row.score || 0))"
+                  :show-text="false"
+                />
+                <!-- Hiển thị điểm số dạng score/100 -->
+                <div class="text-center text-xs text-gray-600 mt-1">
+                  {{ Math.round(row.score || 0) }}/100
+                </div>
+              </div>
             </template>
           </el-table-column>
 
-          <el-table-column label="Lý do phù hợp" min-width="300">
+          <el-table-column width="auto" />
+
+          <el-table-column label="Lý do phù hợp" width="450">
             <template #default="{ row }">
               <ul class="list-disc list-inside">
                 <li v-for="(reason, index) in (row.reasons || [])" 
