@@ -1,11 +1,12 @@
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
+from rest_framework.exceptions import ValidationError
 from datetime import datetime, time
 from django.utils import timezone
 import pytz
 from base.serializers import WritableNestedSerializer
 from ..models import Employee
-from hr.models.skill import EmployeeSkill
+from hr.models.skill import EmployeeSkill, Skill
 from oauth.models import User, Role
 from oauth.serializers import UserShortSerializer, RoleShortSerializer
 from .employee_additional_information import EmployeeAdditionalInformationSerializer
@@ -24,7 +25,12 @@ class EmployeeSerializer(WritableNestedSerializer):
     additional_information = EmployeeAdditionalInformationSerializer(many=True, required=False)
     computed_status = serializers.SerializerMethodField()
     status_text = serializers.SerializerMethodField()
-    skills = serializers.SerializerMethodField()
+    skills = serializers.ListField(
+    child=serializers.CharField(),
+    write_only=True,
+    required=False,
+    help_text="List of skill names to assign to the employee"
+    )
 
     def get_skills(self, obj):
         return [es.skill.name for es in EmployeeSkill.objects.filter(employee=obj)]
@@ -145,8 +151,13 @@ class EmployeeSerializer(WritableNestedSerializer):
     
     def update(self, instance, validated_data):
         """Override update to auto-calculate status"""
+        # Lấy danh sách kỹ năng từ validated_data
+        skills = validated_data.pop('skills', [])
         # Update instance với validated data
         updated_instance = super().update(instance, validated_data)
+        
+        # Gán kỹ năng mới
+        self._assign_skills(updated_instance, skills)
         
         # Auto-calculate và update status
         status_info = self._calculate_current_status(updated_instance)
@@ -157,7 +168,11 @@ class EmployeeSerializer(WritableNestedSerializer):
     
     def create(self, validated_data):
         """Override create to auto-calculate status"""
+        skills = validated_data.pop('skills', [])
         instance = super().create(validated_data)
+        
+        # Gán kỹ năng mới
+        self._assign_skills(instance, skills)
         
         # Auto-calculate và set initial status
         status_info = self._calculate_current_status(instance)
@@ -165,6 +180,44 @@ class EmployeeSerializer(WritableNestedSerializer):
         instance.save(update_fields=['status'])
         
         return instance
+    
+    def _assign_skills(self, employee, skills):
+        """
+        Gán danh sách kỹ năng cho nhân viên.
+        - Xóa các kỹ năng cũ không còn trong danh sách mới.
+        - Thêm các kỹ năng mới.
+        Raise ValidationError nếu có lỗi.
+        """
+        try:
+            # Lấy các kỹ năng hiện tại của nhân viên
+            current_skills = set(EmployeeSkill.objects.filter(employee=employee).values_list('skill__name', flat=True))
+            new_skills = set(skills)
+            print("current_skills", current_skills)
+            print("new_skills", new_skills)
+
+            # Xóa các kỹ năng không còn trong danh sách mới
+            skills_to_remove = current_skills - new_skills
+            print("skills_to_remove", skills_to_remove)
+            deleted_count, _ = EmployeeSkill.objects.filter(employee=employee, skill__name__in=skills_to_remove).delete()
+            if deleted_count < len(skills_to_remove):
+                raise ValidationError(f"Failed to remove some skills for employee {employee.id}")
+
+            # Thêm các kỹ năng mới
+            for skill_name in new_skills - current_skills:
+                try:
+                    skill, created = Skill.objects.get_or_create(name=skill_name)
+                    print(f"Assigning skill '{skill.name}' to employee {employee.id}")
+                    EmployeeSkill.objects.create(employee=employee, skill=skill)
+                    print(f"Successfully assigned skill '{skill.name}' to employee {employee.id}")
+                except Exception as skill_error:
+                    print(f"Error assigning skill '{skill_name}' to employee {employee.id}: {skill_error}")
+                    raise ValidationError(f"Failed to assign skill '{skill_name}': {str(skill_error)}")
+
+        except ValidationError:
+            raise  # Re-raise ValidationError
+        except Exception as e:
+            print(f"Unexpected error in _assign_skills for employee {employee.id}: {e}")
+            raise ValidationError(f"Unexpected error assigning skills: {str(e)}")
 
 
 class EmployeeShortSerializer(serializers.ModelSerializer):
