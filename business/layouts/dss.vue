@@ -28,18 +28,18 @@
             <el-menu-item index="/dss/services" v-if="isAdmin">
               <span>Quản lý Dịch vụ</span>
             </el-menu-item>
-            <el-menu-item index="/dss/orders" v-if="isAdmin || isStaff">
+            <!-- <el-menu-item index="/dss/orders" v-if="isAdmin || isStaff">
               <span>Quản lý Đơn hàng</span>
-            </el-menu-item>
+            </el-menu-item> -->
             <el-menu-item index="/dss/users" v-if="isAdmin">
               <span>Quản lý Nhân viên</span>
             </el-menu-item>
             <el-menu-item index="/dss/customers" v-if="isAdmin">
               <span>Quản lý Khách hàng</span>
             </el-menu-item>
-            <el-menu-item index="/dss/tasks" v-if="isAdmin">
+            <!-- <el-menu-item index="/dss/tasks" v-if="isAdmin">
               <span>Giao task cho nhân viên</span>
-            </el-menu-item>
+            </el-menu-item> -->
 
             <!-- Admin + Staff đơn hàng -->
             <el-menu-item
