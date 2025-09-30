@@ -2,7 +2,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from ..models import Employee
-from hr.models import Order
+from hr.models import Order, Assignment
 from hr.models import Customer
 from ..serializers.recommendation import RecommendationSerializer
 from ..services.recommendation import RecommendationService
@@ -32,8 +32,20 @@ class RecommendationViewSet(ViewSet):
         try:
             logger.info(f"Getting recommendations for order: {pk}")
             order = Order.objects.get(id=pk)
-            employees = Employee.objects.filter(status='1')
-            logger.info(f"Found {len(employees)} active employees")
+
+            assigned_employee_ids = Assignment.objects.filter(
+                order=order
+            ).values_list('employee_id', flat=True)
+            
+            logger.info(f"Found {len(assigned_employee_ids)} already assigned employees")
+
+            employees = Employee.objects.filter(
+                status='1'
+            ).exclude(
+                id__in=assigned_employee_ids
+            )
+            
+            logger.info(f"Found {len(employees)} active employees not yet assigned")
             
             recommendations = []
             
