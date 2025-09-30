@@ -6,7 +6,8 @@ class RecommendationService {
   }
 
   getRecommendations(orderId) {
-    return ApiService.get(`${this.baseUrl}/orders/${orderId}/recommendations`);
+    // Sửa đường dẫn để khớp với endpoint backend đã hoạt động
+    return ApiService.get(`${this.baseUrl}/recommendations/${orderId}/recommendations`);
   }
 }
 

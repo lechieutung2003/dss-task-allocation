@@ -150,7 +150,7 @@
               <!-- Phần hiển thị khuyến nghị khi bật DSS -->
               <div v-if="useDSS" class="bg-blue-50 p-4 rounded mb-4">
                 <div class="flex justify-between items-center">
-                  <span class="font-medium">Nhân viên được đề xuất dựa trên AI</span>
+                  <span class="font-medium">Top 5 nhân viên phù hợp nhất</span>
                   <el-button
                     type="primary"
                     size="small"
@@ -167,17 +167,19 @@
                   style="width: 100%"
                   class="mt-4"
                 >
+                  <el-table-column label="Xếp hạng" width="80" type="index" :index="1" />
+                  
                   <el-table-column label="Nhân viên" min-width="200">
                     <template #default="{ row }">
                       <div class="flex items-center">
                         <el-avatar 
                           :size="32" 
-                          :src="row.employee.avatar_url" 
+                          :src="row.employee?.avatar_url || ''" 
                           class="mr-2"
                         />
                         <div>
-                          <div>{{ row.employee.first_name }} {{ row.employee.last_name }}</div>
-                          <div class="text-gray-500 text-sm">{{ row.employee.area }}</div>
+                          <div>{{ row.employee?.first_name || '' }} {{ row.employee?.last_name || '' }}</div>
+                          <div class="text-gray-500 text-sm">{{ row.employee?.area || 'Không có khu vực' }}</div>
                         </div>
                       </div>
                     </template>
@@ -186,8 +188,8 @@
                   <el-table-column label="Độ phù hợp" width="150">
                     <template #default="{ row }">
                       <el-progress 
-                        :percentage="row.score"
-                        :color="getMatchColor(row.score)"
+                        :percentage="row.score || 0"
+                        :color="getMatchColor(row.score || 0)"
                       />
                     </template>
                   </el-table-column>
@@ -195,7 +197,7 @@
                   <el-table-column label="Lý do phù hợp" min-width="300">
                     <template #default="{ row }">
                       <ul class="list-disc list-inside">
-                        <li v-for="(reason, index) in row.reasons" 
+                        <li v-for="(reason, index) in (row.reasons || [])" 
                             :key="index" 
                             class="text-sm text-gray-600"
                         >
@@ -211,7 +213,7 @@
                         type="primary"
                         size="small"
                         @click="assignEmployee(row.employee)"
-                        :disabled="isEmployeeAssigned(row.employee.id)"
+                        :disabled="!row.employee || isEmployeeAssigned(row.employee?.id)"
                       >
                         Phân công
                       </el-button>
@@ -434,7 +436,41 @@ const getRecommendations = async () => {
   
   try {
     const response = await RecommendationService.getRecommendations(route.params.id);
-    recommendations.value = response;
+    console.log('Raw API response:', response);
+    
+    let tempRecommendations = [];
+    
+    // Xử lý các định dạng response khác nhau
+    if (Array.isArray(response)) {
+      tempRecommendations = response;
+    } 
+    else if (response && Array.isArray(response.results)) {
+      tempRecommendations = response.results;
+    }
+    else if (response && !Array.isArray(response)) {
+      tempRecommendations = [response];
+    }
+    
+    // Kiểm tra dữ liệu hợp lệ
+    tempRecommendations = tempRecommendations.filter(item => 
+      item && item.employee && item.score !== undefined
+    );
+    
+    // Sắp xếp theo score cao nhất
+    tempRecommendations.sort((a, b) => b.score - a.score);
+    
+    // Lấy 5 nhân viên có score cao nhất
+    recommendations.value = tempRecommendations.slice(0, 5);
+    
+    console.log('Top 5 recommendations:', recommendations.value);
+    
+    if (recommendations.value.length === 0) {
+      ElMessage.info('Không có đề xuất nào cho đơn hàng này.');
+    } else if (recommendations.value.length < 5) {
+      ElMessage.info(`Chỉ tìm thấy ${recommendations.value.length} nhân viên phù hợp.`);
+    } else {
+      ElMessage.success(`Đã tìm thấy top 5 nhân viên phù hợp nhất.`);
+    }
   } catch (error) {
     console.error('Lỗi khi lấy đề xuất:', error);
     ElMessage.error('Không thể lấy danh sách đề xuất.');
@@ -675,20 +711,40 @@ const filterEmployees = (resetPage = false) => {
 
 // Check if an employee is already assigned
 const isEmployeeAssigned = (employeeId) => {
+  if (!employeeId) return false;
+  
   return assignedEmployees.value.some(
-    assignment => assignment.employee.id === employeeId
+    assignment => {
+      const assignedId = assignment.employee?.id || assignment.employee;
+      return assignedId === employeeId;
+    }
   );
 };
 
 // Assign employee to the order
+// Assign employee to the order
 const assignEmployee = (employee) => {
-  if (isEmployeeAssigned(employee.id)) {
+  // Kiểm tra employee có tồn tại không
+  if (!employee) {
+    ElMessage.error('Không tìm thấy thông tin nhân viên');
+    return;
+  }
+  
+  // Lấy ID của employee
+  const employeeId = employee.id || employee._id;
+  
+  if (!employeeId) {
+    ElMessage.error('ID nhân viên không hợp lệ');
+    return;
+  }
+  
+  if (isEmployeeAssigned(employeeId)) {
     ElMessage.warning('Nhân viên này đã được phân công.');
     return;
   }
   
   ElMessageBox.confirm(
-    `Bạn có chắc chắn muốn phân công nhân viên ${employee.first_name} ${employee.last_name} cho đơn hàng này?`,
+    `Bạn có chắc chắn muốn phân công nhân viên ${employee.first_name || ''} ${employee.last_name || ''} cho đơn hàng này?`,
     'Xác nhận phân công',
     {
       confirmButtonText: 'Xác nhận',
