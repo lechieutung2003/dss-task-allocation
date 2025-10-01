@@ -60,7 +60,7 @@ watchEffect(() => {
     router.push("/dss/employee-orders");
   }
   else if (isGuest.value) {
-    router.push("/dss/customer-orders");
+    router.push("/dss/home");
   }
 });
 

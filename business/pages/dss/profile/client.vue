@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import customerApi from '@/services/dss/users/customer'
+definePageMeta({
+  middleware: 'role-based'
+})
 
 const user = ref(null)
 const loading = ref(true)

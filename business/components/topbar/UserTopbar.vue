@@ -19,14 +19,14 @@
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
-          <span class="nav-text">Về chúng tôi</span>
+          <span class="nav-text">{{ $t('nav_about') }}</span>
         </span>
         
         <span class="nav-link" :class="{ active: selected === 'services' }" @click="selectMenu('services', goServices)">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 12h18m-9 4.5L21 7.5M12 16.5L3 7.5"></path>
           </svg>
-          <span class="nav-text">Dịch vụ</span>
+          <span class="nav-text">{{ $t('nav_services') }}</span>
         </span>
         
         <span class="nav-link" :class="{ active: selected === 'contact' }" @click="selectMenu('contact', goContact)">
@@ -34,7 +34,7 @@
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
             <polyline points="22,6 12,13 2,6"></polyline>
           </svg>
-          <span class="nav-text">Liên hệ</span>
+          <span class="nav-text">{{ $t('nav_contact') }}</span>
         </span>
         
         <span class="nav-link orders-link" :class="{ active: selected === 'orders' }" @click="selectMenu('orders', goOrders)">
@@ -42,7 +42,7 @@
             <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
             <path d="M9 11V5a2 2 0 0 1 4 0v6"></path>
           </svg>
-          <span class="nav-text">Đơn hàng</span>
+          <span class="nav-text">{{ $t('nav_orders') }}</span>
         </span>
         
         <span class="cta-btn" :class="{ active: selected === 'create' }" @click="selectMenu('create', goCreateOrder)">
@@ -52,10 +52,40 @@
               <line x1="12" y1="8" x2="12" y2="16"></line>
               <line x1="8" y1="12" x2="16" y2="12"></line>
             </svg>
-            <span>Tạo đơn</span>
+            <span>{{ $t('nav_create_order') }}</span>
           </div>
           <div class="cta-shine"></div>
         </span>
+        
+        <!-- Language Switcher -->
+        <div class="language-wrapper">
+          <div class="language-toggle" @click="toggleLangMenu">
+            <span class="lang-flag">{{ getCurrentLangFlag }}</span>
+            <span class="lang-text">{{ getCurrentLangName }}</span>
+            <svg class="lang-arrow" :class="{ 'rotated': showLangMenu }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+          </div>
+          
+          <transition name="dropdown">
+            <div v-if="showLangMenu" class="language-menu" @click.stop>
+              <div class="language-item" :class="{ active: locale === 'vi' }" @click="changeLanguage('vi')">
+                <span class="lang-flag">🇻🇳</span>
+                <span>Tiếng Việt</span>
+                <svg v-if="locale === 'vi'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20,6 9,17 4,12"></polyline>
+                </svg>
+              </div>
+              <div class="language-item" :class="{ active: locale === 'en' }" @click="changeLanguage('en')">
+                <span class="lang-flag">🇺🇸</span>
+                <span>English</span>
+                <svg v-if="locale === 'en'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20,6 9,17 4,12"></polyline>
+                </svg>
+              </div>
+            </div>
+          </transition>
+        </div>
         
         <!-- Avatar dropdown với hiệu ứng clean -->
         <div class="profile-wrapper">
@@ -71,7 +101,7 @@
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                <span>Trang cá nhân</span>
+                <span>{{ $t('nav_profile') }}</span>
               </div>
               <div class="dropdown-item logout" @click="logout">
                 <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -79,7 +109,7 @@
                   <polyline points="16,17 21,12 16,7"></polyline>
                   <line x1="21" y1="12" x2="9" y2="12"></line>
                 </svg>
-                <span>Đăng xuất</span>
+                <span>{{ $t('nav_logout') }}</span>
               </div>
             </div>
           </transition>
@@ -98,8 +128,12 @@ import { ElAvatar } from 'element-plus'
 const store = useOauthStore()
 const router = useRouter()
 const showMenu = ref(false)
+const showLangMenu = ref(false)
 const selected = ref('home')
 const isScrolled = ref(false)
+
+// i18n setup
+const { locale, locales, setLocale } = useI18n()
 
 const fullName = computed(() =>
   store.user?.name || `${store.user?.first_name || ''} ${store.user?.last_name || ''}`.trim()
@@ -123,8 +157,25 @@ const goCreateOrder = () => router.push('/dss/orders/create')
 const goProfile = () => { showMenu.value = false; router.push('/dss/profile/client') }
 const logout = () => { showMenu.value = false; store.$reset(); router.push('/') }
 
-const handleClickOutside = (e) => { if (!e.target.closest('.profile-wrapper')) showMenu.value = false }
+const handleClickOutside = (e) => { 
+  if (!e.target.closest('.profile-wrapper')) showMenu.value = false
+  if (!e.target.closest('.language-wrapper')) showLangMenu.value = false
+}
 const toggleMenu = () => { showMenu.value = !showMenu.value }
+const toggleLangMenu = () => { showLangMenu.value = !showLangMenu.value }
+
+const changeLanguage = (lang) => {
+  setLocale(lang)
+  showLangMenu.value = false
+}
+
+const getCurrentLangFlag = computed(() => {
+  return locale.value === 'vi' ? '🇻🇳' : '🇺🇸'
+})
+
+const getCurrentLangName = computed(() => {
+  return locale.value === 'vi' ? 'Tiếng Việt' : 'English'
+})
 
 const onScroll = () => {
   isScrolled.value = window.scrollY > 10
@@ -417,6 +468,136 @@ onUnmounted(() => {
 .profile-wrapper {
   position: relative;
   margin-left: 20px;
+}
+
+/* Language Switcher */
+.language-wrapper {
+  position: relative;
+  margin-left: 12px;
+}
+
+.language-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
+  box-shadow: var(--clean-shadow);
+}
+
+.language-toggle:hover {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.2);
+}
+
+.lang-flag {
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.lang-text {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lang-arrow {
+  width: 16px;
+  height: 16px;
+  transition: all 0.3s ease;
+  color: var(--text-light);
+}
+
+.lang-arrow.rotated {
+  transform: rotate(180deg);
+  color: var(--accent);
+}
+
+.language-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+  min-width: 180px;
+  z-index: 1000;
+  overflow: hidden;
+  transform-origin: top right;
+}
+
+.language-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  color: var(--text-dark);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.3);
+  position: relative;
+}
+
+.language-item:last-child {
+  border-bottom: none;
+}
+
+.language-item:hover {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+.language-item.active {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.language-item .lang-flag {
+  font-size: 16px;
+}
+
+.check-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+  margin-left: auto;
+}
+
+/* Responsive cho language switcher */
+@media (max-width: 768px) {
+  .language-wrapper {
+    margin-left: 8px;
+  }
+  
+  .language-toggle {
+    padding: 8px 12px;
+  }
+  
+  .lang-text {
+    display: none;
+  }
+  
+  .lang-arrow {
+    width: 14px;
+    height: 14px;
+  }
 }
 
 .avatar-container {

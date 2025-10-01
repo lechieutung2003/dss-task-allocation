@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useOauthStore } from '@/stores/oauth';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import '@/assets/css/customer.css'
+
 const store = useOauthStore();
 const router = useRouter();
+const { t } = useI18n();
 
 const goToCreateOrder = () => {
   router.push('/dss/orders/create');
@@ -21,10 +24,10 @@ const goToCreateOrder = () => {
       
       <div class="hero-content">
         <div class="hero-text">
-          <h1 class="hero-title">Khám phá và trải nghiệm</h1>
-          <h2 class="hero-subtitle">Dịch vụ dọn dẹp chuyên nghiệp</h2>
+          <h1 class="hero-title">{{ t('home_hero_title') }}</h1>
+          <h2 class="hero-subtitle">{{ t('home_hero_subtitle') }}</h2>
           <p class="hero-description">
-            Nền tảng all-in-one để đặt lịch, theo dõi và bàn giao chất lượng — nhanh và thông minh hơn.
+            {{ t('home_hero_description') }}
           </p>
           
           <button class="hero-cta" @click="goToCreateOrder">
@@ -32,7 +35,7 @@ const goToCreateOrder = () => {
               <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               <path d="M9 12l2 2 4-4"></path>
             </svg>
-            Chọn dịch vụ
+            {{ t('home_hero_cta') }}
           </button>
         </div>
         
@@ -44,8 +47,8 @@ const goToCreateOrder = () => {
               <img src="@/assets/images/regular.jpg" alt="Vệ sinh văn phòng" />
             </div>
             <div class="service-info">
-              <h4>Vệ sinh cơ bản</h4>
-              <p>Đảm bảo sạch sẽ</p>
+              <h4>{{ t('home_service_basic') }}</h4>
+              <p>{{ t('home_service_basic_desc') }}</p>
             </div>
           </div>
           
@@ -54,8 +57,8 @@ const goToCreateOrder = () => {
               <img src="@/assets/images/deep.jpg" alt="Vệ sinh văn phòng" />
             </div>
             <div class="service-info">
-              <h4>Vệ sinh nâng cao</h4>
-              <p>Hiệu quả cao</p>
+              <h4>{{ t('home_service_advanced') }}</h4>
+              <p>{{ t('home_service_advanced_desc') }}</p>
             </div>
           </div>
           
@@ -65,8 +68,8 @@ const goToCreateOrder = () => {
               <img src="@/assets/images/clock.jpg" alt="Dọn theo giờ" />
             </div>
             <div class="service-info">
-              <h4>Dọn theo giờ</h4>
-              <p>Linh hoạt</p>
+              <h4>{{ t('home_service_hourly') }}</h4>
+              <p>{{ t('home_service_hourly_desc') }}</p>
             </div>
           </div>
         </div>
@@ -76,9 +79,9 @@ const goToCreateOrder = () => {
     <!-- Hot Services Section -->
     <section class="hot-services">
       <div class="container">
-        <h2 class="section-title">Dịch vụ được yêu thích</h2>
+        <h2 class="section-title">{{ t('home_hot_services_title') }}</h2>
         <p class="section-subtitle">
-          Phổ biến nhất dành cho gia đình và doanh nghiệp hiện đại
+          {{ t('home_hot_services_subtitle') }}
         </p>
         
         <div class="services-grid">
@@ -87,10 +90,10 @@ const goToCreateOrder = () => {
               <img src="@/assets/images/all.jpg" alt="Dọn dẹp tổng thể" />
             </div>
             <div class="service-overlay">
-              <span class="service-tag">TOP</span>
+              <span class="service-tag">{{ t('home_service_top_tag') }}</span>
               <div class="service-content">
-                <h3>Dọn dẹp tổng thể</h3>
-                <p>từ 500.000đ</p>
+                <h3>{{ t('home_service_comprehensive') }}</h3>
+                <p>{{ t('home_service_comprehensive_price') }}</p>
               </div>
             </div>
           </div>
@@ -101,8 +104,8 @@ const goToCreateOrder = () => {
             </div>
             <div class="service-overlay">
               <div class="service-content">
-                <h3>Vệ sinh kính</h3>
-                <p>từ 180.000đ</p>
+                <h3>{{ t('home_service_glass') }}</h3>
+                <p>{{ t('home_service_glass_price') }}</p>
               </div>
             </div>
           </div>
@@ -113,8 +116,8 @@ const goToCreateOrder = () => {
             </div>
             <div class="service-overlay">
               <div class="service-content">
-                <h3>Dọn sau xây dựng</h3>
-                <p>từ 800.000đ</p>
+                <h3>{{ t('home_service_construction') }}</h3>
+                <p>{{ t('home_service_construction_price') }}</p>
               </div>
             </div>
           </div>
@@ -125,8 +128,8 @@ const goToCreateOrder = () => {
             </div>
             <div class="service-overlay">
               <div class="service-content">
-                <h3>Vệ sinh thảm</h3>
-                <p>từ 120.000đ</p>
+                <h3>{{ t('home_service_carpet') }}</h3>
+                <p>{{ t('home_service_carpet_price') }}</p>
               </div>
             </div>
           </div>
@@ -145,17 +148,17 @@ const goToCreateOrder = () => {
         <div class="featured-card">
           <div class="featured-image">
             <img src="@/assets/images/luxury.jpg" alt="Dịch vụ cao cấp" />
-            <div class="featured-badge">Cinnamon Clean Service</div>
+            <div class="featured-badge">{{ t('home_featured_badge') }}</div>
           </div>
           <div class="featured-content">
-            <h2>Dịch vụ cao cấp</h2>
-            <p>Trải nghiệm dịch vụ dọn dẹp đẳng cấp 5 sao với đội ngũ chuyên nghiệp và trang thiết bị hiện đại nhất.</p>
+            <h2>{{ t('home_featured_title') }}</h2>
+            <p>{{ t('home_featured_description') }}</p>
             <div class="featured-tags">
-              <span class="tag">#DanhGiaCao</span>
-              <span class="tag">#ChuyenNghiep</span>
+              <span class="tag">{{ t('home_featured_tag1') }}</span>
+              <span class="tag">{{ t('home_featured_tag2') }}</span>
             </div>
             <button class="hero-cta1" @click="goToCreateOrder">
-              Chọn dịch vụ
+              {{ t('home_featured_cta') }}
               <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M7 17l10-10M7 7h10v10"/>
               </svg>

@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import '@/assets/css/customer.css'
+
 const router = useRouter()
+const { t } = useI18n()
 
 // Form state
 const form = ref({
@@ -22,7 +25,7 @@ const handleSubmit = async () => {
   error.value = ''
   // validate nhẹ
   if (!form.value.fullName || !form.value.phone || !form.value.message) {
-    error.value = 'Vui lòng điền Họ tên, Số điện thoại và Nội dung.'
+    error.value = t('contact_form_validation_error')
     return
   }
   sending.value = true
@@ -31,7 +34,7 @@ const handleSubmit = async () => {
     await new Promise(r => setTimeout(r, 800))
     sent.value = true
   } catch (e) {
-    error.value = 'Gửi thất bại, thử lại sau.'
+    error.value = t('contact_form_submit_error')
   } finally {
     sending.value = false
   }
@@ -46,19 +49,18 @@ const goToCreateOrder = () => router.push('/dss/orders/create')
     <!-- HERO (BEIGE) -->
     <section class="stripe beige">
       <div class="container hero">
-        <p class="eyebrow">Liên hệ</p>
-        <h1 class="title">Chúng tôi luôn sẵn sàng hỗ trợ</h1>
-        <p class="sub">
-          Hãy để lại thông tin, đội ngũ chăm sóc khách hàng sẽ phản hồi trong vòng <strong>15–30 phút (giờ hành chính)</strong>.
+        <p class="eyebrow">{{ t('contact_eyebrow') }}</p>
+        <h1 class="title">{{ t('contact_title') }}</h1>
+        <p class="sub" v-html="t('contact_subtitle')">
         </p>
         <div class="cta-row">
-          <button class="btn" @click="goToCreateOrder">Đặt dịch vụ ngay</button>
-          <a href="tel:19001234" class="btn ghost">Gọi hotline 1900 1234</a>
+          <button class="btn" @click="goToCreateOrder">{{ t('contact_cta_book_service') }}</button>
+          <a href="tel:19001234" class="btn ghost">{{ t('contact_cta_hotline') }}</a>
         </div>
         <ul class="badges">
-          <li>Hỗ trợ 24/7</li>
-          <li>Báo giá minh bạch</li>
-          <li>Bảo hiểm trách nhiệm</li>
+          <li>{{ t('contact_badge_support') }}</li>
+          <li>{{ t('contact_badge_pricing') }}</li>
+          <li>{{ t('contact_badge_insurance') }}</li>
         </ul>
       </div>
     </section>
@@ -69,99 +71,99 @@ const goToCreateOrder = () => router.push('/dss/orders/create')
         <div class="timeline-grid">
           <!-- LEFT: FORM -->
           <div class="t-card">
-            <h2>Gửi yêu cầu</h2>
-            <p style="color: var(--text-light); margin-bottom: 1rem;">Điền biểu mẫu dưới đây để được tư vấn nhanh.</p>
+            <h2>{{ t('contact_form_title') }}</h2>
+            <p style="color: var(--text-light); margin-bottom: 1rem;">{{ t('contact_form_subtitle') }}</p>
 
             <form @submit.prevent="handleSubmit" v-if="!sent">
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                  <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">Họ và tên <span style="color: #ef4444;">*</span></label>
-                  <input v-model="form.fullName" type="text" placeholder="Nguyễn Văn A" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; outline: none; font-size: 14px;" />
+                  <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ t('contact_form_fullname') }} <span style="color: #ef4444;">*</span></label>
+                  <input v-model="form.fullName" type="text" :placeholder="t('contact_form_placeholder_fullname')" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; outline: none; font-size: 14px;" />
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                  <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">Số điện thoại <span style="color: #ef4444;">*</span></label>
-                  <input v-model="form.phone" type="tel" placeholder="090x xxx xxx" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; outline: none; font-size: 14px;" />
+                  <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ t('contact_form_phone') }} <span style="color: #ef4444;">*</span></label>
+                  <input v-model="form.phone" type="tel" :placeholder="t('contact_form_placeholder_phone')" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; outline: none; font-size: 14px;" />
                 </div>
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                  <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">Email</label>
-                  <input v-model="form.email" type="email" placeholder="ban@congty.com" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; outline: none; font-size: 14px;" />
+                  <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ t('contact_form_email') }}</label>
+                  <input v-model="form.email" type="email" :placeholder="t('contact_form_placeholder_email')" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; outline: none; font-size: 14px;" />
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                  <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">Nhu cầu dịch vụ</label>
+                  <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ t('contact_form_service_need') }}</label>
                   <select v-model="form.service" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; outline: none; font-size: 14px;">
-                    <option value="">— Chọn —</option>
-                    <option value="basic">Dọn dẹp cơ bản</option>
-                    <option value="deep">Tổng vệ sinh</option>
-                    <option value="office">Vệ sinh văn phòng</option>
-                    <option value="post">Sau xây dựng</option>
+                    <option value="">{{ t('contact_form_placeholder_service_select') }}</option>
+                    <option value="basic">{{ t('contact_service_basic') }}</option>
+                    <option value="deep">{{ t('contact_service_deep') }}</option>
+                    <option value="office">{{ t('contact_service_office') }}</option>
+                    <option value="post">{{ t('contact_service_post') }}</option>
                   </select>
                 </div>
               </div>
 
               <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-                <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">Nội dung <span style="color: #ef4444;">*</span></label>
-                <textarea v-model="form.message" rows="5" placeholder="Mô tả địa điểm, diện tích, thời gian mong muốn…" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; outline: none; font-size: 14px; resize: vertical;"></textarea>
+                <label style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ t('contact_form_message') }} <span style="color: #ef4444;">*</span></label>
+                <textarea v-model="form.message" rows="5" :placeholder="t('contact_form_placeholder_message')" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; outline: none; font-size: 14px; resize: vertical;"></textarea>
               </div>
 
               <label style="display: flex; gap: 8px; align-items: flex-start; margin: 1rem 0; font-size: 14px; color: var(--text-dark);">
                 <input type="checkbox" v-model="form.agree" />
-                Tôi đồng ý để Công Ty liên hệ tư vấn theo thông tin đã cung cấp.
+                {{ t('contact_form_agree') }}
               </label>
 
               <p v-if="error" style="color: #ef4444; font-weight: 600; margin: 0.5rem 0;">{{ error }}</p>
 
               <button class="btn" style="width: 100%;" :disabled="sending">
-                <span v-if="!sending">Gửi yêu cầu</span>
-                <span v-else>Đang gửi…</span>
+                <span v-if="!sending">{{ t('contact_form_submit') }}</span>
+                <span v-else>{{ t('contact_form_submitting') }}</span>
               </button>
             </form>
 
             <div v-else style="text-align: center; padding: 1.5rem;">
-              <h3 style="margin: 0 0 0.5rem; font-size: 20px; font-weight: 700; color: var(--accent);">Đã nhận yêu cầu ✅</h3>
-              <p style="margin-bottom: 1rem; color: var(--text-light);">Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất. Cảm ơn bạn!</p>
-              <button class="btn" @click="goToCreateOrder">Đặt dịch vụ ngay</button>
+              <h3 style="margin: 0 0 0.5rem; font-size: 20px; font-weight: 700; color: var(--accent);">{{ t('contact_success_title') }}</h3>
+              <p style="margin-bottom: 1rem; color: var(--text-light);">{{ t('contact_success_message') }}</p>
+              <button class="btn" @click="goToCreateOrder">{{ t('contact_success_cta') }}</button>
             </div>
           </div>
 
           <!-- RIGHT: INFO -->
           <div>
             <div class="t-card" style="margin-bottom: 1rem;">
-              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">Hotline</h3>
-              <a href="tel:19001234" style="font-weight: 700; color: var(--text-dark); text-decoration: none;">1900 1234</a>
-              <p style="color: var(--text-light); margin: 0.25rem 0 0;">Giờ làm việc: 08:00–20:00 (T2–CN)</p>
+              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">{{ t('contact_info_hotline') }}</h3>
+              <a href="tel:19001234" style="font-weight: 700; color: var(--text-dark); text-decoration: none;">{{ t('contact_info_hotline_number') }}</a>
+              <p style="color: var(--text-light); margin: 0.25rem 0 0;">{{ t('contact_info_hotline_hours') }}</p>
             </div>
             
             <div class="t-card" style="margin-bottom: 1rem;">
-              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">Email</h3>
-              <a href="mailto:contact@congtydondep.vn" style="font-weight: 700; color: var(--text-dark); text-decoration: none;">contact@congtydondep.vn</a>
-              <p style="color: var(--text-light); margin: 0.25rem 0 0;">Phản hồi trong vòng 24h</p>
+              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">{{ t('contact_info_email') }}</h3>
+              <a :href="`mailto:${t('contact_info_email_address')}`" style="font-weight: 700; color: var(--text-dark); text-decoration: none;">{{ t('contact_info_email_address') }}</a>
+              <p style="color: var(--text-light); margin: 0.25rem 0 0;">{{ t('contact_info_email_response') }}</p>
             </div>
             
             <div class="t-card" style="margin-bottom: 1rem;">
-              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">Zalo / WhatsApp</h3>
-              <p style="color: var(--text-dark); font-weight: 600; margin: 0.25rem 0;">+84 90x xxx xxx</p>
-              <p style="color: var(--text-light); margin: 0;">Kênh trao đổi nhanh, gửi hình hiện trạng</p>
+              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">{{ t('contact_info_messaging') }}</h3>
+              <p style="color: var(--text-dark); font-weight: 600; margin: 0.25rem 0;">{{ t('contact_info_messaging_number') }}</p>
+              <p style="color: var(--text-light); margin: 0;">{{ t('contact_info_messaging_desc') }}</p>
             </div>
             
             <div class="t-card" style="margin-bottom: 1rem;">
-              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">Văn phòng</h3>
-              <p style="color: var(--text-dark); font-weight: 600; margin: 0.25rem 0;">123 Nguyễn Trãi, Q.1, TP.HCM</p>
-              <p style="color: var(--text-light); margin: 0;">Chi nhánh: Hà Nội · Đà Nẵng</p>
+              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">{{ t('contact_info_office') }}</h3>
+              <p style="color: var(--text-dark); font-weight: 600; margin: 0.25rem 0;">{{ t('contact_info_office_address') }}</p>
+              <p style="color: var(--text-light); margin: 0;">{{ t('contact_info_office_branches') }}</p>
             </div>
             
             <div class="t-card" style="background: var(--bg-light);">
-              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">Giờ tiếp nhận</h3>
+              <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; color: var(--accent);">{{ t('contact_info_hours') }}</h3>
               <div style="margin-top: 0.5rem;">
                 <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed #e5e5e5;">
-                  <span style="color: var(--text-dark); font-weight: 500;">Thứ 2–Thứ 6</span>
-                  <span style="color: var(--text-dark); font-weight: 600;">08:00–20:00</span>
+                  <span style="color: var(--text-dark); font-weight: 500;">{{ t('contact_info_weekdays') }}</span>
+                  <span style="color: var(--text-dark); font-weight: 600;">{{ t('contact_info_weekdays_hours') }}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
-                  <span style="color: var(--text-dark); font-weight: 500;">Thứ 7–Chủ nhật</span>
-                  <span style="color: var(--text-dark); font-weight: 600;">09:00–18:00</span>
+                  <span style="color: var(--text-dark); font-weight: 500;">{{ t('contact_info_weekend') }}</span>
+                  <span style="color: var(--text-dark); font-weight: 600;">{{ t('contact_info_weekend_hours') }}</span>
                 </div>
               </div>
             </div>
@@ -172,8 +174,8 @@ const goToCreateOrder = () => router.push('/dss/orders/create')
     <section class="stripe beige">
       <div class="container">
         <div style="text-align: center; margin-bottom: 2rem;">
-          <h2 class="section-title">Bản đồ</h2>
-          <p class="section-subtitle">Ghé văn phòng hoặc đặt lịch khảo sát tại chỗ.</p>
+          <h2 class="section-title">{{ t('contact_map_title') }}</h2>
+          <p class="section-subtitle">{{ t('contact_map_subtitle') }}</p>
         </div>
         <!-- Thay src bằng Google Maps của bạn -->
         <div style="border-radius: 24px; overflow: hidden; box-shadow: var(--shadow);">
@@ -192,25 +194,25 @@ const goToCreateOrder = () => router.push('/dss/orders/create')
     <section class="stripe white">
       <div class="container">
         <div style="text-align: center; margin-bottom: 2rem;">
-          <h2 class="section-title">FAQ – Câu hỏi thường gặp</h2>
+          <h2 class="section-title">{{ t('contact_faq_title') }}</h2>
         </div>
         <div class="vmv-grid">
           <div class="vmv">
             <div class="card">
-              <h3>Giá có bao gồm dụng cụ và hóa chất không?</h3>
-              <p>Có. Chúng tôi chuẩn bị đầy đủ dụng cụ và hóa chất phù hợp từng hạng mục.</p>
+              <h3>{{ t('contact_faq_q1') }}</h3>
+              <p>{{ t('contact_faq_a1') }}</p>
             </div>
           </div>
           <div class="vmv">
             <div class="card">
-              <h3>Đặt lịch gấp trong ngày được không?</h3>
-              <p>Tùy tình trạng lịch. Vui lòng gọi hotline để được sắp xếp nhanh nhất.</p>
+              <h3>{{ t('contact_faq_q2') }}</h3>
+              <p>{{ t('contact_faq_a2') }}</p>
             </div>
           </div>
           <div class="vmv">
             <div class="card">
-              <h3>Chính sách bảo hành chất lượng thế nào?</h3>
-              <p>Nếu chưa hài lòng, chúng tôi sắp xếp xử lý lại miễn phí trong 24–48h.</p>
+              <h3>{{ t('contact_faq_q3') }}</h3>
+              <p>{{ t('contact_faq_a3') }}</p>
             </div>
           </div>
         </div>

@@ -7,6 +7,9 @@ const router = useRouter();
 const services = ref([]);
 const loading = ref(false);
 const error = ref("");
+definePageMeta({
+  middleware: 'role-based'
+})
 
 const fetchServices = async () => {
   loading.value = true;
