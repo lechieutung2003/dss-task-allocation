@@ -1,57 +1,59 @@
 <template>
-  <div class="orders-container">
-    <div class="content-wrapper">
-      <div class="content-header">
-        <h2 class="form-title">Đơn hàng của bạn</h2>
-        <p class="form-subtitle">Xem và quản lý các đơn hàng đã đặt</p>
-      </div>
+  <div class="about-page">
+    <section class="stripe white">
+      <div class="container">
+        <div class="content-header">
+          <h2 class="section-title">Đơn hàng của bạn</h2>
+          <p class="section-subtitle">Xem và quản lý các đơn hàng đã đặt</p>
+        </div>
 
-      <div v-if="loading" class="loading-state">
-        <div class="loading-text">Đang tải...</div>
-      </div>
-      
-      <div v-else class="content-body">
-        <div v-if="error" class="error-message">{{ error }}</div>
-        
-        <div v-if="orders.length" class="orders-table-wrapper">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>Dịch vụ</th>
-                <th>Diện tích (m2)</th>
-                <th>Thời gian bắt đầu</th>
-                <th>Thời gian kết thúc</th>
-                <th>Giá ước tính</th>
-                <th>Trạng thái</th>
-                <th>Ghi chú</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="order in orders" :key="order.id" class="order-row">
-                <td>{{ order.service_details?.name }}</td>
-                <td>{{ formatArea(order.area_m2) }}</td>
-                <td>{{ formatDateTime(order.preferred_start_time) }}</td>
-                <td>{{ formatDateTime(order.preferred_end_time) }}</td>
-                <td>{{ order.cost_confirm ? formatPrice(order.cost_confirm) : 'Chưa xác định' }}</td>
-                <td><span class="status-badge">{{ order.status }}</span></td>
-                <td>{{ order.note || 'Không có' }}</td>
-                <td>
-                  <button @click="viewInvoice(order)" class="action-btn view-invoice" title="Xem hóa đơn">
-                    🧾 Hóa đơn
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              <div v-if="loading" class="loading-state">
+          <div class="loading-text">Đang tải...</div>
         </div>
         
-        <div v-else class="empty-state">
-          <p>Không có đơn hàng nào.</p>
-          <RouterLink to="/dss/orders/create" class="button-submit">Đặt dịch vụ ngay</RouterLink>
+        <div v-else class="content-body">
+          <div v-if="error" class="error-message">{{ error }}</div>
+          
+          <div v-if="orders.length" class="orders-table-wrapper">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Dịch vụ</th>
+                  <th>Diện tích (m2)</th>
+                  <th>Thời gian bắt đầu</th>
+                  <th>Thời gian kết thúc</th>
+                  <th>Giá ước tính</th>
+                  <th>Trạng thái</th>
+                  <th>Ghi chú</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="order in orders" :key="order.id" class="order-row">
+                  <td>{{ order.service_details?.name }}</td>
+                  <td>{{ formatArea(order.area_m2) }}</td>
+                  <td>{{ formatDateTime(order.preferred_start_time) }}</td>
+                  <td>{{ formatDateTime(order.preferred_end_time) }}</td>
+                  <td>{{ order.cost_confirm ? formatPrice(order.cost_confirm) : 'Chưa xác định' }}</td>
+                  <td><span class="status-badge">{{ order.status }}</span></td>
+                  <td>{{ order.note || 'Không có' }}</td>
+                  <td>
+                    <button @click="viewInvoice(order)" class="action-btn view-invoice" title="Xem hóa đơn">
+                      🧾 Hóa đơn
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div v-else class="empty-state">
+            <p>Không có đơn hàng nào.</p>
+            <RouterLink to="/dss/orders/create" class="featured-cta">Đặt dịch vụ ngay</RouterLink>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Modal Hóa đơn -->
     <div v-if="showInvoiceModal && selectedInvoice" class="modal-overlay" @click="closeInvoiceModal">
@@ -94,7 +96,7 @@
                 <span>Phương thức thanh toán:</span>
                 <span>{{ selectedInvoice.orderInfo.paymentMethod }}</span>
               </div>
-              <div class="info-row" v-if="selectedInvoice.orderInfo.note !== 'Không có'">
+              <div v-if="selectedInvoice.orderInfo.note !== 'Không có'" class="info-row">
                 <span>Ghi chú:</span>
                 <span>{{ selectedInvoice.orderInfo.note }}</span>
               </div>
@@ -112,7 +114,7 @@
                 <span>VAT (10%):</span>
                 <span>{{ selectedInvoice.pricing.tax.toLocaleString('vi-VN') }} VNĐ</span>
               </div>
-              <div class="info-row total-amount">
+              <div class="total-amount">
                 <span><strong>Tổng cộng:</strong></span>
                 <span class="total-price"><strong>{{ selectedInvoice.pricing.total.toLocaleString('vi-VN') }} VNĐ</strong></span>
               </div>
@@ -121,7 +123,7 @@
         </div>
 
         <div class="modal-footer">
-          <button class="btn-download" @click="downloadInvoice">� Tải xuống PDF</button>
+          <button class="btn-download" @click="downloadInvoice">📄 Tải xuống PDF</button>
           <button class="btn-close" @click="closeInvoiceModal">Đóng</button>
         </div>
       </div>
@@ -133,7 +135,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import CustomerOrderService from '@/services/dss/users/customer'
-
+import '@/assets/css/customer.css'
 const orders = ref([])
 const loading = ref(false)
 const error = ref('')
@@ -272,7 +274,3 @@ const downloadInvoice = () => {
 
 onMounted(fetchOrders)
 </script>
-
-<style scoped>
-/* Styles đã được chuyển sang customer.css */
-</style>
