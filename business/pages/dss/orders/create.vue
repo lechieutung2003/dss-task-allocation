@@ -7,9 +7,7 @@ import { useOauthStore } from '@/stores/oauth';
 import serviceTypesApi from '@/services/dss/serviceTypes';
 // Import customer CSS
 import '@/assets/css/customer.css';
-definePageMeta({
-  middleware: 'role-based'
-})
+
 const store = useOauthStore();
 const router = useRouter();
 const { t } = useI18n();

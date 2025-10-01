@@ -228,9 +228,9 @@ import CustomerOrderService from '@/services/dss/users/customer'
 import '@/assets/css/customer.css'
 
 // Apply role-based middleware
-definePageMeta({
-  middleware: 'role-based'
-})
+// definePageMeta({
+//   middleware: 'role-based'
+// })
 
 const { t } = useI18n()
 
