@@ -37,18 +37,30 @@ const isEmployee = computed(() => {
 });
 
 
-const isLoggedIn = computed(() => !!oauthStore.tokenInfo?.access_token);
+const isLoggedIn = computed(() => {
+  const token = oauthStore.tokenInfo?.access_token;
+  const currentTime = Math.floor(Date.now() / 1000);
+  const tokenValid = oauthStore.tokenInfo?.exp && oauthStore.tokenInfo.exp > currentTime;
+  return !!(token && tokenValid);
+});
 
-// redirect nếu là admin hoặc employee
+// redirect nếu là admin hoặc employee - CHỈ KHI ĐÃ LOGIN
 watchEffect(() => {
-  if (isAdmin.value || isEmployee.value) {
+  if (!isLoggedIn.value) {
+    // Nếu chưa login, không redirect, hiển thị login form
+    return;
+  }
+  
+  if (isAdmin.value) {
+    // Chỉ admin mới được vào dashboard
     router.push("/dss/dashboard");
-
   } 
+  else if (isEmployee.value || isStaff.value) {
+    // Employee redirect tới employee-orders thay vì dashboard
+    router.push("/dss/employee-orders");
+  }
   else if (isGuest.value) {
-    router.push("/dss/home");
-  } else if (isAdmin.value || isStaff.value) {
-    router.push("/dss/dashboard");
+    router.push("/dss/customer-orders");
   }
 });
 

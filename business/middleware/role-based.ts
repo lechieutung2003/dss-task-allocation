@@ -5,6 +5,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const oauthStore = useOauthStore()
   const { tokenInfo } = oauthStore
 
+  // Skip middleware for root path and auth pages
+  if (to.path === '/' || to.path === '/login' || to.path === '/signup' || to.path === '/access-denied') {
+    return
+  }
+
   // Check if user is authenticated first
   const authenticated = tokenInfo && tokenInfo.access_token && tokenInfo.access_token.length > 0
   const currentTime = Math.floor(Date.now() / 1000)
