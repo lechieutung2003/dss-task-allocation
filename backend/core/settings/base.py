@@ -186,7 +186,7 @@ OPEN_SEARCH_HOST = (
 OPEN_SEARCH_SECURE_SCHEME = (
     os.environ["OPEN_SEARCH_SECURE_SCHEME"]
     if "OPEN_SEARCH_SECURE_SCHEME" in os.environ
-    else env.int("OPEN_SEARCH_SECURE_SCHEME", default=https)
+    else env.int("OPEN_SEARCH_SECURE_SCHEME", default=http)
 )
 OPEN_SEARCH_SECURE_HOST = (
     os.environ["OPEN_SEARCH_SECURE_HOST"]

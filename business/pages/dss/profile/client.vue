@@ -6,6 +6,7 @@ const user = ref(null)
 const loading = ref(true)
 const error = ref(null)
 
+// --- READ ---
 const fetchUserInfo = async () => {
   try {
     loading.value = true
@@ -16,7 +17,6 @@ const fetchUserInfo = async () => {
     console.log('API response:', response)
     console.log('Response data:', response.data)
     
-    // Kiểm tra cấu trúc response
     const userData = response.data || response
     user.value = userData
     console.log('Customer info loaded:', userData)
@@ -26,6 +26,44 @@ const fetchUserInfo = async () => {
     error.value = err.response?.data?.detail || 'Không thể tải thông tin người dùng'
   } finally {
     loading.value = false
+  }
+}
+
+// --- CREATE ---
+const createUser = async (newUser) => {
+  try {
+    const response = await customerApi.createUser(newUser)
+    user.value = response.data
+    console.log('User created:', response.data)
+    return response.data
+  } catch (err) {
+    console.error('Error creating user:', err)
+    throw err
+  }
+}
+
+// --- UPDATE ---
+const updateUser = async (updatedUser) => {
+  try {
+    const response = await customerApi.updateUser(updatedUser.id, updatedUser)
+    user.value = response.data
+    console.log('User updated:', response.data)
+    return response.data
+  } catch (err) {
+    console.error('Error updating user:', err)
+    throw err
+  }
+}
+
+// --- DELETE ---
+const deleteUser = async (id) => {
+  try {
+    await customerApi.deleteUser(id)
+    user.value = null
+    console.log('User deleted:', id)
+  } catch (err) {
+    console.error('Error deleting user:', err)
+    throw err
   }
 }
 

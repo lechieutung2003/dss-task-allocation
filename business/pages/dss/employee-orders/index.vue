@@ -127,7 +127,7 @@ import { definePageMeta } from "#imports";
 
 definePageMeta({
   layout: "dss",
-  middleware: ["auth"],
+  middleware: ["auth", "role-based"],
 });
 
 const loading = ref(false);
