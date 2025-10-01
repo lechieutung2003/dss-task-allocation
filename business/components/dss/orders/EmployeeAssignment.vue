@@ -611,6 +611,20 @@ const filterEmployees = (resetPage = false) => {
   if (showOnlyAvailable.value) {
     result = result.filter(emp => getEmployeeAvailability(emp));
   }
+
+  result.sort((a, b) => {
+    const aAvailable = getEmployeeAvailability(a);
+    const bAvailable = getEmployeeAvailability(b);
+    
+    // Nhân viên "sẵn sàng" lên đầu
+    if (aAvailable && !bAvailable) return -1;
+    if (!aAvailable && bAvailable) return 1;
+    
+    // Nếu cùng trạng thái, sắp xếp theo tên
+    const aName = `${a.first_name || ''} ${a.last_name || ''}`;
+    const bName = `${b.first_name || ''} ${b.last_name || ''}`;
+    return aName.localeCompare(bName);
+  });
   
   filteredEmployees.value = result;
   
