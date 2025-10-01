@@ -64,6 +64,57 @@
             </table>
           </div>
           
+          <!-- Phần Feedback/Admin Log dưới bảng -->
+          <div v-if="(activeTab === 'completed' || activeTab === 'reject') && filteredOrders.length > 0" class="feedback-admin-section">
+            <h3 class="section-title">
+              {{ activeTab === 'completed' ? '💬 Phản hồi từ khách hàng' : '❌ Lý do từ chối' }}
+            </h3>
+            
+            <div class="orders-feedback-list">
+              <div v-for="order in filteredOrders" :key="order.id" class="order-feedback-item">
+                <div class="order-summary">
+                  <span class="order-service">{{ order.service_details?.name }}</span>
+                  <span class="order-date">{{ formatDateTime(order.preferred_start_time) }}</span>
+                </div>
+                
+                <!-- Customer Feedback cho completed -->
+                <div v-if="activeTab === 'completed'" class="feedback-content">
+                  <div v-if="order.customer_feedback" class="existing-feedback">
+                    <div class="feedback-label">Phản hồi của bạn:</div>
+                    <div class="feedback-text">{{ order.customer_feedback }}</div>
+                  </div>
+                  <div v-else class="feedback-input-section">
+                    <div class="feedback-label">Để lại phản hồi về dịch vụ:</div>
+                    <textarea 
+                      v-model="feedbackInputs[order.id]" 
+                      placeholder="Chia sẻ trải nghiệm của bạn về dịch vụ này..."
+                      class="feedback-textarea"
+                      rows="3"
+                    ></textarea>
+                    <button 
+                      @click="submitFeedback(order.id)" 
+                      class="submit-feedback-btn"
+                      :disabled="!feedbackInputs[order.id]?.trim()"
+                    >
+                      📝 Gửi phản hồi
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Admin Log cho reject -->
+                <div v-else-if="activeTab === 'reject'" class="admin-log-content">
+                  <div v-if="order.admin_log" class="admin-log">
+                    <div class="admin-log-label">Lý do từ chối:</div>
+                    <div class="admin-log-text">{{ order.admin_log }}</div>
+                  </div>
+                  <div v-else class="no-admin-log">
+                    <em>Chưa có lý do từ chối được cung cấp</em>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <div v-else class="empty-state">
             <p>{{ getEmptyMessage() }}</p>
             <RouterLink to="/dss/orders/create" class="featured-cta">Đặt dịch vụ ngay</RouterLink>
@@ -146,6 +197,11 @@
       </div>
     </div>
     
+    <!-- Toast Notification -->
+    <div v-if="showToast" :class="['toast-notification', toastType]">
+      {{ toastMessage }}
+    </div>
+    
   </div>
 </template>
 
@@ -162,6 +218,14 @@ const activeTab = ref('pending')
 // Modal hóa đơn
 const showInvoiceModal = ref(false)
 const selectedInvoice = ref(null)
+
+// Feedback inputs cho completed orders
+const feedbackInputs = ref({})
+
+// Toast notification
+const showToast = ref(false)
+const toastMessage = ref('')
+const toastType = ref('success') // 'success' hoặc 'error'
 
 // Tabs configuration
 const tabs = [
@@ -266,6 +330,45 @@ const fetchOrders = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// Phương thức gửi feedback cho completed orders
+const submitFeedback = async (orderId) => {
+  const feedback = feedbackInputs.value[orderId]?.trim()
+  if (!feedback) return
+  
+  try {
+    // Gọi API để cập nhật feedback
+    await CustomerOrderService.updateOrderFeedback(orderId, feedback)
+    
+    // Cập nhật local data
+    const order = orders.value.find(o => o.id === orderId)
+    if (order) {
+      order.customer_feedback = feedback
+    }
+    
+    // Clear input
+    feedbackInputs.value[orderId] = ''
+    
+    // Hiển thị thông báo thành công
+    showToastMessage('Phản hồi đã được gửi thành công!', 'success')
+    
+  } catch (e) {
+    console.error('Error submitting feedback:', e)
+    showToastMessage('Có lỗi xảy ra khi gửi phản hồi. Vui lòng thử lại.', 'error')
+  }
+}
+
+// Hiển thị toast notification
+const showToastMessage = (message, type = 'success') => {
+  toastMessage.value = message
+  toastType.value = type
+  showToast.value = true
+  
+  // Tự động ẩn sau 3 giây
+  setTimeout(() => {
+    showToast.value = false
+  }, 3000)
 }
 
 // Hàm xem hóa đơn
