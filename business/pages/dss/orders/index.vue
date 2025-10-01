@@ -12,10 +12,17 @@
     <el-card class="mb-6 filter-card">
       <div class="grid grid-cols-4 gap-4">
         <el-form-item label="Từ khóa">
-          <el-input v-model="filters.keyword" placeholder="Tìm theo mã đơn, khách hàng..." />
+          <el-input
+            v-model="filters.keyword"
+            placeholder="Tìm theo mã đơn, khách hàng..."
+          />
         </el-form-item>
         <el-form-item label="Trạng thái">
-          <el-select v-model="filters.status" placeholder="Chọn trạng thái" clearable>
+          <el-select
+            v-model="filters.status"
+            placeholder="Chọn trạng thái"
+            clearable
+          >
             <el-option label="Chờ xử lý" value="pending" />
             <el-option label="Đã xác nhận" value="confirmed" />
             <el-option label="Đang xử lý" value="in_progress" />
@@ -24,10 +31,18 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Từ ngày">
-          <el-date-picker v-model="filters.startDate" type="date" placeholder="Chọn ngày" />
+          <el-date-picker
+            v-model="filters.startDate"
+            type="date"
+            placeholder="Chọn ngày"
+          />
         </el-form-item>
         <el-form-item label="Đến ngày">
-          <el-date-picker v-model="filters.endDate" type="date" placeholder="Chọn ngày" />
+          <el-date-picker
+            v-model="filters.endDate"
+            type="date"
+            placeholder="Chọn ngày"
+          />
         </el-form-item>
       </div>
       <div class="flex justify-end mt-4">
@@ -47,9 +62,7 @@
           </template>
         </el-table-column>
         <el-table-column label="Diện tích" width="100">
-          <template #default="{ row }">
-            {{ row.area_m2 }} m²
-          </template>
+          <template #default="{ row }"> {{ row.area_m2 }} m² </template>
         </el-table-column>
         <el-table-column label="Tổng tiền" width="150">
           <template #default="{ row }">
@@ -65,15 +78,27 @@
         </el-table-column>
         <el-table-column label="Thao tác" width="280">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="viewOrderDetail(row.id)">
+            <el-button
+              type="primary"
+              size="small"
+              @click="viewOrderDetail(row.id)"
+            >
               Chi tiết
             </el-button>
-            <el-button type="warning" size="small" @click="navigateToOrderAssignment(row.id)"
-                      v-if="row.status !== 'cancelled'">
+            <el-button
+              type="warning"
+              size="small"
+              @click="navigateToOrderAssignment(row.id)"
+              v-if="row.status !== 'cancelled'"
+            >
               Phân công
             </el-button>
-            <el-button type="danger" size="small" @click="handleCancelOrder(row)"
-                      v-if="row.status !== 'completed' && row.status !== 'cancelled'">
+            <el-button
+              type="danger"
+              size="small"
+              @click="handleCancelOrder(row)"
+              v-if="row.status !== 'completed' && row.status !== 'cancelled'"
+            >
               Hủy
             </el-button>
           </template>
@@ -97,11 +122,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import OrderService from '../../../services/dss/order';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { useRouter } from 'vue-router';
-import { formatCurrency, formatDate, formatDateTime } from '../../../utils/formatters';
+import { ref, reactive, onMounted } from "vue";
+import OrderService from "../../../services/dss/order";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useRouter } from "vue-router";
+import {
+  formatCurrency,
+  formatDate,
+  formatDateTime,
+} from "../../../utils/formatters";
 
 const router = useRouter();
 const loading = ref(false);
@@ -109,21 +138,22 @@ const orderList = ref([]);
 
 definePageMeta({
   layout: "dss",
+  middleware: ["auth", "role-based"],
 });
 
 // Bộ lọc
 const filters = reactive({
-  keyword: '',
-  status: '',
-  startDate: '',
-  endDate: ''
+  keyword: "",
+  status: "",
+  startDate: "",
+  endDate: "",
 });
 
 // Phân trang
 const pagination = reactive({
   currentPage: 1,
   pageSize: 3,
-  total: 0
+  total: 0,
 });
 
 // Hàm lấy danh sách đơn hàng
@@ -133,14 +163,14 @@ const fetchOrders = async () => {
     const response = await OrderService.getOrders({
       ...filters,
       page: pagination.currentPage,
-      pageSize: pagination.pageSize
+      pageSize: pagination.pageSize,
     });
-    
+
     orderList.value = response.results || [];
     pagination.total = response.count || 0;
   } catch (error) {
-    console.error('Lỗi khi tải danh sách đơn hàng:', error);
-    ElMessage.error('Không thể tải danh sách đơn hàng. Vui lòng thử lại sau.');
+    console.error("Lỗi khi tải danh sách đơn hàng:", error);
+    ElMessage.error("Không thể tải danh sách đơn hàng. Vui lòng thử lại sau.");
   } finally {
     loading.value = false;
   }
@@ -154,8 +184,8 @@ const handleSearch = () => {
 
 // Đặt lại bộ lọc
 const resetFilters = () => {
-  Object.keys(filters).forEach(key => {
-    filters[key] = '';
+  Object.keys(filters).forEach((key) => {
+    filters[key] = "";
   });
   handleSearch();
 };
@@ -205,13 +235,13 @@ const getStatusLabel = (status) => {
 // Lấy loại màu cho trạng thái
 const getStatusType = (status) => {
   const statusTypeMap = {
-    'pending': 'warning',
-    'confirmed': 'primary',
-    'in_progress': 'info',
-    'completed': 'success',
-    'cancelled': 'danger'
+    pending: "warning",
+    confirmed: "primary",
+    in_progress: "info",
+    completed: "success",
+    cancelled: "danger",
   };
-  return statusTypeMap[status] || '';
+  return statusTypeMap[status] || "";
 };
 
 // Xử lý cập nhật trạng thái
@@ -248,31 +278,39 @@ const getStatusType = (status) => {
 
 // Xử lý hủy đơn hàng
 const handleCancelOrder = (order) => {
-  ElMessageBox.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?', 'Xác nhận hủy', {
-    confirmButtonText: 'Xác nhận',
-    cancelButtonText: 'Hủy',
-    type: 'warning'
-  }).then(() => {
-    OrderService.updateOrderStatus(order.id, 'cancelled')
-      .then(() => {
-        const index = orderList.value.findIndex(item => item.id === order.id);
-        if (index !== -1) {
-          orderList.value[index].status = 'cancelled';
-        }
-        ElMessage.success('Hủy đơn hàng thành công');
-      })
-      .catch((error) => {
-        console.error('Lỗi khi hủy đơn hàng:', error);
-        ElMessage.error('Hủy đơn hàng thất bại');
-      });
-  }).catch(() => {
-    // Người dùng đã hủy thao tác
-  });
+  ElMessageBox.confirm(
+    "Bạn có chắc chắn muốn hủy đơn hàng này?",
+    "Xác nhận hủy",
+    {
+      confirmButtonText: "Xác nhận",
+      cancelButtonText: "Hủy",
+      type: "warning",
+    }
+  )
+    .then(() => {
+      OrderService.updateOrderStatus(order.id, "cancelled")
+        .then(() => {
+          const index = orderList.value.findIndex(
+            (item) => item.id === order.id
+          );
+          if (index !== -1) {
+            orderList.value[index].status = "cancelled";
+          }
+          ElMessage.success("Hủy đơn hàng thành công");
+        })
+        .catch((error) => {
+          console.error("Lỗi khi hủy đơn hàng:", error);
+          ElMessage.error("Hủy đơn hàng thất bại");
+        });
+    })
+    .catch(() => {
+      // Người dùng đã hủy thao tác
+    });
 };
 
 // Xử lý tạo đơn mới
 const handleCreateOrder = () => {
-  router.push('/dss/orders/create');
+  router.push("/dss/orders/create");
 };
 
 // Load dữ liệu khi component được mount

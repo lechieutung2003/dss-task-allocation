@@ -116,56 +116,6 @@
         />
       </div>
     </el-card>
-
-    <!-- Dialog chi tiết -->
-    <el-dialog
-      v-model="orderDetailDialog.visible"
-      title="Chi tiết đơn hàng"
-      width="50%"
-    >
-      <div v-if="selectedOrder">
-        <h3 class="text-lg font-medium mb-2">Thông tin khách hàng</h3>
-        <p><strong>Tên:</strong> {{ selectedOrder.customer_name }}</p>
-        <p v-if="selectedOrder.customer_details">
-          <strong>Phone:</strong> {{ selectedOrder.customer_details.phone }}
-        </p>
-        <p v-if="selectedOrder.customer_details">
-          <strong>Email:</strong> {{ selectedOrder.customer_details.email }}
-        </p>
-        <p v-if="selectedOrder.customer_details">
-          <strong>Địa chỉ:</strong> {{ selectedOrder.customer_details.address }}
-        </p>
-
-        <h3 class="text-lg font-medium mt-4 mb-2">Chi tiết dịch vụ</h3>
-        <p>
-          <strong>Tên dịch vụ:</strong>
-          {{ selectedOrder.service_details?.name }}
-        </p>
-        <p><strong>Diện tích:</strong> {{ selectedOrder.area_m2 }} m²</p>
-        <p>
-          <strong>Giá/m²:</strong>
-          {{ formatCurrency(selectedOrder.service_details?.price_per_m2) }}
-        </p>
-        <p>
-          <strong>Tổng tiền:</strong>
-          {{ formatCurrency(calculateTotalAmount(selectedOrder)) }}
-        </p>
-
-        <h3 class="text-lg font-medium mt-4 mb-2">Thời gian dự kiến</h3>
-        <p>
-          <strong>Bắt đầu:</strong>
-          {{ formatDateTime(selectedOrder.preferred_start_time) }}
-        </p>
-        <p>
-          <strong>Kết thúc:</strong>
-          {{ formatDateTime(selectedOrder.preferred_end_time) }}
-        </p>
-        <p><strong>Ghi chú:</strong> {{ selectedOrder.note || "Không có" }}</p>
-      </div>
-      <template #footer>
-        <el-button @click="orderDetailDialog.visible = false">Đóng</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -177,7 +127,7 @@ import { definePageMeta } from "#imports";
 
 definePageMeta({
   layout: "dss",
-  middleware: ["auth"],
+  middleware: ["auth", "role-based"],
 });
 
 const loading = ref(false);
@@ -196,10 +146,6 @@ const pagination = reactive({
   currentPage: 1,
   pageSize: 10,
 });
-
-// Dialog chi tiết
-const orderDetailDialog = reactive({ visible: false });
-const selectedOrder = ref(null);
 
 // Lấy danh sách
 const fetchOrders = async () => {
@@ -272,13 +218,8 @@ const calculateTotalAmount = (order) => {
 
 // Xem chi tiết
 const viewOrderDetail = (orderId) => {
-  const found = orders.value.find((o) => o.order_details?.id === orderId);
-  if (found) {
-    selectedOrder.value = found.order_details;
-    orderDetailDialog.visible = true;
-  } else {
-    ElMessage.error("Không tìm thấy đơn hàng");
-  }
+  // Navigate to detail page instead of showing dialog
+  navigateTo(`/dss/employee-orders/${orderId}`);
 };
 
 // Xử lý bộ lọc

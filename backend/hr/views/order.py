@@ -3,7 +3,7 @@ from rest_framework import viewsets, permissions
 from ..models import Order, Assignment, DecisionLog
 from ..models.customer import Customer, ServiceType
 from ..serializers.order import (
-    OrderSerializer, AssignmentSerializer, DecisionLogSerializer,
+    OrderSerializer, OrderEmployeeSerializer, AssignmentSerializer, DecisionLogSerializer,
     CustomerSerializer, ServiceTypeSerializer
 )
 from rest_framework.decorators import action
@@ -44,6 +44,25 @@ class OrderViewSet(BaseViewSet):
         "updateStatus": [["roles:edit"]],
     }
 
+    def get_serializer_class(self):
+        """Trả về serializer phù hợp dựa trên role của user"""
+        user = self.request.user
+        
+        # Nếu là JWTUser, lấy User thật từ database
+        if hasattr(user, 'id'):
+            from oauth.models import User
+            try:
+                real_user = User.objects.get(id=user.id)
+                
+                # Check if user is employee
+                if hasattr(real_user, 'employees') and real_user.employees.exists():
+                    if self.action in ['update', 'partial_update']:
+                        return OrderEmployeeSerializer
+            except User.DoesNotExist:
+                pass
+        
+        return OrderSerializer
+
     def get_queryset(self):
         queryset = super().get_queryset()
         start_date = self.request.query_params.get('start_date')
@@ -52,28 +71,43 @@ class OrderViewSet(BaseViewSet):
             queryset = queryset.filter(preferred_start_time__gte=start_date)
         if end_date:
             queryset = queryset.filter(preferred_start_time__lte=end_date)
+        
         user = self.request.user
         if user.is_staff:
             return queryset
-        elif hasattr(user, 'role') and user.role == 'employee':
-            return queryset.filter(assignment__employee=user)
-        elif hasattr(user, 'role') and user.role in ['customer', 'guest']:
-            return queryset.filter(customer=user)
+        
+        # Nếu là JWTUser, lấy User thật từ database
+        if hasattr(user, 'id'):
+            from oauth.models import User
+            try:
+                real_user = User.objects.get(id=user.id)
+                if hasattr(real_user, 'employees') and real_user.employees.exists():
+                    return queryset.filter(assignment__employee__user=real_user)
+            except User.DoesNotExist:
+                pass
+        
         return queryset.none()
 
     def get_permissions(self):
         user = self.request.user
         if user.is_staff:
             return [permissions.IsAdminUser()]
-        elif hasattr(user, 'role'):
-            if user.role == 'employee':
-                if self.action in ['list', 'retrieve', 'assignments']:
-                    return [permissions.IsAuthenticated(), IsEmployee()]
-                return [permissions.IsAdminUser()]
-            elif user.role in ['customer', 'guest']:
-                if self.action in ['list', 'retrieve', 'create']:
-                    return [permissions.IsAuthenticated(), IsCustomer()]
-                return [permissions.IsAdminUser()]
+        
+        # Nếu là JWTUser, lấy User thật từ database
+        if hasattr(user, 'id'):
+            from oauth.models import User
+            try:
+                real_user = User.objects.get(id=user.id)
+                if hasattr(real_user, 'employees') and real_user.employees.exists():
+                    if self.action in ['list', 'retrieve', 'assignments']:
+                        return [permissions.IsAuthenticated(), IsEmployee()]
+                    elif self.action in ['update', 'partial_update']:
+                        # Cho phép employee update (chỉ status thông qua OrderEmployeeSerializer)
+                        return [permissions.IsAuthenticated(), IsEmployee()]
+                    return [permissions.IsAdminUser()]
+            except User.DoesNotExist:
+                pass
+        
         return super().get_permissions()
 
     @action(methods=[Http.HTTP_GET, Http.HTTP_POST], detail=True, url_path="assignments")

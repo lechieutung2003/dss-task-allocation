@@ -178,7 +178,8 @@ const fetchOrders = async () => {
 // Hàm xem hóa đơn
 const viewInvoice = (order) => {
   const currentDate = new Date(order.created_at || new Date())
-  const invoiceNumber = `HD${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(currentDate.getDate()).padStart(2, '0')}${String(order.id).padStart(4, '0')}`
+  // Sử dụng ID của đơn hàng làm invoiceNumber trực tiếp
+  const invoiceNumber = order.id
   
   selectedInvoice.value = {
     invoiceNumber,

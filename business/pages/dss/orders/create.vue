@@ -259,7 +259,8 @@ const closePaymentModal = () => {
 // 🆕 Hàm tạo hóa đơn
 const generateInvoice = (orderResponse: any) => {
   const currentDate = new Date();
-  const invoiceNumber = `HD${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(currentDate.getDate()).padStart(2, '0')}${String(orderResponse.id).padStart(4, '0')}`;
+  // Sử dụng ID của đơn hàng làm invoiceNumber trực tiếp
+  const invoiceNumber = orderResponse.id;
   
   invoiceData.value = {
     invoiceNumber,
@@ -564,12 +565,19 @@ onMounted(() => {
           <h3 class="calculation-title">Thông tin tính toán</h3>
           <div class="calculation-row">
             <div class="form-group">
-              <label>Giá ước tính</label>
+              <label>Số giờ ước tính</label>
               <div class="inputForm">
-                <input type="text" :value="estimatedPrice !== null ? estimatedPrice.toLocaleString('vi-VN') + ' VNĐ' : ''" class="input" disabled placeholder="Giá ước tính sẽ tự động tính" style="color:#ef4444;font-weight:700;" />
+                <input 
+                  type="text" 
+                  :value="order.estimated_hours !== null ? formatHourMinute(order.estimated_hours) : ''" 
+                  class="input" 
+                  disabled 
+                  placeholder="Số giờ ước tính sẽ tự động tính" 
+                  style="color:#059669;font-weight:700;" 
+                />
               </div>
-              <small v-if="priceExplanation" style="color:#6b7280; font-style:italic; margin-top:4px; display:block;">
-                {{ priceExplanation }}
+              <small v-if="productivity && order.area_m2" style="color:#6b7280; font-style:italic; margin-top:4px; display:block;">
+                Tốc độ làm việc: {{ productivity }} m²/giờ
               </small>
             </div>
             <div class="form-group">
@@ -585,6 +593,20 @@ onMounted(() => {
               <small v-if="minRequiredHours" class="time-info">
                 Thời gian tối thiểu: {{ formatHourMinute(minRequiredHours) }}
               </small>
+            </div>
+          </div>
+          <div class="calculation-row">
+            <div class="form-group">
+              <label>Giá ước tính</label>
+              <div class="inputForm">
+                <input type="text" :value="estimatedPrice !== null ? estimatedPrice.toLocaleString('vi-VN') + ' VNĐ' : ''" class="input" disabled placeholder="Giá ước tính sẽ tự động tính" style="color:#ef4444;font-weight:700;" />
+              </div>
+              <small v-if="priceExplanation" style="color:#6b7280; font-style:italic; margin-top:4px; display:block;">
+                {{ priceExplanation }}
+              </small>
+            </div>
+            <div class="form-group">
+              <!-- Trường trống để cân bằng layout -->
             </div>
           </div>
         </div>

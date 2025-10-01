@@ -15,6 +15,19 @@ class Order(TimeStampedModel):
     cost_confirm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     status = models.CharField(max_length=20)
     note = models.TextField(blank=True, null=True)
+    
+    # Feedback và log sau khi hoàn thành đơn hàng
+    customer_feedback = models.TextField(
+        blank=True, 
+        null=True,
+        help_text="Phản hồi của khách hàng sau khi hoàn thành dịch vụ"
+    )
+    admin_log = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Ghi chú của admin về đơn hàng"
+    )
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
