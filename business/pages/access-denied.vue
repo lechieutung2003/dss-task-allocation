@@ -36,7 +36,7 @@ const router = useRouter();
 const oauthStore = useOauthStore();
 
 definePageMeta({
-  layout: "dss",
+  layout: false, // Không sử dụng layout nào để loại bỏ topbar
 });
 
 const goBack = () => {

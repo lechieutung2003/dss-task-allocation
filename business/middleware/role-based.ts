@@ -72,12 +72,16 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   // Get user role
   const userRole = getUserRole(tokenInfo)
+  console.log('=== MIDDLEWARE DEBUG ===')
   console.log('User role:', userRole, 'Path:', to.path)
-
+  console.log('Token info:', { isStaff: tokenInfo?.isStaff, isSuperuser: tokenInfo?.isSuperuser, scope: tokenInfo?.scope })
+  
   // Check if current path has restrictions
   const currentPathRestriction = Object.keys(roleRestrictions).find(path => 
     to.path.startsWith(path)
   )
+  
+  console.log('Found restriction for path:', currentPathRestriction)
 
   if (currentPathRestriction) {
     const restriction = roleRestrictions[currentPathRestriction]
@@ -86,43 +90,59 @@ export default defineNuxtRouteMiddleware((to, from) => {
     if (!restriction.allowedRoles.includes(userRole)) {
       console.log(`Access denied for role ${userRole} to path ${to.path}`)
       
-      // Redirect based on user role
-      switch (userRole) {
-        case 'employee':
-          return navigateTo('/dss/employee-orders')
-        case 'customer':
-          return navigateTo('/dss/profile/client')
-        case 'admin':
-          return navigateTo('/dss/dashboard')
-        default:
-          return navigateTo('/access-denied')
-      }
+      // Redirect to access denied page
+      return navigateTo('/access-denied')
+    }
+  } else if (to.path.startsWith('/dss/')) {
+    // For any /dss/* route not explicitly defined, default to admin only
+    if (userRole !== 'admin') {
+      console.log(`Access denied for role ${userRole} to undefined path ${to.path} - defaulting to admin only`)
+      
+      // Redirect to access denied page
+      return navigateTo('/access-denied')
     }
   }
 })
 
 function getUserRole(tokenInfo: any): string {
-  if (!tokenInfo) return 'guest'
+  console.log('=== GET USER ROLE DEBUG ===')
+  console.log('tokenInfo:', tokenInfo)
   
-  // Check if user is admin/staff
-  if (tokenInfo.isStaff || tokenInfo.isSuperuser) {
+  if (!tokenInfo) {
+    console.log('No token info, returning guest')
+    return 'guest'
+  }
+  
+  // Check if user is admin/superuser
+  if (tokenInfo.isSuperuser) {
+    console.log('User is superuser (admin)')
     return 'admin'
   }
   
-  // Check scopes to determine if employee
+  // Check if user is staff (employee)
+  if (tokenInfo.isStaff) {
+    console.log('User is staff (employee)')
+    return 'employee'
+  }
+  
+  // Check scopes to determine if employee (backup check)
   const scope = tokenInfo.scope || ''
   const scopes = scope.split(' ')
+  console.log('Scopes:', scopes)
   
   // If has employee scope, consider as employee
   if (scopes.includes('employees:view')) {
+    console.log('User has employees:view scope, returning employee')
     return 'employee'
   }
   
   // Check if guest
   if (tokenInfo.isGuest) {
+    console.log('User is guest')
     return 'guest'
   }
   
   // Default to customer
+  console.log('Defaulting to customer')
   return 'customer'
 }
