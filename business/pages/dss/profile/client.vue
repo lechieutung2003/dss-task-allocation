@@ -1,7 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import customerApi from '@/services/dss/users/customer'
 
+const { t } = useI18n()
 const user = ref(null)
 const loading = ref(true)
 const error = ref(null)
@@ -23,7 +25,7 @@ const fetchUserInfo = async () => {
     console.log('User ref after assignment:', user.value)
   } catch (err) {
     console.error('Error loading customer info:', err)
-    error.value = err.response?.data?.detail || 'Không thể tải thông tin người dùng'
+    error.value = err.response?.data?.detail || t('profile_error_load_user')
   } finally {
     loading.value = false
   }
@@ -45,7 +47,7 @@ onMounted(() => {
             <span class="avatar-text">{{ user?.name?.charAt(0)?.toUpperCase() || 'U' }}</span>
           </div>
           <div class="user-basic-info">
-            <h1 class="user-name">{{ user?.name || 'Loading...' }}</h1>
+            <h1 class="user-name">{{ user?.name || t('profile_loading_name') }}</h1>
             <p class="user-email">{{ user?.email || '' }}</p>
           </div>
         </div>
@@ -54,14 +56,14 @@ onMounted(() => {
       <!-- Loading State -->
       <div v-if="loading" class="loading-card">
         <div class="loading-spinner"></div>
-        <p>Đang tải thông tin...</p>
+        <p>{{ t('profile_loading') }}</p>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="error-card">
         <div class="error-icon">⚠️</div>
         <p>{{ error }}</p>
-        <button @click="fetchUserInfo" class="retry-button">Thử lại</button>
+        <button @click="fetchUserInfo" class="retry-button">{{ t('profile_retry') }}</button>
       </div>
 
       <!-- Profile Info Cards -->
@@ -70,21 +72,21 @@ onMounted(() => {
         <!-- Personal Information Card -->
         <div class="info-card">
           <div class="card-header">
-            <h2 class="card-title">Thông tin cá nhân</h2>
-            <button class="edit-button">Chỉnh sửa</button>
+            <h2 class="card-title">{{ t('profile_personal_info') }}</h2>
+            <button class="edit-button">{{ t('profile_edit') }}</button>
           </div>
           <div class="card-content">
             <div class="info-row">
-              <div class="info-label">Tên</div>
+              <div class="info-label">{{ t('profile_name') }}</div>
               <div class="info-value">{{ user.name }}</div>
             </div>
             <div class="info-row">
-              <div class="info-label">Email</div>
+              <div class="info-label">{{ t('profile_email') }}</div>
               <div class="info-value">{{ user.email }}</div>
             </div>
             <div class="info-row">
-              <div class="info-label">Số điện thoại</div>
-              <div class="info-value">{{ user.phone || 'Chưa cập nhật' }}</div>
+              <div class="info-label">{{ t('profile_phone') }}</div>
+              <div class="info-value">{{ user.phone || t('profile_not_updated') }}</div>
             </div>
           </div>
         </div>
@@ -92,17 +94,17 @@ onMounted(() => {
         <!-- Address Information Card -->
         <div class="info-card">
           <div class="card-header">
-            <h2 class="card-title">Thông tin địa chỉ</h2>
-            <button class="edit-button">Chỉnh sửa</button>
+            <h2 class="card-title">{{ t('profile_address_info') }}</h2>
+            <button class="edit-button">{{ t('profile_edit') }}</button>
           </div>
           <div class="card-content">
             <div class="info-row">
-              <div class="info-label">Địa chỉ</div>
-              <div class="info-value">{{ user.address || 'Chưa cập nhật' }}</div>
+              <div class="info-label">{{ t('profile_address') }}</div>
+              <div class="info-value">{{ user.address || t('profile_not_updated') }}</div>
             </div>
             <div class="info-row">
-              <div class="info-label">Khu vực</div>
-              <div class="info-value">{{ user.area || 'Chưa cập nhật' }}</div>
+              <div class="info-label">{{ t('profile_area') }}</div>
+              <div class="info-value">{{ user.area || t('profile_not_updated') }}</div>
             </div>
           </div>
         </div>
@@ -110,16 +112,16 @@ onMounted(() => {
         <!-- Account Settings Card -->
         <div class="info-card">
           <div class="card-header">
-            <h2 class="card-title">Cài đặt tài khoản</h2>
-            <button class="edit-button">Chỉnh sửa</button>
+            <h2 class="card-title">{{ t('profile_account_settings') }}</h2>
+            <button class="edit-button">{{ t('profile_edit') }}</button>
           </div>
           <div class="card-content">
             <div class="info-row">
-              <div class="info-label">Ngày tạo tài khoản</div>
+              <div class="info-label">{{ t('profile_created_at') }}</div>
               <div class="info-value">{{ new Date(user.created_at).toLocaleDateString('vi-VN') }}</div>
             </div>
             <div class="info-row">
-              <div class="info-label">Lần cập nhật cuối</div>
+              <div class="info-label">{{ t('profile_updated_at') }}</div>
               <div class="info-value">{{ new Date(user.updated_at).toLocaleDateString('vi-VN') }}</div>
             </div>
           </div>

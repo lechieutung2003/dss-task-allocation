@@ -1,4 +1,214 @@
 const vi = {
+  // Navigation
+  nav_about: 'Về chúng tôi',
+  nav_services: 'Dịch vụ',
+  nav_contact: 'Liên hệ',
+  nav_orders: 'Đơn hàng',
+  nav_create_order: 'Tạo đơn',
+  nav_profile: 'Trang cá nhân',
+  nav_logout: 'Đăng xuất',
+  
+  // Home Page
+  home_hero_title: 'Khám phá và trải nghiệm',
+  home_hero_subtitle: 'Dịch vụ dọn dẹp chuyên nghiệp',
+  home_hero_description: 'Nền tảng all-in-one để đặt lịch, theo dõi và bàn giao chất lượng — nhanh và thông minh hơn.',
+  home_hero_cta: 'Chọn dịch vụ',
+  
+  // Quick Services
+  home_service_basic: 'Vệ sinh cơ bản',
+  home_service_basic_desc: 'Đảm bảo sạch sẽ',
+  home_service_advanced: 'Vệ sinh nâng cao',
+  home_service_advanced_desc: 'Hiệu quả cao',
+  home_service_hourly: 'Dọn theo giờ',
+  home_service_hourly_desc: 'Linh hoạt',
+  
+  // Hot Services Section
+  home_hot_services_title: 'Dịch vụ được yêu thích',
+  home_hot_services_subtitle: 'Phổ biến nhất dành cho gia đình và doanh nghiệp hiện đại',
+  home_service_comprehensive: 'Dọn dẹp tổng thể',
+  home_service_comprehensive_price: 'từ 500.000đ',
+  home_service_glass: 'Vệ sinh kính',
+  home_service_glass_price: 'từ 180.000đ',
+  home_service_construction: 'Dọn sau xây dựng',
+  home_service_construction_price: 'từ 800.000đ',
+  home_service_carpet: 'Vệ sinh thảm',
+  home_service_carpet_price: 'từ 120.000đ',
+  home_service_top_tag: 'TOP',
+  
+  // Featured Section
+  home_featured_badge: 'Cinnamon Clean Service',
+  home_featured_title: 'Dịch vụ cao cấp',
+  home_featured_description: 'Trải nghiệm dịch vụ dọn dẹp đẳng cấp 5 sao với đội ngũ chuyên nghiệp và trang thiết bị hiện đại nhất.',
+  home_featured_tag1: '#DanhGiaCao',
+  home_featured_tag2: '#ChuyenNghiep',
+  home_featured_cta: 'Chọn dịch vụ',
+  
+  // About Page
+  about_hero_eyebrow: 'Về chúng tôi',
+  about_hero_title: 'Công Ty Dọn Dẹp – <span>tận tâm</span> & <span>chuẩn mực</span> từ năm 19xx',
+  about_hero_description: 'Chúng tôi bắt đầu từ một đội ngũ nhỏ với niềm tin: vệ sinh chất lượng không chỉ sạch mà còn mang lại sự an tâm. Hơn nhiều thập kỷ, giá trị ấy vẫn không đổi.',
+  about_hero_cta1: 'Đặt dịch vụ',
+  about_hero_cta2: 'Liên hệ tư vấn',
+  about_hero_badge1: 'ISO 9001',
+  about_hero_badge2: 'ISO 14001',
+  about_hero_badge3: 'Trusted Service',
+  
+  // History Section
+  about_history_title: 'Lịch sử lâu đời',
+  about_history_subtitle: 'Những cột mốc đánh dấu hành trình lớn mạnh và chuyên nghiệp hóa.',
+  about_history_1990_title: 'Khởi đầu',
+  about_history_1990_desc: 'Thành lập tại TP. HCM, cung cấp dịch vụ vệ sinh nhà ở và văn phòng nhỏ.',
+  about_history_2000_title: 'Mở rộng',
+  about_history_2000_desc: 'Mở rộng quy mô, đầu tư máy móc hiện đại, chuẩn hóa quy trình vận hành.',
+  about_history_2010_title: 'Chuyển đổi số',
+  about_history_2010_desc: 'Đưa nền tảng đặt lịch trực tuyến, báo cáo chất lượng theo thời gian thực.',
+  about_history_2020_title: 'Chuẩn quốc tế',
+  about_history_2020_desc: 'Đạt các chứng nhận ISO, cam kết an toàn – môi trường – khách hàng là trung tâm.',
+  
+  // VMV Section
+  about_vmv_title: 'Tầm nhìn · Sứ mệnh · Giá trị cốt lõi',
+  about_vision_title: 'Tầm nhìn',
+  about_vision_desc: 'Trở thành đơn vị vệ sinh đáng tin cậy nhất tại Việt Nam, dẫn đầu về chất lượng và trải nghiệm.',
+  about_mission_title: 'Sứ mệnh',
+  about_mission_desc: 'Mang đến không gian sạch – gọn – an toàn, giúp khách hàng tập trung vào điều quan trọng hơn.',
+  about_values_title: 'Giá trị cốt lõi',
+  about_values_1: 'Tận tâm và trung thực',
+  about_values_2: 'Chuẩn hóa quy trình',
+  about_values_3: 'An toàn – Xanh – Bền vững',
+  about_values_4: 'Không ngừng cải tiến',
+  
+  // Stats Section
+  about_stats_title: 'Năng lực đã được chứng minh',
+  about_stats_subtitle: 'Sự tin tưởng của khách hàng thể hiện qua những con số biết nói.',
+  about_stats_projects: '5000+',
+  about_stats_projects_label: 'Công trình mỗi năm',
+  about_stats_satisfaction: '98.7%',
+  about_stats_satisfaction_label: 'Mức hài lòng',
+  about_stats_support: '24/7',
+  about_stats_support_label: 'Hỗ trợ',
+  about_stats_coverage: '30+',
+  about_stats_coverage_label: 'Tỉnh thành phục vụ',
+  
+  // Team Section
+  about_team_title: 'Đội ngũ lãnh đạo',
+  about_team_subtitle: 'Những người dẫn dắt tầm nhìn và chất lượng dịch vụ.',
+  about_team_ceo: 'Nguyễn Văn A',
+  about_team_ceo_role: 'Tổng Giám Đốc',
+  about_team_coo: 'Trần Thị B',
+  about_team_coo_role: 'Giám Đốc Vận Hành',
+  about_team_qa: 'Lê Văn C',
+  about_team_qa_role: 'Giám Đốc Chất Lượng',
+  
+  // Certifications Section
+  about_certs_title: 'Chứng nhận & Đối tác',
+  about_cert_iso9001: 'ISO 9001',
+  about_cert_iso14001: 'ISO 14001',
+  about_cert_green: 'Green Cleaning',
+  about_cert_trusted: 'Trusted Partner',
+  
+  // Final CTA Section
+  about_final_cta_title: 'Bắt đầu với chúng tôi hôm nay',
+  about_final_cta_desc: 'Hẹn lịch nhanh, báo giá minh bạch, đội ngũ chuyên nghiệp.',
+  about_final_cta1: 'Đặt dịch vụ ngay',
+  about_final_cta2: 'Gặp chuyên gia',
+  
+  // Customer Orders Page
+  orders_page_title: 'Đơn hàng của bạn',
+  orders_page_subtitle: 'Xem và quản lý các đơn hàng đã đặt',
+  orders_loading: 'Đang tải...',
+  
+  // Order Tabs
+  orders_tab_pending: 'Chờ xác nhận',
+  orders_tab_confirmed: 'Đã xác nhận',
+  orders_tab_in_progress: 'Đang thực hiện',
+  orders_tab_completed: 'Hoàn thành',
+  orders_tab_rejected: 'Bị từ chối',
+  orders_tab_cancelled: 'Đã hủy',
+  
+  // Table Headers
+  orders_table_service: 'Dịch vụ',
+  orders_table_area: 'Diện tích (m2)',
+  orders_table_start_time: 'Thời gian bắt đầu',
+  orders_table_end_time: 'Thời gian kết thúc',
+  orders_table_estimated_price: 'Giá ước tính',
+  orders_table_status: 'Trạng thái',
+  orders_table_note: 'Ghi chú',
+  orders_table_actions: 'Hành động',
+  orders_table_feedback: 'Phản hồi',
+  orders_table_reject_reason: 'Lý do từ chối',
+  
+  // Order Status
+  orders_status_pending: 'Chờ xác nhận',
+  orders_status_confirmed: 'Đã xác nhận',
+  orders_status_rejected: 'Bị từ chối',
+  orders_status_in_progress: 'Đang thực hiện',
+  orders_status_completed: 'Hoàn thành',
+  orders_status_cancelled: 'Đã hủy',
+  
+  // Order Actions
+  orders_action_invoice: '🧾 Hóa đơn',
+  orders_action_show_feedback: ' Xem phản hồi',
+  orders_action_hide_feedback: ' Ẩn phản hồi',
+  orders_action_show_reason: ' Xem lý do',
+  orders_action_hide_reason: ' Ẩn lý do',
+  
+  // Order Values
+  orders_price_tbd: 'Chưa xác định',
+  orders_note_none: 'Không có',
+  
+  // Empty States
+  orders_empty_pending: 'Không có đơn hàng nào đang chờ xác nhận.',
+  orders_empty_confirmed: 'Không có đơn hàng nào đã được xác nhận.',
+  orders_empty_rejected: 'Không có đơn hàng nào bị từ chối.',
+  orders_empty_in_progress: 'Không có đơn hàng nào đang thực hiện.',
+  orders_empty_completed: 'Không có đơn hàng nào đã hoàn thành.',
+  orders_empty_cancelled: 'Không có đơn hàng nào đã hủy.',
+  orders_empty_cta: 'Đặt dịch vụ ngay',
+  
+  // Feedback Section
+  orders_feedback_title: '💬 Phản hồi về dịch vụ: {serviceName}',
+  orders_feedback_label: 'Phản hồi của bạn:',
+  orders_feedback_input_label: 'Để lại phản hồi về dịch vụ:',
+  orders_feedback_placeholder: 'Chia sẻ trải nghiệm của bạn về dịch vụ này...',
+  orders_feedback_submit: '📝 Gửi phản hồi',
+  orders_feedback_success: 'Phản hồi đã được gửi thành công!',
+  orders_feedback_error: 'Có lỗi xảy ra khi gửi phản hồi. Vui lòng thử lại.',
+  
+  // Reject Reason Section
+  orders_reject_title: '❌ Lý do từ chối: {serviceName}',
+  orders_reject_label: 'Lý do từ chối:',
+  orders_reject_none: 'Chưa có lý do từ chối được cung cấp',
+  
+  // Invoice Modal
+  invoice_title: '🧾 Hóa đơn dịch vụ',
+  invoice_header_title: 'HÓA ĐƠN DỊCH VỤ',
+  invoice_number: 'Số: {number}',
+  invoice_issue_date: 'Ngày xuất: {date}',
+  invoice_due_date: 'Hạn thanh toán: {date}',
+  
+  // Invoice Details
+  invoice_service_details: 'Chi tiết dịch vụ',
+  invoice_service: 'Dịch vụ:',
+  invoice_area: 'Diện tích:',
+  invoice_start_time: 'Thời gian bắt đầu:',
+  invoice_end_time: 'Thời gian kết thúc:',
+  invoice_payment_method: 'Phương thức thanh toán:',
+  invoice_note: 'Ghi chú:',
+  
+  // Invoice Payment
+  invoice_payment_title: 'Thanh toán',
+  invoice_subtotal: 'Tạm tính:',
+  invoice_tax: 'VAT (10%):',
+  invoice_total: 'Tổng cộng:',
+  
+  // Invoice Actions
+  invoice_download: '📄 Tải xuống PDF',
+  invoice_close: 'Đóng',
+  
+  // Payment Methods
+  payment_cash: 'Tiền mặt',
+  payment_transfer: 'Chuyển khoản',
+  
   thank_you_registration:
     "Cảm ơn bạn đã đăng ký. Chúng tôi đã gửi mail đến {email}. Hãy kiểm tra hộp thư của bạn, mở liên kết trong mail để xác nhận tài khoản.",
   upload_business_license_label: "Tải lên giấy phép kinh doanh của bạn",
@@ -754,6 +964,185 @@ const vi = {
   vietan: 'Việt An',
   vugia: 'Vu Gia',
   xuanphu: 'Xuân Phú',
+  
+  // Contact page content
+  contact_eyebrow: 'Liên hệ',
+  contact_title: 'Chúng tôi luôn sẵn sàng hỗ trợ',
+  contact_subtitle: 'Hãy để lại thông tin, đội ngũ chăm sóc khách hàng sẽ phản hồi trong vòng <strong>15–30 phút (giờ hành chính)</strong>.',
+  contact_cta_book_service: 'Đặt dịch vụ ngay',
+  contact_cta_hotline: 'Gọi hotline 1900 1234',
+  contact_badge_support: 'Hỗ trợ 24/7',
+  contact_badge_pricing: 'Báo giá minh bạch',
+  contact_badge_insurance: 'Bảo hiểm trách nhiệm',
+  contact_form_title: 'Gửi yêu cầu',
+  contact_form_subtitle: 'Điền biểu mẫu dưới đây để được tư vấn nhanh.',
+  contact_form_fullname: 'Họ và tên',
+  contact_form_phone: 'Số điện thoại',
+  contact_form_email: 'Email',
+  contact_form_service_need: 'Nhu cầu dịch vụ',
+  contact_form_message: 'Nội dung',
+  contact_form_agree: 'Tôi đồng ý để Công Ty liên hệ tư vấn theo thông tin đã cung cấp.',
+  contact_form_placeholder_fullname: 'Nguyễn Văn A',
+  contact_form_placeholder_phone: '090x xxx xxx',
+  contact_form_placeholder_email: 'ban@congty.com',
+  contact_form_placeholder_service_select: '— Chọn —',
+  contact_form_placeholder_message: 'Mô tả địa điểm, diện tích, thời gian mong muốn…',
+  contact_service_basic: 'Dọn dẹp cơ bản',
+  contact_service_deep: 'Tổng vệ sinh',
+  contact_service_office: 'Vệ sinh văn phòng',
+  contact_service_post: 'Sau xây dựng',
+  contact_form_submit: 'Gửi yêu cầu',
+  contact_form_submitting: 'Đang gửi…',
+  contact_success_title: 'Đã nhận yêu cầu ✅',
+  contact_success_message: 'Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất. Cảm ơn bạn!',
+  contact_success_cta: 'Đặt dịch vụ ngay',
+  contact_info_hotline: 'Hotline',
+  contact_info_hotline_number: '1900 1234',
+  contact_info_hotline_hours: 'Giờ làm việc: 08:00–20:00 (T2–CN)',
+  contact_info_email: 'Email',
+  contact_info_email_address: 'contact@congtydondep.vn',
+  contact_info_email_response: 'Phản hồi trong vòng 24h',
+  contact_info_messaging: 'Zalo / WhatsApp',
+  contact_info_messaging_number: '+84 90x xxx xxx',
+  contact_info_messaging_desc: 'Kênh trao đổi nhanh, gửi hình hiện trạng',
+  contact_info_office: 'Văn phòng',
+  contact_info_office_address: '123 Nguyễn Trãi, Q.1, TP.HCM',
+  contact_info_office_branches: 'Chi nhánh: Hà Nội · Đà Nẵng',
+  contact_info_hours: 'Giờ tiếp nhận',
+  contact_info_weekdays: 'Thứ 2–Thứ 6',
+  contact_info_weekdays_hours: '08:00–20:00',
+  contact_info_weekend: 'Thứ 7–Chủ nhật',
+  contact_info_weekend_hours: '09:00–18:00',
+  
+  // Contact FAQ Questions & Answers
+  contact_faq_q1: 'Giá có bao gồm dụng cụ và hóa chất không?',
+  contact_faq_a1: 'Có. Chúng tôi chuẩn bị đầy đủ dụng cụ và hóa chất phù hợp từng hạng mục.',
+  contact_faq_q2: 'Đặt lịch gấp trong ngày được không?',
+  contact_faq_a2: 'Tùy tình trạng lịch. Vui lòng gọi hotline để được sắp xếp nhanh nhất.',
+  contact_faq_q3: 'Chính sách bảo hành chất lượng thế nào?',
+  contact_faq_a3: 'Nếu chưa hài lòng, chúng tôi sắp xếp xử lý lại miễn phí trong 24–48h.',
+  contact_map_title: 'Bản đồ',
+  contact_map_subtitle: 'Ghé văn phòng hoặc đặt lịch khảo sát tại chỗ.',
+  contact_faq_title: 'FAQ – Câu hỏi thường gặp',
+  contact_faq_pricing_question: 'Giá có bao gồm dụng cụ và hóa chất không?',
+  contact_faq_pricing_answer: 'Có. Chúng tôi chuẩn bị đầy đủ dụng cụ và hóa chất phù hợp từng hạng mục.',
+  contact_faq_urgent_question: 'Đặt lịch gấp trong ngày được không?',
+  contact_faq_urgent_answer: 'Tùy tình trạng lịch. Vui lòng gọi hotline để được sắp xếp nhanh nhất.',
+  contact_faq_warranty_question: 'Chính sách bảo hành chất lượng thế nào?',
+  contact_faq_warranty_answer: 'Nếu chưa hài lòng, chúng tôi sắp xếp xử lý lại miễn phí trong 24–48h.',
+  contact_form_validation_error: 'Vui lòng điền Họ tên, Số điện thoại và Nội dung.',
+  contact_form_submit_error: 'Gửi thất bại, thử lại sau.',
+  
+  // Create Order Page
+  create_order_title: 'Tạo đơn mới',
+  create_order_subtitle: 'Nhập thông tin để tạo đơn dịch vụ',
+  create_order_loading_customer: 'Đang tải thông tin khách hàng...',
+  create_order_customer_info: 'Thông tin khách hàng',
+  create_order_customer_name: 'Tên:',
+  create_order_customer_email: 'Email:',
+  create_order_customer_phone: 'SĐT:',
+  create_order_customer_address: 'Địa chỉ:',
+  
+  // Form Fields
+  create_order_service: 'Dịch vụ',
+  create_order_service_placeholder: 'Chọn dịch vụ',
+  create_order_area: 'Diện tích (m²)',
+  create_order_area_placeholder: 'Nhập diện tích',
+  create_order_note: 'Ghi chú',
+  create_order_note_placeholder: 'Nhập ghi chú (nếu có)',
+  create_order_price_per_m2: 'Tiền trên m²',
+  create_order_price_placeholder: 'Chọn dịch vụ để xem giá',
+  create_order_start_time: 'Thời gian bắt đầu ưu tiên',
+  create_order_end_time: 'Thời gian kết thúc ưu tiên',
+  
+  // Calculation Section
+  create_order_calculation_title: 'Thông tin tính toán',
+  create_order_estimated_hours: 'Số giờ ước tính',
+  create_order_estimated_hours_placeholder: 'Số giờ ước tính sẽ tự động tính',
+  create_order_requested_hours: 'Số giờ yêu cầu',
+  create_order_requested_hours_placeholder: 'Số giờ yêu cầu sẽ tự động tính',
+  create_order_estimated_price: 'Giá ước tính',
+  create_order_estimated_price_placeholder: 'Giá ước tính sẽ tự động tính',
+  create_order_productivity: 'Tốc độ làm việc: {productivity} m²/giờ',
+  create_order_min_time: 'Thời gian tối thiểu: {time}',
+  create_order_time_invalid: 'Thời gian không hợp lệ',
+  create_order_create_button: 'Tạo đơn',
+  
+  // Payment Modal
+  create_order_payment_title: 'Chọn phương thức thanh toán',
+  create_order_order_info: 'Thông tin đơn hàng',
+  create_order_service_label: 'Dịch vụ:',
+  create_order_area_label: 'Diện tích:',
+  create_order_time_label: 'Thời gian yêu cầu:',
+  create_order_total_label: 'Tổng tiền:',
+  create_order_payment_methods: 'Phương thức thanh toán',
+  create_order_cash_payment: 'Thanh toán tiền mặt',
+  create_order_cash_description: 'Thanh toán trực tiếp khi hoàn thành dịch vụ',
+  create_order_cancel: 'Hủy',
+  create_order_confirm: 'Xác nhận tạo đơn',
+  create_order_processing: 'Đang xử lý...',
+  
+  // Invoice Modal
+  create_order_invoice_title: 'Hóa đơn dịch vụ',
+  create_order_invoice_header: 'HÓA ĐƠN DỊCH VỤ',
+  create_order_invoice_number: 'Số: {number}',
+  create_order_invoice_issue_date: 'Ngày xuất: {date}',
+  create_order_invoice_due_date: 'Hạn thanh toán: {date}',
+  create_order_customer_info_title: 'Thông tin khách hàng',
+  create_order_customer_name_label: 'Họ tên:',
+  create_order_customer_email_label: 'Email:',
+  create_order_customer_phone_label: 'Số điện thoại:',
+  create_order_service_details: 'Chi tiết dịch vụ',
+  create_order_service_name: 'Dịch vụ:',
+  create_order_working_area: 'Diện tích:',
+  create_order_working_hours: 'Thời gian làm việc:',
+  create_order_start_time_label: 'Thời gian bắt đầu:',
+  create_order_end_time_label: 'Thời gian kết thúc:',
+  create_order_payment_method_label: 'Phương thức thanh toán:',
+  create_order_note_label: 'Ghi chú:',
+  create_order_payment_info: 'Thanh toán',
+  create_order_subtotal: 'Tạm tính:',
+  create_order_vat: 'VAT (10%):',
+  create_order_total: 'Tổng cộng:',
+  create_order_download_pdf: 'Tải xuống PDF',
+  create_order_view_orders: 'Xem đơn hàng',
+  create_order_close: 'Đóng',
+  
+  // Success/Error Messages
+  create_order_success: 'Tạo đơn thành công!',
+  create_order_error: 'Tạo đơn thất bại, vui lòng kiểm tra thông tin.',
+  create_order_validation_error: 'Không thể tạo đơn: {message}',
+  create_order_customer_error: 'Không thể tải thông tin khách hàng. Vui lòng đăng nhập lại.',
+  create_order_download_error: 'Không thể mở cửa sổ in hóa đơn. Vui lòng kiểm tra trình duyệt của bạn.',
+  
+  // Time Formatting
+  create_order_time_hours: '{hours} giờ',
+  create_order_time_minutes: '{minutes} phút',
+  create_order_time_hours_minutes: '{hours} giờ {minutes} phút',
+  create_order_time_one_minute: '1 phút',
+  
+  // Values
+  create_order_value_none: 'Không có',
+  create_order_value_na: 'N/A',
+  create_order_thank_you: 'Cảm ơn bạn đã sử dụng dịch vụ!',
+  
+  // Client Profile Page
+  profile_loading: 'Đang tải thông tin...',
+  profile_error_load_user: 'Không thể tải thông tin người dùng',
+  profile_retry: 'Thử lại',
+  profile_personal_info: 'Thông tin cá nhân',
+  profile_address_info: 'Thông tin địa chỉ',
+  profile_account_settings: 'Cài đặt tài khoản',
+  profile_edit: 'Chỉnh sửa',
+  profile_name: 'Tên',
+  profile_email: 'Email',
+  profile_phone: 'Số điện thoại',
+  profile_address: 'Địa chỉ',
+  profile_area: 'Khu vực',
+  profile_created_at: 'Ngày tạo tài khoản',
+  profile_updated_at: 'Lần cập nhật cuối',
+  profile_not_updated: 'Chưa cập nhật',
+  profile_loading_name: 'Loading...',
 };
 
 export default vi;

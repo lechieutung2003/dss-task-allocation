@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import CreateOrderService from '@/services/dss/users/customer';
 import { useOauthStore } from '@/stores/oauth';
 import serviceTypesApi from '@/services/dss/serviceTypes';
-// Import hình ảnh QR
-import qrImage from '@/assets/images/qr.jpg';
 // Import customer CSS
 import '@/assets/css/customer.css';
 
 const store = useOauthStore();
 const router = useRouter();
+const { t } = useI18n();
 
 // Thông tin customer từ hr_customer
 const customerInfo = ref<any>(null);
@@ -46,15 +46,6 @@ const isSubmitting = ref<boolean>(false);
 const showInvoiceModal = ref<boolean>(false);
 const invoiceData = ref<any>(null);
 
-// 🆕 Thông tin QR code cho chuyển khoản
-const qrCodeData = ref<string>('');
-const bankInfo = {
-  bankName: 'Vietcombank',
-  accountNumber: '1020567669',
-  accountHolder: 'VO THU THAO',
-  qrCode: qrImage // Sử dụng hình ảnh đã import
-};
-
 type ServiceType = { id: string; name: string; [key: string]: any };
 const serviceTypes = ref<ServiceType[]>([]);
 
@@ -78,7 +69,7 @@ const fetchCustomerInfo = async () => {
     
   } catch (error) {
     console.error('Error loading customer info:', error);
-    alert('Không thể tải thông tin khách hàng. Vui lòng đăng nhập lại.');
+    alert(t('create_order_customer_error'));
   } finally {
     loadingCustomer.value = false;
   }
@@ -162,7 +153,9 @@ const validateRequestedTime = () => {
   
   if (requested < minRequired) {
     isTimeValid.value = false;
-    timeValidationMessage.value = `Thời gian yêu cầu tối thiểu là ${formatHourMinute(minRequired)} (60% của ${formatHourMinute(estimated)})`;
+    timeValidationMessage.value = t('create_order_validation_error', { 
+      message: `${t('create_order_min_time', { time: formatHourMinute(minRequired) })} (60% của ${formatHourMinute(estimated)})` 
+    });
   } else {
     isTimeValid.value = true;
     timeValidationMessage.value = '';
@@ -240,14 +233,9 @@ watch(() => [order.value.requested_hours, minRequiredHours.value], validateReque
 
 const openPaymentModal = () => {
   if (!isTimeValid.value) {
-    alert('Không thể tạo đơn: ' + timeValidationMessage.value);
+    alert(t('create_order_validation_error', { message: timeValidationMessage.value }));
     return;
   }
-  
-  // Sử dụng QR code tĩnh từ assets cho học tập
-  const amount = estimatedPrice.value || 0;
-  const description = `Thanh toan don hang DSS - ${amount.toLocaleString('vi-VN')} VND`;
-  qrCodeData.value = bankInfo.qrCode; // Sử dụng QR tĩnh từ assets
   
   showPaymentModal.value = true;
 };
@@ -268,16 +256,16 @@ const generateInvoice = (orderResponse: any) => {
     invoiceNumber,
     orderInfo: {
       id: orderResponse.id,
-      serviceName: serviceTypes.value.find(s => s.id === order.value.service_type)?.name || 'N/A',
+      serviceName: serviceTypes.value.find(s => s.id === order.value.service_type)?.name || t('create_order_value_na'),
       area: order.value.area_m2,
       workingHours: formatHourMinute(order.value.requested_hours),
       startTime: order.value.preferred_start_time,
       endTime: order.value.preferred_end_time,
-      note: order.value.note || 'Không có',
-      paymentMethod: paymentMethod.value === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'
+      note: order.value.note || t('create_order_value_none'),
+      paymentMethod: paymentMethod.value === 'cash' ? t('payment_cash') : t('payment_transfer')
     },
     customerInfo: {
-      name: customerInfo.value?.name || 'Khách hàng',
+      name: customerInfo.value?.name || t('Customer'),
       email: customerInfo.value?.email || '',
       phone: customerInfo.value?.phone || ''
     },
@@ -308,7 +296,7 @@ const downloadInvoice = () => {
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Hóa đơn ${invoice.invoiceNumber}</title>
+      <title>${t('create_order_invoice_title')} ${invoice.invoiceNumber}</title>
       <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .header { text-align: center; margin-bottom: 30px; background: #f8f9fa; padding: 20px; }
@@ -322,38 +310,38 @@ const downloadInvoice = () => {
     </head>
     <body>
       <div class="header">
-        <div class="title">HÓA ĐƠN DỊCH VỤ</div>
-        <div class="invoice-number">Số: ${invoice.invoiceNumber}</div>
-        <div>Ngày xuất: ${invoice.issueDate} | Hạn thanh toán: ${invoice.dueDate}</div>
+        <div class="title">${t('create_order_invoice_header')}</div>
+        <div class="invoice-number">${t('create_order_invoice_number', { number: invoice.invoiceNumber })}</div>
+        <div>${t('create_order_invoice_issue_date', { date: invoice.issueDate })} | ${t('create_order_invoice_due_date', { date: invoice.dueDate })}</div>
       </div>
       
       <div class="section">
-        <h3>Thông tin khách hàng</h3>
-        <div class="row"><span>Họ tên:</span><span>${invoice.customerInfo.name}</span></div>
-        ${invoice.customerInfo.email ? `<div class="row"><span>Email:</span><span>${invoice.customerInfo.email}</span></div>` : ''}
-        ${invoice.customerInfo.phone ? `<div class="row"><span>Số điện thoại:</span><span>${invoice.customerInfo.phone}</span></div>` : ''}
+        <h3>${t('create_order_customer_info_title')}</h3>
+        <div class="row"><span>${t('create_order_customer_name_label')}</span><span>${invoice.customerInfo.name}</span></div>
+        ${invoice.customerInfo.email ? `<div class="row"><span>${t('create_order_customer_email_label')}</span><span>${invoice.customerInfo.email}</span></div>` : ''}
+        ${invoice.customerInfo.phone ? `<div class="row"><span>${t('create_order_customer_phone_label')}</span><span>${invoice.customerInfo.phone}</span></div>` : ''}
       </div>
       
       <div class="section">
-        <h3>Chi tiết dịch vụ</h3>
-        <div class="row"><span>Dịch vụ:</span><span>${invoice.orderInfo.serviceName}</span></div>
-        <div class="row"><span>Diện tích:</span><span>${invoice.orderInfo.area} m²</span></div>
-        <div class="row"><span>Thời gian làm việc:</span><span>${invoice.orderInfo.workingHours}</span></div>
-        <div class="row"><span>Thời gian bắt đầu:</span><span>${new Date(invoice.orderInfo.startTime).toLocaleString('vi-VN')}</span></div>
-        <div class="row"><span>Thời gian kết thúc:</span><span>${new Date(invoice.orderInfo.endTime).toLocaleString('vi-VN')}</span></div>
-        <div class="row"><span>Phương thức thanh toán:</span><span>${invoice.orderInfo.paymentMethod}</span></div>
-        ${invoice.orderInfo.note !== 'Không có' ? `<div class="row"><span>Ghi chú:</span><span>${invoice.orderInfo.note}</span></div>` : ''}
+        <h3>${t('create_order_service_details')}</h3>
+        <div class="row"><span>${t('create_order_service_name')}</span><span>${invoice.orderInfo.serviceName}</span></div>
+        <div class="row"><span>${t('create_order_working_area')}</span><span>${invoice.orderInfo.area} m²</span></div>
+        <div class="row"><span>${t('create_order_working_hours')}</span><span>${invoice.orderInfo.workingHours}</span></div>
+        <div class="row"><span>${t('create_order_start_time_label')}</span><span>${new Date(invoice.orderInfo.startTime).toLocaleString('vi-VN')}</span></div>
+        <div class="row"><span>${t('create_order_end_time_label')}</span><span>${new Date(invoice.orderInfo.endTime).toLocaleString('vi-VN')}</span></div>
+        <div class="row"><span>${t('create_order_payment_method_label')}</span><span>${invoice.orderInfo.paymentMethod}</span></div>
+        ${invoice.orderInfo.note !== t('create_order_value_none') ? `<div class="row"><span>${t('create_order_note_label')}</span><span>${invoice.orderInfo.note}</span></div>` : ''}
       </div>
       
       <div class="section">
-        <h3>Thanh toán</h3>
-        <div class="row"><span>Tạm tính:</span><span>${invoice.pricing.subtotal.toLocaleString('vi-VN')} VNĐ</span></div>
-        <div class="row"><span>VAT (10%):</span><span>${invoice.pricing.tax.toLocaleString('vi-VN')} VNĐ</span></div>
-        <div class="total"><span>Tổng cộng:</span><span>${invoice.pricing.total.toLocaleString('vi-VN')} VNĐ</span></div>
+        <h3>${t('create_order_payment_info')}</h3>
+        <div class="row"><span>${t('create_order_subtotal')}</span><span>${invoice.pricing.subtotal.toLocaleString('vi-VN')} VNĐ</span></div>
+        <div class="row"><span>${t('create_order_vat')}</span><span>${invoice.pricing.tax.toLocaleString('vi-VN')} VNĐ</span></div>
+        <div class="total"><span>${t('create_order_total')}</span><span>${invoice.pricing.total.toLocaleString('vi-VN')} VNĐ</span></div>
       </div>
       
       <div style="text-align: center; margin-top: 30px; color: #666;">
-        Cảm ơn bạn đã sử dụng dịch vụ!
+        ${t('create_order_thank_you')}
       </div>
     </body>
     </html>
@@ -369,7 +357,7 @@ const downloadInvoice = () => {
     // Tự động đóng cửa sổ sau khi in
     printWindow.onafterprint = () => printWindow.close();
   } else {
-    alert('Không thể mở cửa sổ in hóa đơn. Vui lòng kiểm tra trình duyệt của bạn.');
+    alert(t('create_order_download_error'));
   }
 };
 
@@ -444,23 +432,23 @@ const submitOrder = async () => {
       generateInvoice(response);
       // Có thể chuyển trang sau khi xem hóa đơn
     } else {
-      alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
+      alert(t('create_order_error'));
     }
   } catch (error: any) {
     console.error('Lỗi chi tiết từ backend:', error?.response?.data || error);
-    alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
+    alert(t('create_order_error'));
   } finally {
     isSubmitting.value = false;
   }
 };
 function formatHourMinute(hours: number|null) {
   if (hours === null || isNaN(hours)) return '';
-  if (hours > 0 && hours * 60 < 1) return '1 phút';
+  if (hours > 0 && hours * 60 < 1) return t('create_order_time_one_minute');
   const h = Math.floor(hours);
   let m = Math.round((hours - h) * 60);
-  if (h === 0) return `${m} phút`;
-  if (m === 0) return `${h} giờ`;
-  return `${h} giờ ${m} phút`;
+  if (h === 0) return t('create_order_time_minutes', { minutes: m });
+  if (m === 0) return t('create_order_time_hours', { hours: h });
+  return t('create_order_time_hours_minutes', { hours: h, minutes: m });
 }
 
 onMounted(() => {
@@ -474,30 +462,30 @@ onMounted(() => {
     <section class="stripe white">
       <div class="container">
         <div class="content-header">
-          <h1 class="section-title">Tạo đơn mới</h1>
-          <p class="section-subtitle">Nhập thông tin để tạo đơn dịch vụ</p>
+          <h1 class="section-title">{{ t('create_order_title') }}</h1>
+          <p class="section-subtitle">{{ t('create_order_subtitle') }}</p>
           
           <!-- Customer info display -->
           <div v-if="loadingCustomer" class="customer-info loading">
-            <p>Đang tải thông tin khách hàng...</p>
+            <p>{{ t('create_order_loading_customer') }}</p>
           </div>
           <div v-else-if="customerInfo" class="customer-info">
-            <h3>Thông tin khách hàng</h3>
+            <h3>{{ t('create_order_customer_info') }}</h3>
             <div class="customer-details">
               <div class="customer-item">
-                <span class="label">Tên:</span>
+                <span class="label">{{ t('create_order_customer_name') }}</span>
                 <span class="value">{{ customerInfo.name }}</span>
               </div>
               <div class="customer-item">
-                <span class="label">Email:</span>
+                <span class="label">{{ t('create_order_customer_email') }}</span>
                 <span class="value">{{ customerInfo.email }}</span>
               </div>
               <div class="customer-item" v-if="customerInfo.phone">
-                <span class="label">SĐT:</span>
+                <span class="label">{{ t('create_order_customer_phone') }}</span>
                 <span class="value">{{ customerInfo.phone }}</span>
               </div>
               <div class="customer-item" v-if="customerInfo.address">
-                <span class="label">Địa chỉ:</span>
+                <span class="label">{{ t('create_order_customer_address') }}</span>
                 <span class="value">{{ customerInfo.address }}</span>
               </div>
             </div>
@@ -508,10 +496,10 @@ onMounted(() => {
           <div class="form-grid">
             <div class="form-column">
               <div class="form-group">
-                <label>Dịch vụ</label>
+                <label>{{ t('create_order_service') }}</label>
                 <div class="input-wrapper">
                   <select v-model="order.service_type" class="form-input" required>
-                    <option value="" disabled>Chọn dịch vụ</option>
+                    <option value="" disabled>{{ t('create_order_service_placeholder') }}</option>
                     <option v-for="service in serviceTypes" :key="service.id" :value="service.id">
                       {{ service.name }}
                     </option>
@@ -519,40 +507,40 @@ onMounted(() => {
                 </div>
               </div>
               <div class="form-group">
-                <label>Diện tích (m²)</label>
+                <label>{{ t('create_order_area') }}</label>
                 <div class="input-wrapper">
-                  <input v-model="order.area_m2" type="number" class="form-input" min="0" step="any" placeholder="Nhập diện tích" required />
+                  <input v-model="order.area_m2" type="number" class="form-input" min="0" step="any" :placeholder="t('create_order_area_placeholder')" required />
                 </div>
               </div>
               <div class="form-group">
-                <label>Ghi chú</label>
+                <label>{{ t('create_order_note') }}</label>
                 <div class="input-wrapper">
-                  <textarea v-model="order.note" class="form-input" placeholder="Nhập ghi chú (nếu có)" rows="3"></textarea>
+                  <textarea v-model="order.note" class="form-input" :placeholder="t('create_order_note_placeholder')" rows="3"></textarea>
                 </div>
               </div>
             </div>
             
             <div class="form-column">
               <div class="form-group">
-                <label>Tiền trên m²</label>
+                <label>{{ t('create_order_price_per_m2') }}</label>
                 <div class="input-wrapper">
                   <input 
                     type="text" 
                     :value="selectedServicePrice ? selectedServicePrice.toLocaleString('vi-VN') + ' VNĐ' : ''" 
                     class="form-input price-display" 
                     disabled 
-                    placeholder="Chọn dịch vụ để xem giá" 
+                    :placeholder="t('create_order_price_placeholder')" 
                   />
                 </div>
               </div>
               <div class="form-group">
-                <label>Thời gian bắt đầu ưu tiên</label>
+                <label>{{ t('create_order_start_time') }}</label>
                 <div class="input-wrapper">
                   <input v-model="order.preferred_start_time" type="datetime-local" class="form-input" required />
                 </div>
               </div>
               <div class="form-group">
-                <label>Thời gian kết thúc ưu tiên</label>
+                <label>{{ t('create_order_end_time') }}</label>
                 <div class="input-wrapper">
                   <input v-model="order.preferred_end_time" type="datetime-local" class="form-input" required />
                 </div>
@@ -562,39 +550,39 @@ onMounted(() => {
 
           <!-- Calculation section -->
           <div class="calculation-section">
-            <h3 class="calculation-title">Thông tin tính toán</h3>
+            <h3 class="calculation-title">{{ t('create_order_calculation_title') }}</h3>
             <div class="calculation-grid">
               <div class="form-group">
-                <label>Số giờ ước tính</label>
+                <label>{{ t('create_order_estimated_hours') }}</label>
                 <div class="input-wrapper">
                   <input 
                     type="text" 
                     :value="order.estimated_hours !== null ? formatHourMinute(order.estimated_hours) : ''" 
                     class="form-input estimated-display" 
                     disabled 
-                    placeholder="Số giờ ước tính sẽ tự động tính" 
+                    :placeholder="t('create_order_estimated_hours_placeholder')" 
                   />
                 </div>
                 <small v-if="productivity && order.area_m2" class="form-hint">
-                  Tốc độ làm việc: {{ productivity }} m²/giờ
+                  {{ t('create_order_productivity', { productivity }) }}
                 </small>
               </div>
               <div class="form-group">
-                <label>Số giờ yêu cầu</label>
+                <label>{{ t('create_order_requested_hours') }}</label>
                 <div class="input-wrapper" :class="{ 'error': !isTimeValid }">
-                  <input type="text" :value="order.requested_hours !== null ? formatHourMinute(order.requested_hours) : ''" class="form-input requested-display" readonly placeholder="Số giờ yêu cầu sẽ tự động tính" />
+                  <input type="text" :value="order.requested_hours !== null ? formatHourMinute(order.requested_hours) : ''" class="form-input requested-display" readonly :placeholder="t('create_order_requested_hours_placeholder')" />
                 </div>
                 <div v-if="!isTimeValid && timeValidationMessage" class="error-message">
                    {{ timeValidationMessage }}
                 </div>
                 <small v-if="minRequiredHours" class="form-hint success">
-                  Thời gian tối thiểu: {{ formatHourMinute(minRequiredHours) }}
+                  {{ t('create_order_min_time', { time: formatHourMinute(minRequiredHours) }) }}
                 </small>
               </div>
               <div class="form-group">
-                <label>Giá ước tính</label>
+                <label>{{ t('create_order_estimated_price') }}</label>
                 <div class="input-wrapper">
-                  <input type="text" :value="estimatedPrice !== null ? estimatedPrice.toLocaleString('vi-VN') + ' VNĐ' : ''" class="form-input price-estimated" disabled placeholder="Giá ước tính sẽ tự động tính" />
+                  <input type="text" :value="estimatedPrice !== null ? estimatedPrice.toLocaleString('vi-VN') + ' VNĐ' : ''" class="form-input price-estimated" disabled :placeholder="t('create_order_estimated_price_placeholder')" />
                 </div>
                 <small v-if="priceExplanation" class="form-hint">
                   {{ priceExplanation }}
@@ -607,7 +595,7 @@ onMounted(() => {
           </div>
           
           <button type="button" class="featured-cta" :disabled="!isTimeValid" @click="openPaymentModal">
-            {{ !isTimeValid ? 'Thời gian không hợp lệ' : 'Tạo đơn' }}
+            {{ !isTimeValid ? t('create_order_time_invalid') : t('create_order_create_button') }}
           </button>
         </form>
       </div>
@@ -617,82 +605,53 @@ onMounted(() => {
     <div v-if="showPaymentModal" class="modal-overlay" @click="closePaymentModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h2>Chọn phương thức thanh toán</h2>
+          <h2>{{ t('create_order_payment_title') }}</h2>
           <button class="close-btn" @click="closePaymentModal">×</button>
         </div>
         
         <div class="modal-body">
           <!-- Thông tin đơn hàng -->
           <div class="t-card">
-            <h3>Thông tin đơn hàng</h3>
+            <h3>{{ t('create_order_order_info') }}</h3>
             <div class="summary-item">
-              <span>Dịch vụ:</span>
-              <span>{{ serviceTypes.find(s => s.id === order.service_type)?.name || 'N/A' }}</span>
+              <span>{{ t('create_order_service_label') }}</span>
+              <span>{{ serviceTypes.find(s => s.id === order.service_type)?.name || t('create_order_value_na') }}</span>
             </div>
             <div class="summary-item">
-              <span>Diện tích:</span>
+              <span>{{ t('create_order_area_label') }}</span>
               <span>{{ order.area_m2 }} m²</span>
             </div>
             <div class="summary-item">
-              <span>Thời gian yêu cầu:</span>
+              <span>{{ t('create_order_time_label') }}</span>
               <span>{{ formatHourMinute(order.requested_hours) }}</span>
             </div>
             <div class="summary-item total">
-              <span>Tổng tiền:</span>
+              <span>{{ t('create_order_total_label') }}</span>
               <span class="price">{{ estimatedPrice?.toLocaleString('vi-VN') || '0' }} VNĐ</span>
             </div>
           </div>
 
           <!-- Chọn phương thức thanh toán -->
           <div class="payment-methods">
-            <h3>Phương thức thanh toán</h3>
+            <h3>{{ t('create_order_payment_methods') }}</h3>
             
             <div class="payment-option">
               <label class="radio-container">
-                <input type="radio" v-model="paymentMethod" value="cash">
+                <input type="radio" v-model="paymentMethod" value="cash" checked>
                 <span class="checkmark"></span>
                 <div class="payment-info">
-                  <div class="payment-title">💰 Thanh toán tiền mặt</div>
-                  <div class="payment-desc">Thanh toán trực tiếp khi hoàn thành dịch vụ</div>
+                  <div class="payment-title">{{ t('create_order_cash_payment') }}</div>
+                  <div class="payment-desc">{{ t('create_order_cash_description') }}</div>
                 </div>
               </label>
-            </div>
-
-            <div class="payment-option">
-              <label class="radio-container">
-                <input type="radio" v-model="paymentMethod" value="transfer">
-                <span class="checkmark"></span>
-                <div class="payment-info">
-                  <div class="payment-title">🏦 Chuyển khoản ngân hàng</div>
-                  <div class="payment-desc">Chuyển khoản qua QR Code</div>
-                </div>
-              </label>
-            </div>
-
-            <!-- QR Code cho chuyển khoản -->
-            <div v-if="paymentMethod === 'transfer'" class="qr-section">
-              <div class="bank-info">
-                <h4>Thông tin chuyển khoản:</h4>
-                <div class="bank-details">
-                  <div><strong>Ngân hàng:</strong> {{ bankInfo.bankName }}</div>
-                  <div><strong>Số tài khoản:</strong> {{ bankInfo.accountNumber }}</div>
-                  <div><strong>Chủ tài khoản:</strong> {{ bankInfo.accountHolder }}</div>
-                  <div><strong>Số tiền:</strong> <span class="amount">{{ estimatedPrice?.toLocaleString('vi-VN') }} VNĐ</span></div>
-                </div>
-              </div>
-              
-              <div class="qr-code">
-                <img :src="qrCodeData" alt="QR Code thanh toán" />
-                <p>Quét mã QR để thanh toán</p>
-              </div>
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button class="btn-close" @click="closePaymentModal">Hủy</button>
+          <button class="btn-close" @click="closePaymentModal">{{ t('create_order_cancel') }}</button>
           <button class="btn-download" @click="submitOrder" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Đang xử lý...' : 'Xác nhận tạo đơn' }}
+            {{ isSubmitting ? t('create_order_processing') : t('create_order_confirm') }}
           </button>
         </div>
       </div>
@@ -702,83 +661,83 @@ onMounted(() => {
     <div v-if="showInvoiceModal && invoiceData" class="modal-overlay" @click="closeInvoiceModal">
       <div class="modal-content invoice-modal" @click.stop>
         <div class="modal-header">
-          <h2>🧾 Hóa đơn dịch vụ</h2>
+          <h2>{{ t('create_order_invoice_title') }}</h2>
           <button class="close-btn" @click="closeInvoiceModal">×</button>
         </div>
         
         <div class="modal-body">
           <div class="invoice-header">
-            <div class="invoice-title">HÓA ĐƠN DỊCH VỤ</div>
-            <div class="invoice-number">Số: {{ invoiceData.invoiceNumber }}</div>
+            <div class="invoice-title">{{ t('create_order_invoice_header') }}</div>
+            <div class="invoice-number">{{ t('create_order_invoice_number', { number: invoiceData.invoiceNumber }) }}</div>
             <div class="invoice-date">
-              <div>Ngày xuất: {{ invoiceData.issueDate }}</div>
-              <div>Hạn thanh toán: {{ invoiceData.dueDate }}</div>
+              <div>{{ t('create_order_invoice_issue_date', { date: invoiceData.issueDate }) }}</div>
+              <div>{{ t('create_order_invoice_due_date', { date: invoiceData.dueDate }) }}</div>
             </div>
           </div>
 
           <div class="invoice-section">
-            <h4>Thông tin khách hàng</h4>
+            <h4>{{ t('create_order_customer_info_title') }}</h4>
             <div class="info-row">
-              <span>Họ tên:</span>
+              <span>{{ t('create_order_customer_name_label') }}</span>
               <span>{{ invoiceData.customerInfo.name }}</span>
             </div>
             <div class="info-row" v-if="invoiceData.customerInfo.email">
-              <span>Email:</span>
+              <span>{{ t('create_order_customer_email_label') }}</span>
               <span>{{ invoiceData.customerInfo.email }}</span>
             </div>
             <div class="info-row" v-if="invoiceData.customerInfo.phone">
-              <span>Số điện thoại:</span>
+              <span>{{ t('create_order_customer_phone_label') }}</span>
               <span>{{ invoiceData.customerInfo.phone }}</span>
             </div>
           </div>
 
           <div class="invoice-section">
-            <h4>Chi tiết dịch vụ</h4>
+            <h4>{{ t('create_order_service_details') }}</h4>
             <div class="service-details">
               <div class="info-row">
-                <span>Dịch vụ:</span>
+                <span>{{ t('create_order_service_name') }}</span>
                 <span>{{ invoiceData.orderInfo.serviceName }}</span>
               </div>
               <div class="info-row">
-                <span>Diện tích:</span>
+                <span>{{ t('create_order_working_area') }}</span>
                 <span>{{ invoiceData.orderInfo.area }} m²</span>
               </div>
               <div class="info-row">
-                <span>Thời gian làm việc:</span>
+                <span>{{ t('create_order_working_hours') }}</span>
                 <span>{{ invoiceData.orderInfo.workingHours }}</span>
               </div>
               <div class="info-row">
-                <span>Thời gian bắt đầu:</span>
+                <span>{{ t('create_order_start_time_label') }}</span>
                 <span>{{ new Date(invoiceData.orderInfo.startTime).toLocaleString('vi-VN') }}</span>
               </div>
               <div class="info-row">
-                <span>Thời gian kết thúc:</span>
+                <span>{{ t('create_order_end_time_label') }}</span>
                 <span>{{ new Date(invoiceData.orderInfo.endTime).toLocaleString('vi-VN') }}</span>
               </div>
               <div class="info-row">
-                <span>Phương thức thanh toán:</span>
+                <span>{{ t('create_order_payment_method_label') }}</span>
                 <span>{{ invoiceData.orderInfo.paymentMethod }}</span>
               </div>
-              <div class="info-row" v-if="invoiceData.orderInfo.note !== 'Không có'">
-                <span>Ghi chú:</span>
+              <div class="info-row" v-if="invoiceData.orderInfo.note !== t('create_order_value_none')">
+                <span>{{ t('create_order_note_label') }}</span>
                 <span>{{ invoiceData.orderInfo.note }}</span>
               </div>
             </div>
           </div>
 
           <div class="invoice-section">
-            <h4>Thanh toán</h4>
+            <h4>{{ t('create_order_payment_info') }}</h4>
             <div class="pricing-details">
               <div class="info-row">
-                <span>Tạm tính:</span>
+                <span>{{ t('create_order_subtotal') }}</span>
                 <span>{{ invoiceData.pricing.subtotal.toLocaleString('vi-VN') }} VNĐ</span>
               </div>
               <div class="info-row">
-                <span>VAT (10%):</span>
+                <span>{{ t('create_order_vat') }}</span>
                 <span>{{ invoiceData.pricing.tax.toLocaleString('vi-VN') }} VNĐ</span>
               </div>
               <div class="total-amount">
-                <span><strong>Tổng cộng:</strong></span>
+                <span><strong>{{ t('create_order_total') }}</strong></span>
                 <span class="total-price"><strong>{{ invoiceData.pricing.total.toLocaleString('vi-VN') }} VNĐ</strong></span>
               </div>
             </div>
@@ -786,10 +745,12 @@ onMounted(() => {
         </div>
 
         <div class="modal-footer">
-          <button class="btn-download" @click="downloadInvoice">� Tải xuống PDF</button>
+          <button class="btn-download" @click="downloadInvoice">{{ t('create_order_download_pdf') }}</button>
           <button class="btn-close" @click="() => { closeInvoiceModal(); router.push('/dss/customer-orders'); }">
-            Xem đơn hàng
+            {{ t('create_order_view_orders') }}
           </button>
+        </div>        <div class="modal-footer">
+          
         </div>
       </div>
     </div>
@@ -1052,55 +1013,6 @@ onMounted(() => {
   color: var(--text-light);
 }
 
-/* QR Section */
-.qr-section {
-  margin-top: 1.25rem;
-  padding: 1.25rem;
-  background: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid var(--primary);
-}
-
-.bank-info h4 {
-  margin: 0 0 0.75rem;
-  color: var(--primary);
-  font-size: 1rem;
-}
-
-.bank-details {
-  margin-bottom: 1.25rem;
-}
-
-.bank-details div {
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-dark);
-}
-
-.bank-details .amount {
-  color: #ef4444;
-  font-weight: 700;
-}
-
-.qr-code {
-  text-align: center;
-}
-
-.qr-code img {
-  width: 200px;
-  height: 200px;
-  border-radius: 12px;
-  border: 2px solid #e5e7eb;
-  margin-bottom: 0.75rem;
-}
-
-.qr-code p {
-  margin: 0;
-  font-size: 0.875rem;
-  color: var(--text-light);
-  font-style: italic;
-}
-
 /* Summary item styles */
 .summary-item {
   display: flex;
@@ -1138,11 +1050,6 @@ onMounted(() => {
   
   .customer-details {
     grid-template-columns: 1fr;
-  }
-  
-  .qr-code img {
-    width: 160px;
-    height: 160px;
   }
 }
 </style>
