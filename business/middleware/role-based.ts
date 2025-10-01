@@ -60,18 +60,21 @@ export default defineNuxtRouteMiddleware((to, from) => {
     
     // CUSTOMER ONLY ROUTES
     '/dss/customer-orders': {
-      allowedRoles: ['customer']
+      allowedRoles: ['guest']
     },
     '/dss/orders/create': {
-      allowedRoles: ['customer']
+      allowedRoles: ['guest']
+    },
+    '/dss/services/customer': {
+      allowedRoles: ['guest']
     },
     
     // SHARED ROUTES (all authenticated users)
     '/dss/profile': {
-      allowedRoles: ['admin', 'employee', 'customer']
+      allowedRoles: ['admin', 'employee', 'guest']
     },
     '/dss/notifications': {
-      allowedRoles: ['admin', 'employee', 'customer']
+      allowedRoles: ['admin', 'employee', 'guest']
     }
   }
 
