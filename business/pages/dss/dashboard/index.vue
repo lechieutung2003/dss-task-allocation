@@ -18,7 +18,7 @@ import {
 import dashboardService from "~/services/dss/dashboardService";
 import ChartCard from "~/components/ChartCard.vue";
 
-definePageMeta({ layout: "dss", middleware: ["auth"] });
+definePageMeta({ layout: "dss", middleware: ["auth", "role-based"] });
 
 // State management
 const loading = ref(false);
