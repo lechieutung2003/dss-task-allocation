@@ -62,7 +62,7 @@ class OrderService extends BaseService {
   
   // Cập nhật trạng thái đơn hàng
   updateOrderStatus(id, status) {
-    return this.request().patch(`${this.entity}/${id}`, { status });
+    return this.request().put(`${this.entity}/${id}`, { status });
   }
 }
 
