@@ -6,6 +6,8 @@ import { useOauthStore } from '@/stores/oauth';
 import serviceTypesApi from '@/services/dss/serviceTypes';
 // Import hình ảnh QR
 import qrImage from '@/assets/images/qr.jpg';
+// Import customer CSS
+import '@/assets/css/customer.css';
 
 const store = useOauthStore();
 const router = useRouter();
@@ -468,12 +470,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="create-order-container">
-    <div class="form-wrapper">
-      <form class="form" @submit.prevent="submitOrder">
-        <div class="form-header">
-          <h1 class="form-title">Tạo đơn mới</h1>
-          <p class="form-subtitle">Nhập thông tin để tạo đơn dịch vụ</p>
+  <div class="about-page">
+    <section class="stripe white">
+      <div class="container">
+        <div class="content-header">
+          <h1 class="section-title">Tạo đơn mới</h1>
+          <p class="section-subtitle">Nhập thông tin để tạo đơn dịch vụ</p>
           
           <!-- Customer info display -->
           <div v-if="loadingCustomer" class="customer-info loading">
@@ -501,120 +503,115 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="signup-columns">
-          <div class="signup-column">
-            <div class="form-group">
-              <label>Dịch vụ</label>
-              <div class="inputForm">
-                <select v-model="order.service_type" class="input" required>
-                  <option value="" disabled>Chọn dịch vụ</option>
-                  <option v-for="service in serviceTypes" :key="service.id" :value="service.id">
-                    {{ service.name }}
-                  </option>
-                </select>
+        
+        <form class="order-form" @submit.prevent="submitOrder">
+          <div class="form-grid">
+            <div class="form-column">
+              <div class="form-group">
+                <label>Dịch vụ</label>
+                <div class="input-wrapper">
+                  <select v-model="order.service_type" class="form-input" required>
+                    <option value="" disabled>Chọn dịch vụ</option>
+                    <option v-for="service in serviceTypes" :key="service.id" :value="service.id">
+                      {{ service.name }}
+                    </option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label>Diện tích (m²)</label>
-              <div class="inputForm">
-                <input v-model="order.area_m2" type="number" class="input" min="0" step="any" placeholder="Nhập diện tích" required />
+              <div class="form-group">
+                <label>Diện tích (m²)</label>
+                <div class="input-wrapper">
+                  <input v-model="order.area_m2" type="number" class="form-input" min="0" step="any" placeholder="Nhập diện tích" required />
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label>Ghi chú</label>
-              <div class="inputForm">
-                <textarea v-model="order.note" class="input" placeholder="Nhập ghi chú (nếu có)" style="height: 50px;"></textarea>
+              <div class="form-group">
+                <label>Ghi chú</label>
+                <div class="input-wrapper">
+                  <textarea v-model="order.note" class="form-input" placeholder="Nhập ghi chú (nếu có)" rows="3"></textarea>
+                </div>
               </div>
             </div>
             
+            <div class="form-column">
+              <div class="form-group">
+                <label>Tiền trên m²</label>
+                <div class="input-wrapper">
+                  <input 
+                    type="text" 
+                    :value="selectedServicePrice ? selectedServicePrice.toLocaleString('vi-VN') + ' VNĐ' : ''" 
+                    class="form-input price-display" 
+                    disabled 
+                    placeholder="Chọn dịch vụ để xem giá" 
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Thời gian bắt đầu ưu tiên</label>
+                <div class="input-wrapper">
+                  <input v-model="order.preferred_start_time" type="datetime-local" class="form-input" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Thời gian kết thúc ưu tiên</label>
+                <div class="input-wrapper">
+                  <input v-model="order.preferred_end_time" type="datetime-local" class="form-input" required />
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="signup-column">
-            <div class="form-group">
-              <label>Tiền trên m²</label>
-              <div class="inputForm">
-                <input 
-                  type="text" 
-                  :value="selectedServicePrice ? selectedServicePrice.toLocaleString('vi-VN') + ' VNĐ' : ''" 
-                  class="input" 
-                  disabled 
-                  placeholder="Chọn dịch vụ để xem giá" 
-                  style="color:#2d79f3;font-weight:600;" 
-                />
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Thời gian bắt đầu ưu tiên</label>
-              <div class="inputForm">
-                <input v-model="order.preferred_start_time" type="datetime-local" class="input" required />
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Thời gian kết thúc ưu tiên</label>
-              <div class="inputForm">
-                <input v-model="order.preferred_end_time" type="datetime-local" class="input" required />
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Dấu gạch ngang phân cách -->
-        <div class="divider"></div>
-
-        <!-- Phần tính toán giá và thời gian -->
-        <div class="calculation-section">
-          <h3 class="calculation-title">Thông tin tính toán</h3>
-          <div class="calculation-row">
-            <div class="form-group">
-              <label>Số giờ ước tính</label>
-              <div class="inputForm">
-                <input 
-                  type="text" 
-                  :value="order.estimated_hours !== null ? formatHourMinute(order.estimated_hours) : ''" 
-                  class="input" 
-                  disabled 
-                  placeholder="Số giờ ước tính sẽ tự động tính" 
-                  style="color:#059669;font-weight:700;" 
-                />
+          <!-- Calculation section -->
+          <div class="calculation-section">
+            <h3 class="calculation-title">Thông tin tính toán</h3>
+            <div class="calculation-grid">
+              <div class="form-group">
+                <label>Số giờ ước tính</label>
+                <div class="input-wrapper">
+                  <input 
+                    type="text" 
+                    :value="order.estimated_hours !== null ? formatHourMinute(order.estimated_hours) : ''" 
+                    class="form-input estimated-display" 
+                    disabled 
+                    placeholder="Số giờ ước tính sẽ tự động tính" 
+                  />
+                </div>
+                <small v-if="productivity && order.area_m2" class="form-hint">
+                  Tốc độ làm việc: {{ productivity }} m²/giờ
+                </small>
               </div>
-              <small v-if="productivity && order.area_m2" style="color:#6b7280; font-style:italic; margin-top:4px; display:block;">
-                Tốc độ làm việc: {{ productivity }} m²/giờ
-              </small>
-            </div>
-            <div class="form-group">
-              <label>Số giờ yêu cầu</label>
-              <div class="inputForm" :class="{ 'error': !isTimeValid }">
-                <input type="text" :value="order.requested_hours !== null ? formatHourMinute(order.requested_hours) : ''" class="input" readonly placeholder="Số giờ yêu cầu sẽ tự động tính" style="color:#ef4444;font-weight:700;" />
+              <div class="form-group">
+                <label>Số giờ yêu cầu</label>
+                <div class="input-wrapper" :class="{ 'error': !isTimeValid }">
+                  <input type="text" :value="order.requested_hours !== null ? formatHourMinute(order.requested_hours) : ''" class="form-input requested-display" readonly placeholder="Số giờ yêu cầu sẽ tự động tính" />
+                </div>
+                <div v-if="!isTimeValid && timeValidationMessage" class="error-message">
+                   {{ timeValidationMessage }}
+                </div>
+                <small v-if="minRequiredHours" class="form-hint success">
+                  Thời gian tối thiểu: {{ formatHourMinute(minRequiredHours) }}
+                </small>
               </div>
-              <!-- Hiển thị thông báo lỗi thời gian -->
-              <div v-if="!isTimeValid && timeValidationMessage" class="error-message">
-                 {{ timeValidationMessage }}
+              <div class="form-group">
+                <label>Giá ước tính</label>
+                <div class="input-wrapper">
+                  <input type="text" :value="estimatedPrice !== null ? estimatedPrice.toLocaleString('vi-VN') + ' VNĐ' : ''" class="form-input price-estimated" disabled placeholder="Giá ước tính sẽ tự động tính" />
+                </div>
+                <small v-if="priceExplanation" class="form-hint">
+                  {{ priceExplanation }}
+                </small>
               </div>
-              <!-- Hiển thị thông tin thời gian tối thiểu -->
-              <small v-if="minRequiredHours" class="time-info">
-                Thời gian tối thiểu: {{ formatHourMinute(minRequiredHours) }}
-              </small>
-            </div>
-          </div>
-          <div class="calculation-row">
-            <div class="form-group">
-              <label>Giá ước tính</label>
-              <div class="inputForm">
-                <input type="text" :value="estimatedPrice !== null ? estimatedPrice.toLocaleString('vi-VN') + ' VNĐ' : ''" class="input" disabled placeholder="Giá ước tính sẽ tự động tính" style="color:#ef4444;font-weight:700;" />
+              <div class="form-group">
+                <!-- Empty space for layout balance -->
               </div>
-              <small v-if="priceExplanation" style="color:#6b7280; font-style:italic; margin-top:4px; display:block;">
-                {{ priceExplanation }}
-              </small>
-            </div>
-            <div class="form-group">
-              <!-- Trường trống để cân bằng layout -->
             </div>
           </div>
-        </div>
-        <button type="button" class="button-submit" :disabled="!isTimeValid" @click="openPaymentModal">
-          {{ !isTimeValid ? 'Thời gian không hợp lệ' : 'Tạo đơn' }}
-        </button>
-      </form>
-    </div>
+          
+          <button type="button" class="featured-cta" :disabled="!isTimeValid" @click="openPaymentModal">
+            {{ !isTimeValid ? 'Thời gian không hợp lệ' : 'Tạo đơn' }}
+          </button>
+        </form>
+      </div>
+    </section>
     
     <!-- Modal thanh toán -->
     <div v-if="showPaymentModal" class="modal-overlay" @click="closePaymentModal">
@@ -626,7 +623,7 @@ onMounted(() => {
         
         <div class="modal-body">
           <!-- Thông tin đơn hàng -->
-          <div class="order-summary">
+          <div class="t-card">
             <h3>Thông tin đơn hàng</h3>
             <div class="summary-item">
               <span>Dịch vụ:</span>
@@ -693,8 +690,8 @@ onMounted(() => {
         </div>
 
         <div class="modal-footer">
-          <button class="btn-cancel" @click="closePaymentModal">Hủy</button>
-          <button class="btn-confirm" @click="submitOrder" :disabled="isSubmitting">
+          <button class="btn-close" @click="closePaymentModal">Hủy</button>
+          <button class="btn-download" @click="submitOrder" :disabled="isSubmitting">
             {{ isSubmitting ? 'Đang xử lý...' : 'Xác nhận tạo đơn' }}
           </button>
         </div>
@@ -780,7 +777,7 @@ onMounted(() => {
                 <span>VAT (10%):</span>
                 <span>{{ invoiceData.pricing.tax.toLocaleString('vi-VN') }} VNĐ</span>
               </div>
-              <div class="info-row total-amount">
+              <div class="total-amount">
                 <span><strong>Tổng cộng:</strong></span>
                 <span class="total-price"><strong>{{ invoiceData.pricing.total.toLocaleString('vi-VN') }} VNĐ</strong></span>
               </div>
@@ -789,8 +786,8 @@ onMounted(() => {
         </div>
 
         <div class="modal-footer">
-          <button class="btn-download" @click="downloadInvoice">�️ 📥 Tải xuống PDF</button>
-          <button class="btn-confirm" @click="() => { closeInvoiceModal(); router.push('/dss/customer-orders'); }">
+          <button class="btn-download" @click="downloadInvoice">� Tải xuống PDF</button>
+          <button class="btn-close" @click="() => { closeInvoiceModal(); router.push('/dss/customer-orders'); }">
             Xem đơn hàng
           </button>
         </div>
@@ -800,384 +797,212 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.create-order-container {
-  display: flex;
-  justify-content: center;
-  padding: 40px 20px;
-}
-.form-wrapper {
-  width: 100%;
-  max-width: 900px;
-  background-color: #fff;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.form-header {
-  text-align: center;
-  margin-bottom: 10px;
-}
-.signup-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-.signup-column {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-.form-group label {
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-.inputForm {
-  border: 1.5px solid #ecedec;
-  border-radius: 10px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  padding-left: 10px;
-  transition: 0.2s ease-in-out;
-}
-.input {
-  margin-left: 10px;
-  border-radius: 10px;
-  border: none;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-}
-.input:focus {
-  outline: none;
-}
-.inputForm:focus-within {
-  border-color: #2d79f3;
-}
-.button-submit {
-  background-color: #151717;
-  border: none;
-  color: white;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 10px;
-  height: 50px;
-  width: 100%;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
-}
-.button-submit:hover {
-  background-color: #252727;
-}
-.button-submit:disabled {
-  background-color: #666;
-  cursor: not-allowed;
-}
-@media (max-width: 768px) {
-  .signup-columns {
-    grid-template-columns: 1fr;
-  }
-}
-.form-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #151717;
-  margin-bottom: 5px;
-}
-.form-subtitle {
-  font-size: 16px;
-  color: #6b7280;
-  font-weight: 400;
-  margin: 0;
-}
-
 /* Customer info styles */
 .customer-info {
-  background-color: #f8fafc;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 20px;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-card);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  box-shadow: var(--shadow);
 }
 
 .customer-info.loading {
   text-align: center;
-  color: #6b7280;
+  color: var(--text-light);
 }
 
 .customer-info h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #374151;
-  margin: 0 0 15px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 1rem;
   text-align: center;
 }
 
 .customer-details {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
+  gap: 1rem;
 }
 
 .customer-item {
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
   align-items: center;
 }
 
 .customer-item .label {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--text-light);
   min-width: 60px;
 }
 
 .customer-item .value {
-  font-size: 14px;
-  color: #1f2937;
+  font-size: 0.875rem;
+  color: var(--text-dark);
   font-weight: 500;
 }
 
-/* Divider styles */
-.divider {
-  height: 1px;
-  background: linear-gradient(to right, transparent, #e5e7eb, transparent);
-  margin: 30px 0;
-  position: relative;
+/* Form styles */
+.order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.divider::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: #2d79f3;
-  border-radius: 2px;
-}
-
-/* Calculation section styles */
-.calculation-section {
-  background-color: #f8fafc;
-  border-radius: 16px;
-  padding: 25px;
-  border: 1px solid #e5e7eb;
-}
-
-.calculation-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #374151;
-  margin: 0 0 20px 0;
-  text-align: center;
-  position: relative;
-}
-
-.calculation-title::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 2px;
-  background: #ef4444;
-  border-radius: 1px;
-}
-
-.calculation-row {
+.form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 2rem;
 }
 
-@media (max-width: 768px) {
-  .calculation-row {
-    grid-template-columns: 1fr;
-  }
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-/* Error states */
-.inputForm.error {
-  border-color: #ef4444 !important;
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+
+.input-wrapper {
+  border: 1.5px solid #ecedec;
+  border-radius: 10px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  transition: all 0.2s ease-in-out;
+  background: var(--bg-card);
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--primary);
+}
+
+.input-wrapper.error {
+  border-color: #ef4444;
   background-color: #fef2f2;
 }
 
-.error-message {
-  color: #ef4444;
-  font-size: 13px;
-  font-weight: 500;
-  margin-top: 5px;
-  padding: 8px 12px;
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.time-info {
-  color: #059669;
-  font-size: 12px;
-  font-style: italic;
-  margin-top: 4px;
-  display: block;
-}
-
-/* Service price info styles */
-.service-price-info {
-  color: #2d79f3;
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 4px;
-  display: block;
-  padding: 4px 8px;
-  background-color: #f0f9ff;
-  border-radius: 6px;
-  border: 1px solid #bae6fd;
-}
-
-/* Modal styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px 24px 0;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 24px;
-}
-
-.modal-header h2 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-}
-
-.close-btn {
-  background: none;
+.form-input {
   border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: var(--text-dark);
+  font-size: 1rem;
 }
 
-.close-btn:hover {
-  background-color: #f3f4f6;
-  color: #374151;
+.form-input:focus {
+  outline: none;
 }
 
-.modal-body {
-  padding: 0 24px 24px;
+.form-input:disabled {
+  color: var(--text-light);
+  cursor: not-allowed;
 }
 
-/* Order summary */
-.order-summary {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 24px;
-}
-
-.order-summary h3 {
-  margin: 0 0 16px 0;
-  font-size: 16px;
+.form-input.price-display {
+  color: var(--primary);
   font-weight: 600;
-  color: #374151;
 }
 
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #e5e7eb;
+.form-input.estimated-display {
+  color: var(--accent);
+  font-weight: 700;
 }
 
-.summary-item:last-child {
-  border-bottom: none;
-}
-
-.summary-item.total {
-  font-weight: 600;
-  font-size: 16px;
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 2px solid #e5e7eb;
-}
-
-.summary-item .price {
+.form-input.requested-display {
   color: #ef4444;
   font-weight: 700;
 }
 
-/* Payment methods */
-.payment-methods h3 {
-  margin: 0 0 16px 0;
-  font-size: 16px;
+.form-input.price-estimated {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.form-hint {
+  color: var(--text-light);
+  font-style: italic;
+  margin-top: 0.25rem;
+  display: block;
+  font-size: 0.75rem;
+}
+
+.form-hint.success {
+  color: var(--accent);
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.813rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+}
+
+/* Calculation section */
+.calculation-section {
+  background: var(--bg-light);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.calculation-title {
+  font-size: 1.125rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-dark);
+  margin: 0 0 1.5rem;
+  text-align: center;
+}
+
+.calculation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Payment methods styles */
+.payment-methods h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
 }
 
 .payment-option {
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 
 .radio-container {
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 16px;
+  padding: 1rem;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
   transition: all 0.2s;
 }
 
 .radio-container:hover {
-  border-color: #2d79f3;
-  background-color: #f8fafc;
+  border-color: var(--primary);
+  background-color: var(--bg-light);
 }
 
 .radio-container input[type="radio"] {
@@ -1195,8 +1020,8 @@ onMounted(() => {
 }
 
 .radio-container input[type="radio"]:checked + .checkmark {
-  border-color: #2d79f3;
-  background-color: #2d79f3;
+  border-color: var(--primary);
+  background-color: var(--primary);
 }
 
 .radio-container input[type="radio"]:checked + .checkmark::after {
@@ -1216,40 +1041,40 @@ onMounted(() => {
 }
 
 .payment-title {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
-  color: #111827;
-  margin-bottom: 4px;
+  color: var(--text-dark);
+  margin-bottom: 0.25rem;
 }
 
 .payment-desc {
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 0.875rem;
+  color: var(--text-light);
 }
 
 /* QR Section */
 .qr-section {
-  margin-top: 20px;
-  padding: 20px;
-  background: #f0f9ff;
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  background: var(--bg-card);
   border-radius: 12px;
-  border: 1px solid #0ea5e9;
+  border: 1px solid var(--primary);
 }
 
 .bank-info h4 {
-  margin: 0 0 12px 0;
-  color: #0c4a6e;
-  font-size: 16px;
+  margin: 0 0 0.75rem;
+  color: var(--primary);
+  font-size: 1rem;
 }
 
 .bank-details {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .bank-details div {
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-dark);
 }
 
 .bank-details .amount {
@@ -1266,314 +1091,58 @@ onMounted(() => {
   height: 200px;
   border-radius: 12px;
   border: 2px solid #e5e7eb;
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
 }
 
 .qr-code p {
   margin: 0;
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 0.875rem;
+  color: var(--text-light);
   font-style: italic;
 }
 
-/* Modal footer */
-.modal-footer {
+/* Summary item styles */
+.summary-item {
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 0 24px 24px;
-  border-top: 1px solid #e5e7eb;
-  margin-top: 24px;
-  padding-top: 24px;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.btn-cancel, .btn-confirm {
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+.summary-item:last-child {
+  border-bottom: none;
 }
 
-.btn-cancel {
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  color: #374151;
+.summary-item.total {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid #e5e7eb;
 }
 
-.btn-cancel:hover {
-  background: #e5e7eb;
+.summary-item .price {
+  color: #ef4444;
+  font-weight: 700;
 }
 
-.btn-confirm {
-  background: #2d79f3;
-  border: 1px solid #2d79f3;
-  color: white;
-}
-
-.btn-confirm:hover:not(:disabled) {
-  background: #1d4ed8;
-}
-
-.btn-confirm:disabled {
-  background: #9ca3af;
-  border-color: #9ca3af;
-  cursor: not-allowed;
-}
-
-@media (max-width: 640px) {
-  .modal-content {
-    width: 95%;
-    margin: 10px;
+/* Responsive */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
   }
   
-  .modal-header, .modal-body, .modal-footer {
-    padding-left: 16px;
-    padding-right: 16px;
+  .calculation-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .customer-details {
+    grid-template-columns: 1fr;
   }
   
   .qr-code img {
     width: 160px;
     height: 160px;
-  }
-  
-  .modal-footer {
-    flex-direction: column;
-  }
-  
-  .btn-cancel, .btn-confirm {
-    width: 100%;
-  }
-}
-
-/* Invoice Modal Styles - Chủ đạo đen trắng */
-.invoice-modal {
-  max-width: 900px;
-}
-
-.modal-header {
-  text-align: center;
-  margin-bottom: 30px;
-  position: relative;
-}
-
-.modal-header h2 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #151717;
-  margin-bottom: 5px;
-}
-
-.close-btn {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: #fff;
-  border: 1.5px solid #ecedec;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  cursor: pointer;
-  color: #6b7280;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease-in-out;
-}
-
-.close-btn:hover {
-  border-color: #2d79f3;
-  color: #151717;
-  background: #f8f9fa;
-}
-
-.modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.invoice-header {
-  text-align: center;
-  background: #151717;
-  color: white;
-  border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 20px;
-}
-
-.invoice-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
-.invoice-number {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 400;
-  margin-bottom: 10px;
-}
-
-.invoice-date {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.invoice-section {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.invoice-section h4 {
-  font-weight: 600;
-  margin-bottom: 15px;
-  font-size: 18px;
-  color: #151717;
-  text-align: center;
-}
-
-.service-details,
-.pricing-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.info-row {
-  border: 1.5px solid #ecedec;
-  border-radius: 10px;
-  height: 50px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding-left: 10px;
-  transition: 0.2s ease-in-out;
-  background: #fff;
-}
-
-.info-row:hover {
-  border-color: #2d79f3;
-}
-
-.info-row span:first-child {
-  font-weight: 600;
-  margin-bottom: 2px;
-  color: #6b7280;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: block;
-}
-
-.info-row span:last-child {
-  color: #151717;
-  font-weight: 500;
-  font-size: 15px;
-  display: block;
-}
-
-.total-amount {
-  grid-column: 1 / -1;
-  background-color: #151717;
-  border: none;
-  color: white;
-  height: 60px;
-  font-size: 16px;
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  border-radius: 10px;
-  margin-top: 10px;
-}
-
-.total-amount span:first-child {
-  color: white !important;
-  font-size: 16px;
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-.total-price {
-  color: white !important;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #ecedec;
-}
-
-.btn-download {
-  background-color: #151717;
-  border: none;
-  color: white;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 10px;
-  height: 50px;
-  padding: 0 30px;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-download:hover {
-  background-color: #252727;
-}
-
-.btn-confirm {
-  background: #fff;
-  border: 1.5px solid #ecedec;
-  color: #6b7280;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 10px;
-  height: 50px;
-  padding: 0 30px;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.btn-confirm:hover {
-  border-color: #2d79f3;
-  color: #151717;
-}
-
-@media (max-width: 768px) {
-  .service-details,
-  .pricing-details {
-    grid-template-columns: 1fr;
-  }
-  
-  .modal-footer {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .btn-download, .btn-confirm {
-    width: 100%;
-  }
-  
-  .close-btn {
-    top: -5px;
-    right: -5px;
-    width: 35px;
-    height: 35px;
-    font-size: 18px;
   }
 }
 </style>

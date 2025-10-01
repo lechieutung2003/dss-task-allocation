@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import serviceTypesApi from "@/services/dss/serviceTypes.js";
-
+import '@/assets/css/customer.css'
 const router = useRouter();
 const services = ref([]);
 const loading = ref(false);
@@ -29,241 +29,72 @@ onMounted(fetchServices);
 </script>
 
 <template>
-  <div class="signup-container">
-    <div class="form-wrapper">
-      <div class="form-header">
-        <h1 class="form-title">Danh sách dịch vụ hệ thống</h1>
-        <p class="form-subtitle">Chọn dịch vụ để đặt đơn hàng</p>
-      </div>
-      <div v-if="error" class="text-red-600 mb-2">{{ error }}</div>
-      <div class="form">
-        <div class="service-grid">
-          <div v-for="service in services" :key="service.id" class="service-card">
-            <div class="service-image">
+  <div class="about-page">
+    <section class="stripe white">
+      <div class="container">
+        <div class="content-header">
+          <h1 class="section-title">Danh sách dịch vụ hệ thống</h1>
+          <p class="section-subtitle">Chọn dịch vụ để đặt đơn hàng</p>
+        </div>
+        <div v-if="error" style="color: #ef4444; text-align: center; padding: 15px; margin-bottom: 20px; background-color: #fef2f2; border-radius: 10px;">{{ error }}</div>
+        <div class="services-grid-custom">
+          <div v-for="service in services" :key="service.id" class="service-tile">
+            <div class="service-bg">
               <img v-if="service.image_url" :src="service.image_url" alt="Hình dịch vụ" />
-                <div v-else class="image-placeholder">
-                  <img src="@/assets/images/deep.jpg" alt="Ảnh dịch vụ" style="width:100%;height:100%;object-fit:cover;" />
-                  <span style="position:absolute;bottom:8px;left:0;right:0;text-align:center;color:#aaa;font-size:13px;">Ảnh dịch vụ</span>
+              <img v-else src="@/assets/images/deep.jpg" alt="Ảnh dịch vụ" />
+            </div>
+            <div class="service-overlay">
+              <div class="service-tag">Hot</div>
+              <div class="service-content">
+                <h3>{{ service.name }}</h3>
+                <p><strong>Giá/m²:</strong> {{ service.price_per_m2 }}</p>
+                <p><strong>Tốc độ (m²/h):</strong> {{ service.cleaning_rate_m2_per_h }}</p>
+                <p><strong>Mô tả:</strong> {{ service.description || 'Chưa có mô tả' }}</p>
+                <div style="display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap;">
+                  <button class="featured-cta" @click="router.push('/dss/orders/create')" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    Đặt dịch vụ này
+                  </button>
+                  <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    Xem chi tiết
+                  </button>
                 </div>
-            </div>
-            <div class="service-info">
-              <div class="service-title">{{ service.name }}</div>
-              <div class="service-detail"><b>Giá/m2:</b> {{ service.price_per_m2 }}</div>
-              <div class="service-detail"><b>Tốc độ (m2/h):</b> {{ service.cleaning_rate_m2_per_h }}</div>
-              <div class="service-detail"><b>Mô tả:</b> {{ service.description || 'Chưa có mô tả' }}</div>
-            </div>
-            <div style="display:flex;gap:10px;width:100%;justify-content:center;">
-              <el-button class="button-submit" size="small" @click="router.push(`/dss/orders/create`)">
-                Đặt dịch vụ này
-              </el-button>
-              <el-button class="button-submit" size="small" type="info" >
-                Xem chi tiết
-              </el-button>
+              </div>
             </div>
           </div>
         </div>
-        <div v-if="!loading && services.length === 0" class="text-center text-gray-500 py-8">
+        <div v-if="!loading && services.length === 0" style="text-align: center; color: var(--text-light); padding: 40px 20px;">
           Không có dữ liệu
         </div>
       </div>
-
- </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-/* Card dịch vụ */
-.service-grid {
+.services-grid-custom {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
-.service-card {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  min-height: 320px;
-}
-
-.service-image {
-  width: 100%;
-  max-width: 180px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f6f6f6;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-.service-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.image-placeholder {
-  color: #aaa;
-  font-size: 15px;
-}
-.service-info {
-  width: 100%;
-  text-align: left;
-  margin-bottom: 8px;
-}
-.service-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #151717;
-  margin-bottom: 6px;
-}
-.service-detail {
-  font-size: 15px;
-  color: #444;
-  margin-bottom: 3px;
-}
-   
-.signup-container {
-  display: flex;
-  justify-content: center;
-  padding: 40px 20px;
-}
-
-.form-wrapper {
-  width: 100%;
-  max-width: 900px;
-  background-color: #fff;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-header {
+.content-header {
   text-align: center;
-  margin-bottom: 10px;
-}
-
-.signup-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-
-.signup-column {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-
-.inputForm {
-  border: 1.5px solid #ecedec;
-  border-radius: 10px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  padding-left: 10px;
-  transition: 0.2s ease-in-out;
-}
-
-.input {
-  margin-left: 10px;
-  border-radius: 10px;
-  border: none;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-}
-
-.input:focus {
-  outline: none;
-}
-
-.inputForm:focus-within {
-  border-color: #2d79f3;
-}
-
-.error-border {
-  border-color: #ef4444 !important;
-}
-
-.error-text {
-  color: #ef4444;
-  font-size: 12px;
-  margin-top: 3px;
-}
-
-.button-submit {
-  background-color: #151717;
-  border: none;
-  color: white;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 10px;
-  height: 40px;
-  min-width: 120px;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
-}
-
-.button-submit:hover {
-  background-color: #252727;
-}
-
-.button-submit:disabled {
-  background-color: #666;
-  cursor: not-allowed;
-}
-
-.p {
-  text-align: center;
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-.link {
-  color: #2d79f3;
-  font-weight: 500;
-  text-decoration: none;
+  margin-bottom: 3rem;
 }
 
 @media (max-width: 768px) {
-  .signup-columns {
+  .services-grid-custom {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-}
-.form-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #151717;
-  margin-bottom: 5px;
-}
-
-.form-subtitle {
-  font-size: 16px;
-  color: #6b7280; /* xám nhạt */
-  font-weight: 400;
-  margin: 0;
+  
+  .service-content h3 {
+    font-size: 1.1rem;
+  }
+  
+  .service-content p {
+    font-size: 0.9rem;
+  }
 }
 </style>
