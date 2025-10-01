@@ -182,6 +182,7 @@
 import { defineProps, defineEmits } from 'vue';
 import { ElMessageBox } from 'element-plus';
 import { formatCurrency, formatDate, formatDateTime } from '../../../utils/formatters';
+import OrderService from '../../../services/dss/order';
 
 const props = defineProps({
   order: Object,
@@ -205,7 +206,7 @@ const getStatusLabel = (status) => {
     'confirmed': 'Đã xác nhận',
     'in_progress': 'Đang xử lý',
     'completed': 'Hoàn thành',
-    'cancelled': 'Đã hủy'
+    'rejected': 'Đã hủy'
   };
   return statusMap[status] || status;
 };
@@ -223,25 +224,25 @@ const getStatusType = (status) => {
 };
 
 // Handle update status
-const handleUpdateStatus = () => {
-  ElMessageBox.prompt('Chọn trạng thái mới', 'Cập nhật trạng thái', {
-    confirmButtonText: 'Xác nhận',
-    cancelButtonText: 'Hủy',
-    inputType: 'select',
-    inputValue: props.order.status,
-    inputPlaceholder: 'Chọn trạng thái',
-    inputOptions: [
-      { value: 'pending', label: 'Chờ xử lý' },
-      { value: 'confirmed', label: 'Đã xác nhận' },
-      { value: 'in_progress', label: 'Đang xử lý' },
-      { value: 'completed', label: 'Hoàn thành' }
-    ]
-  }).then(({ value }) => {
-    emit('update-status', value);
-  }).catch(() => {
-    // User cancelled
-  });
-};
+// const handleUpdateStatus = () => {
+//   ElMessageBox.prompt('Chọn trạng thái mới', 'Cập nhật trạng thái', {
+//     confirmButtonText: 'Xác nhận',
+//     cancelButtonText: 'Hủy',
+//     inputType: 'select',
+//     inputValue: props.order.status,
+//     inputPlaceholder: 'Chọn trạng thái',
+//     inputOptions: [
+//       { value: 'pending', label: 'Chờ xử lý' },
+//       { value: 'confirmed', label: 'Đã xác nhận' },
+//       { value: 'in_progress', label: 'Đang xử lý' },
+//       { value: 'completed', label: 'Hoàn thành' }
+//     ]
+//   }).then(({ value }) => {
+//     emit('update-status', value);
+//   }).catch(() => {
+//     // User cancelled
+//   });
+// };
 
 // Handle cancel order
 const handleCancelOrder = () => {
@@ -249,8 +250,10 @@ const handleCancelOrder = () => {
     confirmButtonText: 'Xác nhận',
     cancelButtonText: 'Hủy',
     type: 'warning'
-  }).then(() => {
-    emit('cancel-order');
+  }).then(async () => {
+    const orderId = props.order.id;
+    await OrderService.updateOrderStatus(orderId, 'rejected');
+    props.order.status = 'rejected';
   }).catch(() => {
     // User cancelled
   });

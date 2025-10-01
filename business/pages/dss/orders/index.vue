@@ -20,7 +20,7 @@
             <el-option label="Đã xác nhận" value="confirmed" />
             <el-option label="Đang xử lý" value="in_progress" />
             <el-option label="Hoàn thành" value="completed" />
-            <el-option label="Hủy" value="cancelled" />
+            <el-option label="Hủy" value="rejected" />
           </el-select>
         </el-form-item>
         <el-form-item label="Từ ngày">
@@ -197,7 +197,7 @@ const getStatusLabel = (status) => {
     'confirmed': 'Đã xác nhận',
     'in_progress': 'Đang xử lý',
     'completed': 'Hoàn thành',
-    'cancelled': 'Đã hủy'
+    'rejected': 'Đã hủy'
   };
   return statusMap[status] || status;
 };
@@ -215,36 +215,36 @@ const getStatusType = (status) => {
 };
 
 // Xử lý cập nhật trạng thái
-const handleUpdateStatus = (order) => {
-  ElMessageBox.prompt('Chọn trạng thái mới', 'Cập nhật trạng thái', {
-    confirmButtonText: 'Xác nhận',
-    cancelButtonText: 'Hủy',
-    inputType: 'select',
-    inputValue: order.status,
-    inputPlaceholder: 'Chọn trạng thái',
-    inputOptions: [
-      { value: 'pending', label: 'Chờ xử lý' },
-      { value: 'confirmed', label: 'Đã xác nhận' },
-      { value: 'in_progress', label: 'Đang xử lý' },
-      { value: 'completed', label: 'Hoàn thành' }
-    ]
-  }).then(({ value }) => {
-    OrderService.updateOrderStatus(order.id, value)
-      .then(() => {
-        const index = orderList.value.findIndex(item => item.id === order.id);
-        if (index !== -1) {
-          orderList.value[index].status = value;
-        }
-        ElMessage.success('Cập nhật trạng thái thành công');
-      })
-      .catch((error) => {
-        console.error('Lỗi khi cập nhật trạng thái:', error);
-        ElMessage.error('Cập nhật trạng thái thất bại');
-      });
-  }).catch(() => {
-    // Người dùng đã hủy cập nhật
-  });
-};
+// const handleUpdateStatus = (order) => {
+//   ElMessageBox.prompt('Chọn trạng thái mới', 'Cập nhật trạng thái', {
+//     confirmButtonText: 'Xác nhận',
+//     cancelButtonText: 'Hủy',
+//     inputType: 'select',
+//     inputValue: order.status,
+//     inputPlaceholder: 'Chọn trạng thái',
+//     inputOptions: [
+//       { value: 'pending', label: 'Chờ xử lý' },
+//       { value: 'confirmed', label: 'Đã xác nhận' },
+//       { value: 'in_progress', label: 'Đang xử lý' },
+//       { value: 'completed', label: 'Hoàn thành' }
+//     ]
+//   }).then(({ value }) => {
+//     OrderService.updateOrderStatus(order.id, value)
+//       .then(() => {
+//         const index = orderList.value.findIndex(item => item.id === order.id);
+//         if (index !== -1) {
+//           orderList.value[index].status = value;
+//         }
+//         ElMessage.success('Cập nhật trạng thái thành công');
+//       })
+//       .catch((error) => {
+//         console.error('Lỗi khi cập nhật trạng thái:', error);
+//         ElMessage.error('Cập nhật trạng thái thất bại');
+//       });
+//   }).catch(() => {
+//     // Người dùng đã hủy cập nhật
+//   });
+// };
 
 // Xử lý hủy đơn hàng
 const handleCancelOrder = (order) => {

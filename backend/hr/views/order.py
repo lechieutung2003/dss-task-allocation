@@ -41,6 +41,7 @@ class OrderViewSet(BaseViewSet):
         "destroy": [["roles:edit"]],
         "list": [["roles:edit"], ["roles:view"]],
         "get_assignments": [["roles:edit"], ["roles:view"]],
+        "updateStatus": [["roles:edit"]],
     }
 
     def get_queryset(self):
@@ -108,6 +109,30 @@ class OrderViewSet(BaseViewSet):
             
             result_serializer = AssignmentSerializer(created_assignments, many=True)
             return Response(result_serializer.data, status=status.HTTP_201_CREATED)
+        
+    @action(methods=['PATCH'], detail=True, url_path="updateStatus")
+    def updateStatus(self, request, pk=None):
+        """
+        API endpoint để cập nhật trạng thái đơn hàng
+        """
+        order = self.get_object()
+        old_status = order.status
+        
+        if 'status' not in request.data:
+            return Response({"detail": "Missing status field"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        new_status = request.data['status']
+        valid_statuses = ['pending', 'confirmed', 'in_progress', 'completed', 'rejected']
+        
+        if new_status not in valid_statuses:
+            return Response({"detail": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        order.status = new_status
+        order.save()
+        
+        serializer = self.get_serializer(order)
+        return Response(serializer.data)
+    
 
 class AssignmentViewSet(BaseViewSet):
     queryset = Assignment.objects.all()
