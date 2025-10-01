@@ -11,7 +11,8 @@ from .views import (
     HolidayViewSet,
     WorkSessionViewSet,
     UnitViewSet,
-    UnitTypeViewSet
+    UnitTypeViewSet,
+    SkillViewSet
 )
 
 from .views.order import OrderViewSet, AssignmentViewSet, CustomerViewSet, ServiceTypeViewSet,AssignmentViewSet
@@ -24,6 +25,7 @@ router.register(r'groups', GroupViewSet, basename="groups")
 router.register(r'offices', OfficeViewSet, basename="offices")
 router.register(r'units', UnitViewSet, basename="units")
 router.register(r'unit-types', UnitTypeViewSet, basename="unit-types")
+router.register(r'skills', SkillViewSet, basename="skills")
 
 # Đăng ký các ViewSets liên quan đến order
 router.register(r'customers', CustomerViewSet, basename="customers")

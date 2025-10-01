@@ -1,7 +1,7 @@
 <template>
-  <div class="order-list-container p-4">
+  <div class="order-list-container p-6">
     <!-- Tiêu đề trang -->
-    <div class="mb-6 flex justify-between items-center mt-12">
+    <div class="mb-6 flex justify-between items-center">
       <h1 class="text-2xl font-bold">Danh sách/Lịch sử đơn hàng</h1>
       <el-button type="primary" size="large" @click="handleCreateOrder">
         <i class="el-icon-plus mr-1"></i> Tạo đơn mới
@@ -63,7 +63,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Thao tác" width="330">
+        <el-table-column label="Thao tác" width="280">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="viewOrderDetail(row.id)">
               Chi tiết
@@ -71,10 +71,6 @@
             <el-button type="warning" size="small" @click="navigateToOrderAssignment(row.id)"
                       v-if="row.status !== 'cancelled'">
               Phân công
-            </el-button>
-            <el-button type="success" size="small" @click="handleUpdateStatus(row)" 
-                      v-if="row.status !== 'completed' && row.status !== 'cancelled'">
-              Cập nhật
             </el-button>
             <el-button type="danger" size="small" @click="handleCancelOrder(row)"
                       v-if="row.status !== 'completed' && row.status !== 'cancelled'">

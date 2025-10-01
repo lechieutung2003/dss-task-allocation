@@ -116,6 +116,15 @@
     justify-content: space-between;
 }
 
+.flex-row-content {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    gap: 10px;
+    justify-content: space-between;
+    margin-top: 58px; /* Thêm khoảng cách từ top */
+}
+
 .flex-row > div > label {
     font-size: 14px;
     color: black;

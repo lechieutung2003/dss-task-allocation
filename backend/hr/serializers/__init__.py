@@ -11,3 +11,4 @@ from .order import (
     AssignmentSerializer,
     DecisionLogSerializer
 )
+from .skill import SkillSerializer

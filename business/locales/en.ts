@@ -740,6 +740,8 @@ const en = {
   vietan: 'Viet An Ward',
   vugia: 'Vu Gia Ward',
   xuanphu: 'Xuan Phu Ward',
+  skills: 'Skills',
+  select_skills: 'Select skills',
 }
 
 export default en;
