@@ -181,7 +181,7 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue';
 import { ElMessageBox } from 'element-plus';
-import { formatCurrency, formatDate, formatDateTime } from '../../../utils/formatters';
+import { formatCurrency, formatDate, formatDateTime } from '../../../utils/time';
 
 const props = defineProps({
   order: Object,

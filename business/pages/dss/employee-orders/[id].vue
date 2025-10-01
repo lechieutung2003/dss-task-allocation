@@ -176,7 +176,7 @@ import {
   formatCurrency,
   formatDate,
   formatDateTime,
-} from "../../../utils/formatters";
+} from "../../../utils/time";
 
 const router = useRouter();
 const route = useRoute();

@@ -353,7 +353,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { formatDateTime } from '../../../utils/formatters';
+import { formatDateTime } from '../../../utils/time';
 import EmployeeService from '../../../services/dss/users/employees';
 import AssignmentService from '../../../services/dss/order-assignment';
 import RecommendationService from '../../../services/dss/recommendationService';
