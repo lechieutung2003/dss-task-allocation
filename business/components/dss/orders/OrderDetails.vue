@@ -246,13 +246,22 @@ const getStatusType = (status) => {
 
 // Handle cancel order
 const handleCancelOrder = () => {
-  ElMessageBox.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?', 'Xác nhận hủy', {
+  ElMessageBox.prompt('Vui lòng nhập lý do hủy đơn hàng', 'Xác nhận hủy', {
     confirmButtonText: 'Xác nhận',
     cancelButtonText: 'Hủy',
-    type: 'warning'
-  }).then(async () => {
+    type: 'warning',
+    inputType: 'textarea',
+    inputPlaceholder: 'Nhập lý do hủy đơn hàng...'
+  }).then(async ({ value: reason }) => {
     const orderId = props.order.id;
+    
+    // Gọi API để hủy đơn hàng và ghi log
+    await OrderService.rejectOrder(orderId, reason);
+    
+    //Cập nhật trạng thái
     await OrderService.updateOrderStatus(orderId, 'rejected');
+    
+    
     props.order.status = 'rejected';
   }).catch(() => {
     // User cancelled

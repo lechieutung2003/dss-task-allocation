@@ -167,6 +167,48 @@ class OrderViewSet(BaseViewSet):
         serializer = self.get_serializer(order)
         return Response(serializer.data)
     
+    @action(methods=['PATCH'], detail=True, url_path="admin-log")
+    def update_admin_log(self, request, pk=None):
+        """
+        API endpoint để cập nhật admin_log của đơn hàng
+        """
+        order = self.get_object()
+        
+        print("="*50)
+        print(f"UPDATE ADMIN LOG REQUEST: Order ID={pk}")
+        print(f"Request data: {request.data}")
+
+        # Kiểm tra dữ liệu đầu vào
+        if 'admin_log' not in request.data:
+            # Kiểm tra xem có trường reason không (để tương thích với code cũ)
+            if 'reason' in request.data:
+                order.admin_log = request.data['reason']
+            else:
+                return Response(
+                    {"detail": "Missing admin_log field"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            admin_log = request.data['admin_log']
+            # Kiểm tra nếu admin_log là dict có chứa reason
+            if isinstance(admin_log, dict) and 'reason' in admin_log:
+                order.admin_log = admin_log['reason']
+            else:
+                # Lưu admin_log trực tiếp
+                order.admin_log = admin_log
+        
+        # Lưu thay đổi
+        order.save()
+        
+        print(f"Admin log updated for order {pk}")
+        print(f"New log: {order.admin_log}")
+        if 'status' in request.data:
+            print(f"Status updated to: {order.status}")
+        
+        # Trả về đơn hàng đã cập nhật
+        serializer = self.get_serializer(order)
+        return Response(serializer.data)
+    
 
 class AssignmentViewSet(BaseViewSet):
     queryset = Assignment.objects.all()
