@@ -7,6 +7,23 @@
           <p class="section-subtitle">Xem và quản lý các đơn hàng đã đặt</p>
         </div>
 
+        <!-- Tabs -->
+        <div class="tabs-container">
+          <div class="tabs">
+            <button 
+              v-for="tab in tabs" 
+              :key="tab.status" 
+              @click="activeTab = tab.status"
+              :class="['tab-button', { active: activeTab === tab.status }]"
+            >
+              {{ tab.name }}
+              <span v-if="getOrderCountByStatus(tab.status) > 0" class="tab-badge">
+                {{ getOrderCountByStatus(tab.status) }}
+              </span>
+            </button>
+          </div>
+        </div>
+
               <div v-if="loading" class="loading-state">
           <div class="loading-text">Đang tải...</div>
         </div>
@@ -14,7 +31,7 @@
         <div v-else class="content-body">
           <div v-if="error" class="error-message">{{ error }}</div>
           
-          <div v-if="orders.length" class="orders-table-wrapper">
+          <div v-if="filteredOrders.length" class="orders-table-wrapper">
             <table class="orders-table">
               <thead>
                 <tr>
@@ -29,13 +46,13 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="order in orders" :key="order.id" class="order-row">
+                <tr v-for="order in filteredOrders" :key="order.id" class="order-row">
                   <td>{{ order.service_details?.name }}</td>
                   <td>{{ formatArea(order.area_m2) }}</td>
                   <td>{{ formatDateTime(order.preferred_start_time) }}</td>
                   <td>{{ formatDateTime(order.preferred_end_time) }}</td>
                   <td>{{ order.cost_confirm ? formatPrice(order.cost_confirm) : 'Chưa xác định' }}</td>
-                  <td><span class="status-badge">{{ order.status }}</span></td>
+                  <td><span :class="['status-badge', getStatusClass(order.status)]">{{ getStatusText(order.status) }}</span></td>
                   <td>{{ order.note || 'Không có' }}</td>
                   <td>
                     <button @click="viewInvoice(order)" class="action-btn view-invoice" title="Xem hóa đơn">
@@ -48,7 +65,7 @@
           </div>
           
           <div v-else class="empty-state">
-            <p>Không có đơn hàng nào.</p>
+            <p>{{ getEmptyMessage() }}</p>
             <RouterLink to="/dss/orders/create" class="featured-cta">Đặt dịch vụ ngay</RouterLink>
           </div>
         </div>
@@ -133,16 +150,73 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import CustomerOrderService from '@/services/dss/users/customer'
 import '@/assets/css/customer.css'
+
 const orders = ref([])
 const loading = ref(false)
 const error = ref('')
+const activeTab = ref('pending')
 
 // Modal hóa đơn
 const showInvoiceModal = ref(false)
 const selectedInvoice = ref(null)
+
+// Tabs configuration
+const tabs = [
+  { status: 'pending', name: 'Chờ xác nhận' },
+  { status: 'confirm', name: 'Đã xác nhận' },
+  { status: 'process', name: 'Đang thực hiện' },
+  { status: 'completed', name: 'Hoàn thành' },
+  { status: 'reject', name: 'Bị từ chối' }
+]
+
+// Computed property to filter orders by active tab
+const filteredOrders = computed(() => {
+  return orders.value.filter(order => order.status === activeTab.value)
+})
+
+// Get order count by status
+const getOrderCountByStatus = (status) => {
+  return orders.value.filter(order => order.status === status).length
+}
+
+// Get status display text
+const getStatusText = (status) => {
+  const statusMap = {
+    'pending': 'Chờ xác nhận',
+    'confirm': 'Đã xác nhận',
+    'reject': 'Bị từ chối',
+    'process': 'Đang thực hiện',
+    'completed': 'Hoàn thành'
+  }
+  return statusMap[status] || status
+}
+
+// Get status CSS class
+const getStatusClass = (status) => {
+  const classMap = {
+    'pending': 'status-pending',
+    'confirm': 'status-confirm',
+    'reject': 'status-reject',
+    'process': 'status-process',
+    'completed': 'status-completed'
+  }
+  return classMap[status] || ''
+}
+
+// Get empty message based on active tab
+const getEmptyMessage = () => {
+  const messageMap = {
+    'pending': 'Không có đơn hàng nào đang chờ xác nhận.',
+    'confirm': 'Không có đơn hàng nào đã được xác nhận.',
+    'reject': 'Không có đơn hàng nào bị từ chối.',
+    'process': 'Không có đơn hàng nào đang thực hiện.',
+    'completed': 'Không có đơn hàng nào đã hoàn thành.'
+  }
+  return messageMap[activeTab.value] || 'Không có đơn hàng nào.'
+}
 
 const formatDateTime = (datetime) => {
   return datetime ? new Date(datetime).toLocaleString() : ''
@@ -168,10 +242,27 @@ const fetchOrders = async () => {
   try {
     const res = await CustomerOrderService.getOrders()
     console.log('API Response:', res)
-    orders.value = Array.isArray(res) ? res : (res.results || [])
+    console.log('Type of response:', typeof res)
+    
+    // Xử lý nhiều format response khác nhau
+    let ordersData = []
+    if (Array.isArray(res)) {
+      ordersData = res
+    } else if (res.results && Array.isArray(res.results)) {
+      ordersData = res.results
+    } else if (res.data && Array.isArray(res.data)) {
+      ordersData = res.data
+    } else {
+      console.warn('Unexpected response format:', res)
+      ordersData = []
+    }
+    
+    orders.value = ordersData
+    console.log('Orders after processing:', orders.value)
+    console.log('Orders length:', orders.value.length)
   } catch (e) {
-    console.error('Error:', e)
-    error.value = 'Không thể tải danh sách đơn hàng'
+    console.error('Error fetching orders:', e)
+    error.value = 'Không thể tải danh sách đơn hàng: ' + e.message
   } finally {
     loading.value = false
   }

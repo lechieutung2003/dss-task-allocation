@@ -888,6 +888,62 @@
   margin: 0;
 }
 
+/* Tabs Styles */
+.tabs-container {
+  margin-bottom: 2rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--bg-light);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+.tab-button:hover {
+  color: var(--text-dark);
+  background: var(--bg-light);
+}
+
+.tab-button.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.tab-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.tab-button.active .tab-badge {
+  background: white;
+  color: var(--primary);
+}
+
 .loading-state {
   display: flex;
   justify-content: center;
@@ -949,6 +1005,32 @@
   color: #374151;
 }
 
+/* Status Badge Colors */
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-confirm {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-reject {
+  background-color: #fecaca;
+  color: #dc2626;
+}
+
+.status-process {
+  background-color: #e0e7ff;
+  color: #5b21b6;
+}
+
+.status-completed {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
 .empty-state {
   text-align: center;
   padding: 40px 20px;
@@ -957,6 +1039,30 @@
 .empty-state p {
   color: #6b7280;
   margin-bottom: 20px;
+}
+
+/* Action Buttons */
+.action-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-invoice {
+  background: var(--primary);
+  color: white;
+}
+
+.view-invoice:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
 }
 
 .button-submit {
