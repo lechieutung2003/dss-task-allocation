@@ -278,23 +278,27 @@ const getStatusType = (status) => {
 
 // Xử lý hủy đơn hàng
 const handleCancelOrder = (order) => {
-  ElMessageBox.confirm(
-    "Bạn có chắc chắn muốn hủy đơn hàng này?",
+  ElMessageBox.prompt(
+    "Vui lòng nhập lý do hủy đơn hàng",
     "Xác nhận hủy",
     {
       confirmButtonText: "Xác nhận",
       cancelButtonText: "Hủy",
       type: "warning",
+      inputType: "textarea",
+      inputPlaceholder: "Nhập lý do hủy đơn hàng..."
     }
   )
-    .then(() => {
-      OrderService.updateOrderStatus(order.id, "cancelled")
+    .then(({ value: reason }) => {
+      // Sử dụng phương thức mới để hủy đơn hàng và ghi log
+      OrderService.rejectOrder(order.id, reason)
         .then(() => {
+          // Cập nhật trạng thái trong danh sách
           const index = orderList.value.findIndex(
             (item) => item.id === order.id
           );
           if (index !== -1) {
-            orderList.value[index].status = "cancelled";
+            orderList.value[index].status = "rejected";
           }
           ElMessage.success("Hủy đơn hàng thành công");
         })

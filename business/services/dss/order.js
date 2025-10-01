@@ -98,6 +98,38 @@ class OrderService extends BaseService {
         throw error;
       });
   }
+
+  rejectOrder(id, reason) {
+
+    const reasondata = typeof reason === 'string' ? { reason } : reason;
+
+    const payload = {
+    admin_log: reasondata || 'Không có lý do'
+    };
+    
+    // Lấy token
+    const token = localStorage.getItem('access_token');
+    const headers = { 'Content-Type': 'application/json' };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    // Gửi request tới API
+    const baseUrl = 'http://127.0.0.1:8008/api/v1/orders';
+    const url = `${baseUrl}/${id}/admin-log`;
+    
+    return this.request()
+      .patch(url, payload, { headers })
+      .then(response => {
+        console.log('Order rejected successfully:', response);
+        return response;
+      })
+      .catch(error => {
+        console.error('Error rejecting order:', error);
+        throw error;
+      });
+  }
 }
 
 export default new OrderService();
