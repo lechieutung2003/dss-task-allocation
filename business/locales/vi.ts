@@ -1125,24 +1125,6 @@ const vi = {
   create_order_value_none: 'Không có',
   create_order_value_na: 'N/A',
   create_order_thank_you: 'Cảm ơn bạn đã sử dụng dịch vụ!',
-  
-  // Client Profile Page
-  profile_loading: 'Đang tải thông tin...',
-  profile_error_load_user: 'Không thể tải thông tin người dùng',
-  profile_retry: 'Thử lại',
-  profile_personal_info: 'Thông tin cá nhân',
-  profile_address_info: 'Thông tin địa chỉ',
-  profile_account_settings: 'Cài đặt tài khoản',
-  profile_edit: 'Chỉnh sửa',
-  profile_name: 'Tên',
-  profile_email: 'Email',
-  profile_phone: 'Số điện thoại',
-  profile_address: 'Địa chỉ',
-  profile_area: 'Khu vực',
-  profile_created_at: 'Ngày tạo tài khoản',
-  profile_updated_at: 'Lần cập nhật cuối',
-  profile_not_updated: 'Chưa cập nhật',
-  profile_loading_name: 'Loading...',
 };
 
 export default vi;

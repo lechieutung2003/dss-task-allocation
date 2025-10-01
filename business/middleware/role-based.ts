@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const { tokenInfo } = oauthStore
 
   // Skip middleware for root path and auth pages
-  if (to.path === '/' || to.path === '/login' || to.path === '/signup' || to.path === '/access-denied') {
+  if (to.path === '/' || to.path === '/signup' || to.path === '/access-denied') {
     return
   }
 
@@ -62,7 +62,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     '/dss/customer-orders': {
       allowedRoles: ['customer']
     },
-    '/dss/customer-bookings': {
+    '/dss/orders/create': {
       allowedRoles: ['customer']
     },
     
@@ -82,9 +82,10 @@ export default defineNuxtRouteMiddleware((to, from) => {
   console.log('Token info:', { isStaff: tokenInfo?.isStaff, isSuperuser: tokenInfo?.isSuperuser, scope: tokenInfo?.scope })
   
   // Check if current path has restrictions
-  const currentPathRestriction = Object.keys(roleRestrictions).find(path => 
-    to.path.startsWith(path)
-  )
+  // Sort by length (longest first) to match most specific path
+  const currentPathRestriction = Object.keys(roleRestrictions)
+    .sort((a, b) => b.length - a.length) // Sort by length descending
+    .find(path => to.path.startsWith(path))
   
   console.log('Found restriction for path:', currentPathRestriction)
 
@@ -99,13 +100,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
       return navigateTo('/access-denied')
     }
   } else if (to.path.startsWith('/dss/')) {
-    // For any /dss/* route not explicitly defined, default to admin only
-    if (userRole !== 'admin') {
-      console.log(`Access denied for role ${userRole} to undefined path ${to.path} - defaulting to admin only`)
-      
-      // Redirect to access denied page
-      return navigateTo('/access-denied')
-    }
+    // For any /dss/* route not explicitly defined, deny access to all
+    console.log(`Access denied to undefined path ${to.path} - no explicit permission defined`)
+    
+    // Redirect to access denied page
+    return navigateTo('/access-denied')
   }
 })
 

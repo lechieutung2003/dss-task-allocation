@@ -1113,24 +1113,6 @@ const en = {
   create_order_value_none: 'None',
   create_order_value_na: 'N/A',
   create_order_thank_you: 'Thank you for using our service!',
-  
-  // Client Profile Page
-  profile_loading: 'Loading information...',
-  profile_error_load_user: 'Unable to load user information',
-  profile_retry: 'Retry',
-  profile_personal_info: 'Personal Information',
-  profile_address_info: 'Address Information',
-  profile_account_settings: 'Account Settings',
-  profile_edit: 'Edit',
-  profile_name: 'Name',
-  profile_email: 'Email',
-  profile_phone: 'Phone Number',
-  profile_address: 'Address',
-  profile_area: 'Area',
-  profile_created_at: 'Account Created',
-  profile_updated_at: 'Last Updated',
-  profile_not_updated: 'Not updated',
-  profile_loading_name: 'Loading...',
 }
 
 export default en;
