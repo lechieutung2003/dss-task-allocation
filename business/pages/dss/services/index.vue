@@ -1,6 +1,7 @@
 <script setup>
 definePageMeta({
   layout: "dss",
+  middleware: ["auth", "role-based"],
 });
 
 import { ref, onMounted, computed } from "vue";
@@ -10,12 +11,14 @@ import serviceTypesApi from "@/services/dss/serviceTypes.js";
 
 const router = useRouter();
 const oauthStore = useOauthStore();
-const isAdmin = computed(() => oauthStore.hasAllScopes([
-  "users:view",
-  "users:edit",
-  "roles:view",
-  "roles:edit",
-]));
+const isAdmin = computed(() =>
+  oauthStore.hasAllScopes([
+    "users:view",
+    "users:edit",
+    "roles:view",
+    "roles:edit",
+  ])
+);
 const services = ref([]);
 const loading = ref(false);
 const error = ref("");
