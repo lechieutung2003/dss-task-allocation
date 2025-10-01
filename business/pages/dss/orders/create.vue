@@ -259,7 +259,8 @@ const closePaymentModal = () => {
 // 🆕 Hàm tạo hóa đơn
 const generateInvoice = (orderResponse: any) => {
   const currentDate = new Date();
-  const invoiceNumber = `HD${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(currentDate.getDate()).padStart(2, '0')}${String(orderResponse.id).padStart(4, '0')}`;
+  // Sử dụng ID của đơn hàng làm invoiceNumber trực tiếp
+  const invoiceNumber = orderResponse.id;
   
   invoiceData.value = {
     invoiceNumber,
