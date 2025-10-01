@@ -228,7 +228,7 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="Thao tác" width="180">
+          <el-table-column label="Thao tác" width="120" align="center">
             <template #default="{ row }">
               <el-button 
                 type="primary" 
@@ -237,13 +237,6 @@
                 :disabled="isEmployeeAssigned(row.id)"
               >
                 {{ isEmployeeAssigned(row.id) ? 'Đã phân công' : 'Phân công' }}
-              </el-button>
-              <el-button 
-                type="info" 
-                size="small" 
-                @click="showEmployeeSchedule(row)"
-              >
-                <i class="el-icon-time"></i>
               </el-button>
             </template>
           </el-table-column>
@@ -357,6 +350,7 @@ import { formatDateTime } from '../../../utils/formatters';
 import EmployeeService from '../../../services/dss/users/employees';
 import AssignmentService from '../../../services/dss/order-assignment';
 import RecommendationService from '../../../services/dss/recommendationService';
+import OrderService from '../../../services/dss/order';
 
 const props = defineProps({
   order: Object,
@@ -611,6 +605,20 @@ const filterEmployees = (resetPage = false) => {
   if (showOnlyAvailable.value) {
     result = result.filter(emp => getEmployeeAvailability(emp));
   }
+
+  result.sort((a, b) => {
+    const aAvailable = getEmployeeAvailability(a);
+    const bAvailable = getEmployeeAvailability(b);
+    
+    // Nhân viên "sẵn sàng" lên đầu
+    if (aAvailable && !bAvailable) return -1;
+    if (!aAvailable && bAvailable) return 1;
+    
+    // Nếu cùng trạng thái, sắp xếp theo tên
+    const aName = `${a.first_name || ''} ${a.last_name || ''}`;
+    const bName = `${b.first_name || ''} ${b.last_name || ''}`;
+    return aName.localeCompare(bName);
+  });
   
   filteredEmployees.value = result;
   
@@ -729,6 +737,22 @@ const resetAssignments = () => {
   });
 };
 
+const updateOrderStatus = async (orderId, status) => {
+  try {
+    console.log('Updating order status:', orderId, status);
+    
+    // Đảm bảo status là một string đơn giản
+    const statusValue = typeof status === 'string' ? status : status.status;
+
+    await OrderService.updateOrderStatus(orderId, statusValue);
+    
+    ElMessage.success(`Đơn hàng đã được chuyển sang trạng thái ${status}`);
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    ElMessage.warning('Đã phân công nhân viên nhưng không thể cập nhật trạng thái đơn hàng.');
+  }
+};
+
 // Save all assignments
 const saveAssignments = async () => {
   if (!props.order) return;
@@ -752,7 +776,9 @@ const saveAssignments = async () => {
     if (newAssignments.length > 0) {
       await AssignmentService.createAssignments(orderId, newAssignments);
     }
-    
+
+    await OrderService.updateOrderStatus(orderId, 'confirmed');
+
     ElMessage.success('Phân công nhân viên thành công!');
     await fetchAssignedEmployees();
   } catch (error) {

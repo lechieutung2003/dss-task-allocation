@@ -62,7 +62,41 @@ class OrderService extends BaseService {
   
   // Cập nhật trạng thái đơn hàng
   updateOrderStatus(id, status) {
-    return this.request().put(`${this.entity}/${id}`, { status });
+    // Nếu status là string, chuyển thành đối tượng
+    const statusData = typeof status === 'string' ? { status } : status;
+    
+    // Kiểm tra token
+    const token = localStorage.getItem('access_token');
+    
+    // Thêm token vào headers nếu cần
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    // Sử dụng URL không có trailing slash "/" ở cuối
+    // Và thêm /api/v1/ vào đầu URL nếu không có trong this.entity
+    const baseUrl = 'http://127.0.0.1:8008/api/v1/orders';
+    const url = `${baseUrl}/${id}/updateStatus`;
+    
+    return this.request()
+      .patch(url, statusData, { headers })
+      .then(response => {
+        // console.log('Update successful!');
+        // console.log('Response:', response);
+        return response;
+      })
+      .catch(error => {
+        // console.error('Update failed:', error);
+        if (error.response) {
+          // console.error('Response status:', error.response.status);
+          // console.error('Response data:', error.response.data);
+        }
+        throw error;
+      });
   }
 }
 
