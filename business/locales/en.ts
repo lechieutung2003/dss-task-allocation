@@ -1,4 +1,223 @@
 const en = {
+  // Navigation
+  nav_about: 'About Us',
+  nav_services: 'Services',
+  nav_contact: 'Contact',
+  nav_orders: 'Orders',
+  nav_create_order: 'Create Order',
+  nav_profile: 'Profile',
+  nav_logout: 'Logout',
+  
+  // Home Page
+  home_hero_title: 'Discover and Experience',
+  home_hero_subtitle: 'Professional Cleaning Services',
+  home_hero_description: 'An all-in-one platform to schedule, track, and deliver quality — faster and smarter.',
+  home_hero_cta: 'Choose Service',
+  
+  // Quick Services
+  home_service_basic: 'Basic Cleaning',
+  home_service_basic_desc: 'Guaranteed clean',
+  home_service_advanced: 'Advanced Cleaning',
+  home_service_advanced_desc: 'High efficiency',
+  home_service_hourly: 'Hourly Cleaning',
+  home_service_hourly_desc: 'Flexible',
+  
+  // Hot Services Section
+  home_hot_services_title: 'Popular Services',
+  home_hot_services_subtitle: 'Most popular for modern families and businesses',
+  home_service_comprehensive: 'Comprehensive Cleaning',
+  home_service_comprehensive_price: 'from 500,000đ',
+  home_service_glass: 'Glass Cleaning',
+  home_service_glass_price: 'from 180,000đ',
+  home_service_construction: 'Post-Construction Cleaning',
+  home_service_construction_price: 'from 800,000đ',
+  home_service_carpet: 'Carpet Cleaning',
+  home_service_carpet_price: 'from 120,000đ',
+  home_service_top_tag: 'TOP',
+  
+  // Featured Section
+  home_featured_badge: 'Cinnamon Clean Service',
+  home_featured_title: 'Premium Services',
+  home_featured_description: 'Experience 5-star cleaning services with professional staff and state-of-the-art equipment.',
+  home_featured_tag1: '#HighRated',
+  home_featured_tag2: '#Professional',
+  home_featured_cta: 'Choose Service',
+  
+  // About Page
+  about_hero_eyebrow: 'About Us',
+  about_hero_title: 'Cleaning Company – <span>dedicated</span> & <span>standardized</span> since 19xx',
+  about_hero_description: 'We started as a small team with a belief: quality cleaning is not just about cleanliness, but also brings peace of mind. After many decades, that value remains unchanged.',
+  about_hero_cta1: 'Book Service',
+  about_hero_cta2: 'Contact for Consultation',
+  about_hero_badge1: 'ISO 9001',
+  about_hero_badge2: 'ISO 14001',
+  about_hero_badge3: 'Trusted Service',
+  
+  // History Section
+  about_history_title: 'Rich History',
+  about_history_subtitle: 'Milestones marking the journey of growth and professionalization.',
+  about_history_1990_title: 'Beginning',
+  about_history_1990_desc: 'Established in Ho Chi Minh City, providing cleaning services for homes and small offices.',
+  about_history_2000_title: 'Expansion',
+  about_history_2000_desc: 'Expanded scale, invested in modern equipment, standardized operational processes.',
+  about_history_2010_title: 'Digital Transformation',
+  about_history_2010_desc: 'Launched online booking platform, real-time quality reporting.',
+  about_history_2020_title: 'International Standards',
+  about_history_2020_desc: 'Achieved ISO certifications, committed to safety – environment – customer-centric approach.',
+  
+  // VMV Section
+  about_vmv_title: 'Vision · Mission · Core Values',
+  about_vision_title: 'Vision',
+  about_vision_desc: 'To become the most trusted cleaning service provider in Vietnam, leading in quality and experience.',
+  about_mission_title: 'Mission',
+  about_mission_desc: 'Deliver clean – organized – safe spaces, helping customers focus on what matters most.',
+  about_values_title: 'Core Values',
+  about_values_1: 'Dedication and honesty',
+  about_values_2: 'Process standardization',
+  about_values_3: 'Safety – Green – Sustainable',
+  about_values_4: 'Continuous improvement',
+  
+  // Stats Section
+  about_stats_title: 'Proven Capabilities',
+  about_stats_subtitle: 'Customer trust reflected through meaningful numbers.',
+  about_stats_projects: '5000+',
+  about_stats_projects_label: 'Projects per year',
+  about_stats_satisfaction: '98.7%',
+  about_stats_satisfaction_label: 'Satisfaction rate',
+  about_stats_support: '24/7',
+  about_stats_support_label: 'Support',
+  about_stats_coverage: '30+',
+  about_stats_coverage_label: 'Provinces served',
+  
+  // Team Section
+  about_team_title: 'Leadership Team',
+  about_team_subtitle: 'People who lead the vision and service quality.',
+  about_team_ceo: 'Nguyen Van A',
+  about_team_ceo_role: 'Chief Executive Officer',
+  about_team_coo: 'Tran Thi B',
+  about_team_coo_role: 'Chief Operating Officer',
+  about_team_qa: 'Le Van C',
+  about_team_qa_role: 'Quality Director',
+  
+  // Certifications Section
+  about_certs_title: 'Certifications & Partners',
+  about_cert_iso9001: 'ISO 9001',
+  about_cert_iso14001: 'ISO 14001',
+  about_cert_green: 'Green Cleaning',
+  about_cert_trusted: 'Trusted Partner',
+  
+  // Final CTA Section
+  about_final_cta_title: 'Start with us today',
+  about_final_cta_desc: 'Quick scheduling, transparent pricing, professional team.',
+  about_final_cta1: 'Book Service Now',
+  about_final_cta2: 'Meet Expert',
+  
+  // Customer Orders Page
+  orders_page_title: 'Your Orders',
+  orders_page_subtitle: 'View and manage your placed orders',
+  orders_loading: 'Loading...',
+  
+  // Order Tabs
+  orders_tab_pending: 'Pending',
+  orders_tab_confirmed: 'Confirmed',
+  orders_tab_in_progress: 'In Progress',
+  orders_tab_completed: 'Completed',
+  orders_tab_rejected: 'Rejected',
+  orders_tab_cancelled: 'Cancelled',
+  
+  // Table Headers
+  orders_table_service: 'Service',
+  orders_table_area: 'Area (m2)',
+  orders_table_start_time: 'Start Time',
+  orders_table_end_time: 'End Time',
+  orders_table_estimated_price: 'Estimated Price',
+  orders_table_status: 'Status',
+  orders_table_note: 'Note',
+  orders_table_created_at: 'Created At',
+  orders_table_actions: 'Actions',
+  orders_table_feedback: 'Feedback',
+  orders_table_reject_reason: 'Reject Reason',
+  
+  // Order Status
+  orders_status_pending: 'Pending',
+  orders_status_confirmed: 'Confirmed',
+  orders_status_rejected: 'Rejected',
+  orders_status_in_progress: 'In Progress',
+  orders_status_completed: 'Completed',
+  orders_status_cancelled: 'Cancelled',
+  
+  // Order Actions
+  orders_action_invoice: 'Invoice',
+  orders_action_edit: 'Edit',
+  orders_action_show_feedback: ' Show feedback',
+  orders_action_hide_feedback: ' Hide feedback',
+  orders_action_show_reason: ' Show reason',
+  orders_action_hide_reason: ' Hide reason',
+  
+  // Order Values
+  orders_price_tbd: 'To be determined',
+  orders_note_none: 'None',
+  
+  // Empty States
+  orders_empty_pending: 'No orders are pending confirmation.',
+  orders_empty_confirmed: 'No orders have been confirmed.',
+  orders_empty_rejected: 'No orders have been rejected.',
+  orders_empty_in_progress: 'No orders are in progress.',
+  orders_empty_completed: 'No orders have been completed.',
+  orders_empty_cancelled: 'No orders have been cancelled.',
+  orders_empty_cta: 'Book Service Now',
+  
+  // Feedback Section
+  orders_feedback_title: 'Service feedback: {serviceName}',
+  orders_feedback_label: 'Your feedback:',
+  orders_feedback_input_label: 'Leave feedback about the service:',
+  orders_feedback_placeholder: 'Share your experience with this service...',
+  orders_feedback_submit: 'Submit feedback',
+  orders_feedback_success: 'Feedback has been submitted successfully!',
+  orders_feedback_error: 'An error occurred while submitting feedback. Please try again.',
+  
+  // Reject Reason Section
+  orders_reject_title: 'Reject reason: {serviceName}',
+  orders_reject_label: 'Reject reason:',
+  orders_reject_none: 'No reject reason has been provided',
+  
+  // Invoice Modal
+  invoice_title: 'Service Invoice',
+  invoice_header_title: 'SERVICE INVOICE',
+  invoice_number: 'No: {number}',
+  invoice_issue_date: 'Issue date: {date}',
+  invoice_due_date: 'Due date: {date}',
+  
+  // Invoice Details
+  invoice_service_details: 'Service Details',
+  invoice_service: 'Service:',
+  invoice_area: 'Area:',
+  invoice_start_time: 'Start time:',
+  invoice_end_time: 'End time:',
+  invoice_payment_method: 'Payment method:',
+  invoice_note: 'Note:',
+  
+  // Invoice Payment
+  invoice_payment_title: 'Payment',
+  invoice_subtotal: 'Subtotal:',
+  invoice_tax: 'VAT (10%):',
+  invoice_total: 'Total:',
+  
+  // Invoice Actions
+  invoice_download: 'Download PDF',
+  invoice_close: 'Close',
+  
+  // Pagination
+  pagination_showing: 'Showing',
+  pagination_of: 'of',
+  pagination_results: 'results',
+  pagination_previous: 'Previous',
+  pagination_next: 'Next',
+  
+  // Payment Methods
+  payment_cash: 'Cash',
+  payment_transfer: 'Bank Transfer',
+  
   thank_you_registration: "Thank you for registering. An email has been sent to {email}. Please check your email and follow the link to confirm your account.",
   note_register: "By selecting Household, you indicate that you have the certificate of household business registration.",
   upload_business_license_label: "Upload your business' license",
@@ -742,6 +961,212 @@ const en = {
   xuanphu: 'Xuan Phu Ward',
   skills: 'Skills',
   select_skills: 'Select skills',
+  
+  // Contact page content
+  contact_eyebrow: 'Contact',
+  contact_title: 'We are always ready to support',
+  contact_subtitle: 'Leave your information, our customer service team will respond within <strong>15–30 minutes (business hours)</strong>.',
+  contact_cta_book_service: 'Book service now',
+  contact_cta_hotline: 'Call hotline 1900 1234',
+  contact_badge_support: '24/7 Support',
+  contact_badge_pricing: 'Transparent pricing',
+  contact_badge_insurance: 'Liability insurance',
+  contact_form_title: 'Send request',
+  contact_form_subtitle: 'Fill out the form below for quick consultation.',
+  contact_form_fullname: 'Full name',
+  contact_form_phone: 'Phone number',
+  contact_form_email: 'Email',
+  contact_form_service_need: 'Service need',
+  contact_form_message: 'Content',
+  contact_form_agree: 'I agree to let the Company contact me for consultation according to the information provided.',
+  contact_form_placeholder_fullname: 'John Doe',
+  contact_form_placeholder_phone: '090x xxx xxx',
+  contact_form_placeholder_email: 'you@company.com',
+  contact_form_placeholder_service_select: '— Select —',
+  contact_form_placeholder_message: 'Describe location, area, desired time…',
+  contact_service_basic: 'Basic cleaning',
+  contact_service_deep: 'Deep cleaning',
+  contact_service_office: 'Office cleaning',
+  contact_service_post: 'Post-construction cleaning',
+  contact_form_submit: 'Send request',
+  contact_form_submitting: 'Sending…',
+  contact_success_title: 'Request received ✅',
+  contact_success_message: 'We will contact you as soon as possible. Thank you!',
+  contact_success_cta: 'Book service now',
+  contact_info_hotline: 'Hotline',
+  contact_info_hotline_number: '1900 1234',
+  contact_info_hotline_hours: 'Working hours: 08:00–20:00 (Mon–Sun)',
+  contact_info_email: 'Email',
+  contact_info_email_address: 'contact@cleaningcompany.vn',
+  contact_info_email_response: 'Response within 24h',
+  contact_info_messaging: 'Zalo / WhatsApp',
+  contact_info_messaging_number: '+84 90x xxx xxx',
+  contact_info_messaging_desc: 'Quick communication channel, send current status photos',
+  contact_info_office: 'Office',
+  contact_info_office_address: '123 Nguyen Trai, District 1, Ho Chi Minh City',
+  contact_info_office_branches: 'Branches: Hanoi · Da Nang',
+  contact_info_hours: 'Reception hours',
+  contact_info_weekdays: 'Monday–Friday',
+  contact_info_weekdays_hours: '08:00–20:00',
+  contact_info_weekend: 'Saturday–Sunday',
+  contact_info_weekend_hours: '09:00–18:00',
+  
+  // Contact FAQ Questions & Answers
+  contact_faq_q1: 'Does the price include tools and chemicals?',
+  contact_faq_a1: 'Yes. We provide all necessary tools and chemicals suitable for each service category.',
+  contact_faq_q2: 'Can I book urgent same-day service?',
+  contact_faq_a2: 'Depending on schedule availability. Please call our hotline for the fastest arrangement.',
+  contact_faq_q3: 'What is your quality guarantee policy?',
+  contact_faq_a3: 'If you\'re not satisfied, we will arrange a free re-service within 24–48 hours.',
+  contact_map_title: 'Map',
+  contact_map_subtitle: 'Visit our office or schedule an on-site survey.',
+  contact_faq_title: 'FAQ – Frequently Asked Questions',
+  contact_faq_pricing_question: 'Does the price include tools and chemicals?',
+  contact_faq_pricing_answer: 'Yes. We prepare all necessary tools and chemicals suitable for each item.',
+  contact_faq_urgent_question: 'Can I book urgently on the same day?',
+  contact_faq_urgent_answer: 'Depending on schedule availability. Please call our hotline for the fastest arrangement.',
+  contact_faq_warranty_question: 'What is the quality warranty policy?',
+  contact_faq_warranty_answer: 'If not satisfied, we arrange free re-service within 24–48h.',
+  contact_form_validation_error: 'Please fill in Full name, Phone number and Content.',
+  contact_form_submit_error: 'Submission failed, please try again later.',
+  
+  // Create Order Page
+  create_order_title: 'Create New Order',
+  create_order_subtitle: 'Enter information to create a service order',
+  create_order_loading_customer: 'Loading customer information...',
+  create_order_customer_info: 'Customer Information',
+  create_order_customer_name: 'Name:',
+  create_order_customer_email: 'Email:',
+  create_order_customer_phone: 'Phone:',
+  create_order_customer_address: 'Address:',
+  
+  // Edit Order Page
+  edit_order_title: 'Edit Order',
+  edit_order_subtitle: 'Update order information',
+  edit_order_save_button: 'Save Changes',
+  edit_order_cancel_button: 'Cancel',
+  edit_order_success: 'Order updated successfully!',
+  edit_order_error: 'Update failed, please try again.',
+  edit_order_loading: 'Loading order information...',
+  edit_order_saving: 'Saving...',
+  edit_order_confirm_cancel: 'Are you sure you want to cancel? Changes will not be saved.',
+  edit_order_calculation_notice: 'Price and time will be automatically recalculated when you change information.',
+  
+  // Form Fields
+  create_order_service: 'Service',
+  create_order_service_placeholder: 'Select service',
+  create_order_area: 'Area (m²)',
+  create_order_area_placeholder: 'Enter area',
+  create_order_note: 'Note',
+  create_order_note_placeholder: 'Enter note (if any)',
+  create_order_price_per_m2: 'Price per m²',
+  create_order_price_placeholder: 'Select service to view price',
+  create_order_start_time: 'Preferred start time',
+  create_order_end_time: 'Preferred end time',
+  
+  // Calculation Section
+  create_order_calculation_title: 'Calculation Information',
+  create_order_estimated_hours: 'Estimated hours',
+  create_order_estimated_hours_placeholder: 'Estimated hours will be auto-calculated',
+  create_order_requested_hours: 'Requested hours',
+  create_order_requested_hours_placeholder: 'Requested hours will be auto-calculated',
+  create_order_estimated_price: 'Estimated price',
+  create_order_estimated_price_placeholder: 'Estimated price will be auto-calculated',
+  create_order_productivity: 'Work rate: {productivity} m²/hour',
+  create_order_min_time: 'Minimum time: {time}',
+  create_order_time_invalid: 'Invalid time',
+  create_order_create_button: 'Create Order',
+  
+  // Payment Modal
+  create_order_payment_title: 'Choose Payment Method',
+  create_order_order_info: 'Order Information',
+  create_order_service_label: 'Service:',
+  create_order_area_label: 'Area:',
+  create_order_time_label: 'Requested time:',
+  create_order_total_label: 'Total amount:',
+  create_order_payment_methods: 'Payment Methods',
+  create_order_cash_payment: 'Cash Payment',
+  create_order_cash_description: 'Pay directly upon service completion',
+  create_order_cancel: 'Cancel',
+  create_order_confirm: 'Confirm Order Creation',
+  create_order_processing: 'Processing...',
+  
+  // Invoice Modal
+  create_order_invoice_title: 'Service Invoice',
+  create_order_invoice_header: 'SERVICE INVOICE',
+  create_order_invoice_number: 'No: {number}',
+  create_order_invoice_issue_date: 'Issue date: {date}',
+  create_order_invoice_due_date: 'Due date: {date}',
+  create_order_customer_info_title: 'Customer Information',
+  create_order_customer_name_label: 'Full name:',
+  create_order_customer_email_label: 'Email:',
+  create_order_customer_phone_label: 'Phone number:',
+  create_order_service_details: 'Service Details',
+  create_order_service_name: 'Service:',
+  create_order_working_area: 'Area:',
+  create_order_working_hours: 'Working hours:',
+  create_order_start_time_label: 'Start time:',
+  create_order_end_time_label: 'End time:',
+  create_order_payment_method_label: 'Payment method:',
+  create_order_note_label: 'Note:',
+  create_order_payment_info: 'Payment',
+  create_order_subtotal: 'Subtotal:',
+  create_order_vat: 'VAT (10%):',
+  create_order_total: 'Total:',
+  create_order_download_pdf: 'Download PDF',
+  create_order_view_orders: 'View Orders',
+  create_order_close: 'Close',
+  
+  // Success/Error Messages
+  create_order_success: 'Order created successfully!',
+  create_order_error: 'Order creation failed, please check your information.',
+  create_order_validation_error: 'Cannot create order: {message}',
+  create_order_customer_error: 'Unable to load customer information. Please log in again.',
+  create_order_download_error: 'Unable to open invoice print window. Please check your browser.',
+  
+  // Time Formatting
+  create_order_time_hours: '{hours} hours',
+  create_order_time_minutes: '{minutes} minutes',
+  create_order_time_hours_minutes: '{hours} hours {minutes} minutes',
+  create_order_time_one_minute: '1 minute',
+  
+  // Values
+  create_order_value_none: 'None',
+  create_order_value_na: 'N/A',
+  create_order_thank_you: 'Thank you for using our service!',
+  
+  // Cancel Order
+  cancel_order_button: 'Cancel Order',
+  cancel_order_title: 'Cancel Order Request',
+  cancel_order_warning: 'Important Notice',
+  cancel_order_description: 'To cancel your order, please contact our customer service directly. We will assist you in processing your request quickly.',
+  cancel_order_contact_admin: 'Contact Information:',
+  cancel_order_phone: 'Phone:',
+  cancel_order_email: 'Email:',
+  cancel_order_note_title: 'Notes:',
+  cancel_order_note_1: 'Please provide your order ID when contacting us',
+  cancel_order_note_2: 'Processing time: 1-2 business hours',
+  cancel_order_note_3: 'Cancellation fees may apply depending on timing',
+  cancel_order_close: 'Close',
+  cancel_order_call_now: 'Call Now',
+  
+  // Copy functions
+  copy_phone: 'Copy phone number',
+  copy_email: 'Copy email',
+  copy_phone_success: 'Phone number copied',
+  copy_phone_error: 'Failed to copy phone number',
+  copy_email_success: 'Email copied',
+  copy_email_error: 'Failed to copy email',
+  
+  search_orders_placeholder: 'Search orders...',
+  search_type_all: 'All',
+  search_type_service: 'Service',
+  search_type_id: 'Order ID',
+  search_type_note: 'Note',
+  search_type_price: 'Price',
+  search_results_found: 'Found {count} results',
+  search_no_results: 'No results found',
+  
 }
 
 export default en;
