@@ -1,7 +1,7 @@
 <template>
   <div class="order-detail-container p-4">
     <!-- Tiêu đề trang -->
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6   flex justify-between items-center">
       <h1 class="text-2xl font-bold">Chi tiết đơn hàng #{{ $route.params.id }}</h1>
       <div>
         <el-button type="primary" @click="handlePrintOrder">
@@ -39,7 +39,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { useRouter, useRoute } from 'vue-router';
 import { formatCurrency, formatDate, formatDateTime } from '../../../utils/formatters';
 import OrderDetails from '../../../components/dss/orders/OrderDetails.vue';
-import EmployeeAssignment from '../../../components/dss/orders/EmployeeAssignment.vue';
+import EmployeeAssignment from './EmployeeAssignment.vue';
 
 const router = useRouter();
 const route = useRoute();
