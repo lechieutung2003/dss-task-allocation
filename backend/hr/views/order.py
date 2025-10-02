@@ -214,9 +214,9 @@ class AssignmentViewSet(BaseViewSet):
     queryset = Assignment.objects.all()
     serializer_class = AssignmentSerializer
     required_alternate_scopes = {
-        "create": [["assignments:edit"]],
-        "retrieve": [["assignments:view"], ["assignments:edit"]],
-        "update": [["assignments:edit"]],
-        "destroy": [["assignments:edit"]],
-        "list": [["assignments:view"], ["assignments:edit"]],
+        "create": [["roles:edit"]],
+        "retrieve": [["assignments:view"], ["roles:edit"]],
+        "update": [["roles:edit"]],
+        "destroy": [["roles:edit"]],
+        "list": [["assignments:view"], ["roles:edit"]],
     }

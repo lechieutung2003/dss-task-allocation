@@ -47,6 +47,7 @@ class AssignmentService {
    * @returns {Promise} API response
    */
   deleteAssignment(id) {
+    console.log("Deleting assignment with ID:", id);
     return ApiService.delete(`${this.baseUrl}/${id}`);
   }
 

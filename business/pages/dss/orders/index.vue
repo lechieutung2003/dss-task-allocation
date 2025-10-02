@@ -3,18 +3,19 @@
     <!-- Tiêu đề trang -->
     <div class="mb-6 flex justify-between items-center">
       <h1 class="text-2xl font-bold">Danh sách/Lịch sử đơn hàng</h1>
-      <el-button type="primary" size="large" @click="handleCreateOrder">
+      <!-- <el-button type="primary" size="large" @click="handleCreateOrder">
         <i class="el-icon-plus mr-1"></i> Tạo đơn mới
-      </el-button>
+      </el-button> -->
     </div>
 
     <!-- Bộ lọc -->
     <el-card class="mb-6 filter-card">
-      <div class="grid grid-cols-4 gap-4">
-        <el-form-item label="Từ khóa">
+      <div class="grid grid-cols-3 gap-4">
+        <el-form-item label="Khách hàng">
           <el-input
-            v-model="filters.keyword"
-            placeholder="Tìm theo mã đơn, khách hàng..."
+            v-model="filters.customer_name"
+            placeholder="Tìm theo tên khách hàng..."
+            @input="handleSearch"
           />
         </el-form-item>
         <el-form-item label="Trạng thái">
@@ -22,6 +23,7 @@
             v-model="filters.status"
             placeholder="Chọn trạng thái"
             clearable
+            @change="handleSearch"
           >
             <el-option label="Chờ xử lý" value="pending" />
             <el-option label="Đã xác nhận" value="confirmed" />
@@ -30,30 +32,23 @@
             <el-option label="Hủy" value="rejected" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Từ ngày">
+        <el-form-item label="Ngày tạo">
           <el-date-picker
-            v-model="filters.startDate"
+            v-model="filters.createdDate"
             type="date"
-            placeholder="Chọn ngày"
+            placeholder="Chọn ngày tạo"
+            @change="handleSearch"
           />
         </el-form-item>
-        <el-form-item label="Đến ngày">
-          <el-date-picker
-            v-model="filters.endDate"
-            type="date"
-            placeholder="Chọn ngày"
-          />
+        <el-form-item v-if="hasActiveFilters" :offset-top="10" class="col-span-3 flex justify-end">
+          <el-button type="text" @click="resetFilters">Đặt lại bộ lọc</el-button>
         </el-form-item>
-      </div>
-      <div class="flex justify-end mt-4">
-        <el-button type="primary" @click="handleSearch">Tìm kiếm</el-button>
-        <el-button @click="resetFilters">Đặt lại</el-button>
       </div>
     </el-card>
 
     <!-- Bảng dữ liệu -->
     <el-card class="order-table">
-      <el-table :data="orderList" border stripe v-loading="loading">
+      <el-table :data="paginatedOrders" border stripe v-loading="loading">
         <el-table-column prop="id" label="Mã đơn hàng" width="150" />
         <el-table-column prop="customer_name" label="Khách hàng" />
         <el-table-column label="Ngày tạo" width="180">
@@ -66,7 +61,7 @@
         </el-table-column>
         <el-table-column label="Tổng tiền" width="150">
           <template #default="{ row }">
-            {{ formatCurrency(calculateTotalAmount(row)) }}
+            {{ row.cost_confirm }}
           </template>
         </el-table-column>
         <el-table-column prop="status" label="Trạng thái" width="150">
@@ -110,7 +105,7 @@
         <el-pagination
           v-model:currentPage="pagination.currentPage"
           v-model:page-size="pagination.pageSize"
-          :total="pagination.total"
+          :total="filteredOrders.length"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
@@ -143,10 +138,9 @@ definePageMeta({
 
 // Bộ lọc
 const filters = reactive({
-  keyword: "",
+  customer_name: "",
   status: "",
-  startDate: "",
-  endDate: "",
+  createdDate: "",
 });
 
 // Phân trang
@@ -161,45 +155,75 @@ const fetchOrders = async () => {
   loading.value = true;
   try {
     const response = await OrderService.getOrders({
-      ...filters,
-      page: pagination.currentPage,
-      pageSize: pagination.pageSize,
+      // Không truyền page và pageSize
+      // Hoặc truyền pageSize lớn để lấy tất cả
+      pageSize: 1000 
     });
 
     orderList.value = response.results || [];
-    pagination.total = response.count || 0;
+    pagination.total = orderList.value.length;
   } catch (error) {
     console.error("Lỗi khi tải danh sách đơn hàng:", error);
-    ElMessage.error("Không thể tải danh sách đơn hàng. Vui lòng thử lại sau.");
+    ElMessage.error("Không thể tải danh sách đơn hàng.");
   } finally {
     loading.value = false;
   }
 };
 
+const filteredOrders = computed(() => {
+  return orderList.value.filter(order => {
+    // Lọc theo tên khách hàng
+    const matchCustomer = !filters.customer_name || 
+      order.customer_name?.toLowerCase().includes(filters.customer_name.toLowerCase());
+    
+    // Lọc theo trạng thái
+    const matchStatus = !filters.status || order.status === filters.status;
+    
+    // Lọc theo ngày tạo
+    const matchDate = !filters.createdDate || (
+      order.created_at && 
+      formatDate(order.created_at) === formatDate(filters.createdDate)
+    );
+    
+    return matchCustomer && matchStatus && matchDate;
+  });
+});
+
 // Xử lý tìm kiếm
 const handleSearch = () => {
   pagination.currentPage = 1;
-  fetchOrders();
+  // Không gọi fetchOrders() nữa vì lọc trên frontend
+  pagination.total = filteredOrders.value.length; // Cập nhật tổng số bản ghi sau khi lọc
 };
+
+const paginatedOrders = computed(() => {
+  const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
+  const endIndex = startIndex + pagination.pageSize;
+  return filteredOrders.value.slice(startIndex, endIndex);
+});
+
+const hasActiveFilters = computed(() => {
+  return filters.customer_name || filters.status || filters.createdDate;
+});
 
 // Đặt lại bộ lọc
 const resetFilters = () => {
-  Object.keys(filters).forEach((key) => {
-    filters[key] = "";
-  });
+  filters.customer_name = "";
+  filters.status = "";
+  filters.createdDate = "";
   handleSearch();
 };
 
 // Xử lý thay đổi kích thước trang
 const handleSizeChange = (size) => {
   pagination.pageSize = size;
-  fetchOrders();
+  pagination.currentPage = 1;
+  // Không gọi fetchOrders()
 };
 
 // Xử lý thay đổi trang hiện tại
 const handleCurrentChange = (page) => {
   pagination.currentPage = page;
-  fetchOrders();
 };
 
 // Xem chi tiết đơn hàng
