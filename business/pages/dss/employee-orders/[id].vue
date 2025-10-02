@@ -111,7 +111,7 @@
             <div class="info-item">
               <strong>Tổng tiền:</strong>
               <span class="text-xl font-bold text-green-600">
-                {{ formatCurrency(calculateTotalAmount(order)) }}
+                {{ order.cost_confirm }}
               </span>
             </div>
             <div class="info-item">
@@ -304,7 +304,7 @@ const handlePrintOrder = () => {
       </table>
       
       <div class="total">
-        <p>Tổng tiền: ${formatCurrency(calculateTotalAmount(order.value))}</p>
+        <p>Tổng tiền: ${order.value.cost_confirm}</p>
       </div>
       
       <div class="info-section">

@@ -25,7 +25,11 @@
               <strong>{{ order.area_m2 }} m²</strong>
             </div> -->
             <div class="flex justify-between">
-              <span class="text-gray-600">Thời gian yêu cầu:</span>
+              <span class="text-gray-600">Thời gian ước tính</span>
+              <strong>{{ order.estimated_hours }} giờ</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Thời gian yêu cầu</span>
               <strong>{{ order.requested_hours }} giờ</strong>
             </div>
             <div class="flex justify-between">
