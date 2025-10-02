@@ -1158,7 +1158,14 @@ const en = {
   copy_email_success: 'Email copied',
   copy_email_error: 'Failed to copy email',
   
-  // Search functionality
+  search_orders_placeholder: 'Search orders...',
+  search_type_all: 'All',
+  search_type_service: 'Service',
+  search_type_id: 'Order ID',
+  search_type_note: 'Note',
+  search_type_price: 'Price',
+  search_results_found: 'Found {count} results',
+  search_no_results: 'No results found',
   
 }
 
