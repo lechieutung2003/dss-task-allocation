@@ -181,7 +181,8 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue';
 import { ElMessageBox } from 'element-plus';
-import { formatCurrency, formatDate, formatDateTime } from '../../../utils/time';
+import { formatCurrency} from '../../../utils/formatters'
+import { formatDate, formatDateTime } from '../../../utils/time';
 
 const props = defineProps({
   order: Object,
@@ -205,7 +206,7 @@ const getStatusLabel = (status) => {
     'confirmed': 'Đã xác nhận',
     'in_progress': 'Đang xử lý',
     'completed': 'Hoàn thành',
-    'cancelled': 'Đã hủy'
+    'rejected': 'Đã hủy'
   };
   return statusMap[status] || status;
 };
@@ -223,34 +224,45 @@ const getStatusType = (status) => {
 };
 
 // Handle update status
-const handleUpdateStatus = () => {
-  ElMessageBox.prompt('Chọn trạng thái mới', 'Cập nhật trạng thái', {
-    confirmButtonText: 'Xác nhận',
-    cancelButtonText: 'Hủy',
-    inputType: 'select',
-    inputValue: props.order.status,
-    inputPlaceholder: 'Chọn trạng thái',
-    inputOptions: [
-      { value: 'pending', label: 'Chờ xử lý' },
-      { value: 'confirmed', label: 'Đã xác nhận' },
-      { value: 'in_progress', label: 'Đang xử lý' },
-      { value: 'completed', label: 'Hoàn thành' }
-    ]
-  }).then(({ value }) => {
-    emit('update-status', value);
-  }).catch(() => {
-    // User cancelled
-  });
-};
+// const handleUpdateStatus = () => {
+//   ElMessageBox.prompt('Chọn trạng thái mới', 'Cập nhật trạng thái', {
+//     confirmButtonText: 'Xác nhận',
+//     cancelButtonText: 'Hủy',
+//     inputType: 'select',
+//     inputValue: props.order.status,
+//     inputPlaceholder: 'Chọn trạng thái',
+//     inputOptions: [
+//       { value: 'pending', label: 'Chờ xử lý' },
+//       { value: 'confirmed', label: 'Đã xác nhận' },
+//       { value: 'in_progress', label: 'Đang xử lý' },
+//       { value: 'completed', label: 'Hoàn thành' }
+//     ]
+//   }).then(({ value }) => {
+//     emit('update-status', value);
+//   }).catch(() => {
+//     // User cancelled
+//   });
+// };
 
 // Handle cancel order
 const handleCancelOrder = () => {
-  ElMessageBox.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?', 'Xác nhận hủy', {
+  ElMessageBox.prompt('Vui lòng nhập lý do hủy đơn hàng', 'Xác nhận hủy', {
     confirmButtonText: 'Xác nhận',
     cancelButtonText: 'Hủy',
-    type: 'warning'
-  }).then(() => {
-    emit('cancel-order');
+    type: 'warning',
+    inputType: 'textarea',
+    inputPlaceholder: 'Nhập lý do hủy đơn hàng...'
+  }).then(async ({ value: reason }) => {
+    const orderId = props.order.id;
+    
+    // Gọi API để hủy đơn hàng và ghi log
+    await OrderService.rejectOrder(orderId, reason);
+    
+    //Cập nhật trạng thái
+    await OrderService.updateOrderStatus(orderId, 'rejected');
+    
+    
+    props.order.status = 'rejected';
   }).catch(() => {
     // User cancelled
   });

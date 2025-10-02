@@ -37,7 +37,8 @@ import { ref, onMounted } from 'vue';
 import OrderService from '../../../services/dss/order';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useRouter, useRoute } from 'vue-router';
-import { formatCurrency, formatDate, formatDateTime } from '../../../utils/time';
+import { formatCurrency} from '../../../utils/formatters';
+import { formatDate, formatDateTime } from '../../../utils/time';
 import OrderDetails from '../../../components/dss/orders/OrderDetails.vue';
 import EmployeeAssignment from '../../../components/dss/orders/EmployeeAssignment.vue';
 

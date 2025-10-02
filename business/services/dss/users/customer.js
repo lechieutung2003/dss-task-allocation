@@ -22,6 +22,13 @@ const customerApi = {
 		return ApiService.post(`${baseUrl}/create-order`, orderData);
 	},
 
+	// Cập nhật feedback cho đơn hàng đã hoàn thành
+	async updateOrderFeedback(orderId, feedback) {
+		return ApiService.put(`${baseUrl}/orders/${orderId}/feedback`, {
+			customer_feedback: feedback
+		});
+	},
+
 };
 
 export default customerApi;

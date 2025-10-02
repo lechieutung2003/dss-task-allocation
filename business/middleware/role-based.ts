@@ -5,6 +5,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const oauthStore = useOauthStore()
   const { tokenInfo } = oauthStore
 
+  // Skip middleware for root path and auth pages
+  if (to.path === '/' || to.path === '/signup' || to.path === '/access-denied') {
+    return
+  }
+
   // Check if user is authenticated first
   const authenticated = tokenInfo && tokenInfo.access_token && tokenInfo.access_token.length > 0
   const currentTime = Math.floor(Date.now() / 1000)
@@ -55,18 +60,21 @@ export default defineNuxtRouteMiddleware((to, from) => {
     
     // CUSTOMER ONLY ROUTES
     '/dss/customer-orders': {
-      allowedRoles: ['customer']
+      allowedRoles: ['guest']
     },
-    '/dss/customer-bookings': {
-      allowedRoles: ['customer']
+    '/dss/orders/create': {
+      allowedRoles: ['guest']
+    },
+    '/dss/services/customer': {
+      allowedRoles: ['guest']
     },
     
     // SHARED ROUTES (all authenticated users)
     '/dss/profile': {
-      allowedRoles: ['admin', 'employee', 'customer']
+      allowedRoles: ['admin', 'employee', 'guest']
     },
     '/dss/notifications': {
-      allowedRoles: ['admin', 'employee', 'customer']
+      allowedRoles: ['admin', 'employee', 'guest']
     }
   }
 
@@ -77,9 +85,10 @@ export default defineNuxtRouteMiddleware((to, from) => {
   console.log('Token info:', { isStaff: tokenInfo?.isStaff, isSuperuser: tokenInfo?.isSuperuser, scope: tokenInfo?.scope })
   
   // Check if current path has restrictions
-  const currentPathRestriction = Object.keys(roleRestrictions).find(path => 
-    to.path.startsWith(path)
-  )
+  // Sort by length (longest first) to match most specific path
+  const currentPathRestriction = Object.keys(roleRestrictions)
+    .sort((a, b) => b.length - a.length) // Sort by length descending
+    .find(path => to.path.startsWith(path))
   
   console.log('Found restriction for path:', currentPathRestriction)
 
@@ -94,13 +103,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
       return navigateTo('/access-denied')
     }
   } else if (to.path.startsWith('/dss/')) {
-    // For any /dss/* route not explicitly defined, default to admin only
-    if (userRole !== 'admin') {
-      console.log(`Access denied for role ${userRole} to undefined path ${to.path} - defaulting to admin only`)
-      
-      // Redirect to access denied page
-      return navigateTo('/access-denied')
-    }
+    // For any /dss/* route not explicitly defined, deny access to all
+    console.log(`Access denied to undefined path ${to.path} - no explicit permission defined`)
+    
+    // Redirect to access denied page
+    return navigateTo('/access-denied')
   }
 })
 

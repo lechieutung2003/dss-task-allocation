@@ -3,9 +3,9 @@
     <!-- Tiêu đề trang -->
     <div class="mb-6 flex justify-between items-center">
       <h1 class="text-2xl font-bold">Danh sách/Lịch sử đơn hàng</h1>
-      <el-button type="primary" size="large" @click="handleCreateOrder">
+      <!-- <el-button type="primary" size="large" @click="handleCreateOrder">
         <i class="el-icon-plus mr-1"></i> Tạo đơn mới
-      </el-button>
+      </el-button> -->
     </div>
 
     <!-- Bộ lọc -->
@@ -27,7 +27,7 @@
             <el-option label="Đã xác nhận" value="confirmed" />
             <el-option label="Đang xử lý" value="in_progress" />
             <el-option label="Hoàn thành" value="completed" />
-            <el-option label="Hủy" value="cancelled" />
+            <el-option label="Hủy" value="rejected" />
           </el-select>
         </el-form-item>
         <el-form-item label="Từ ngày">
@@ -127,11 +127,10 @@ import OrderService from "../../../services/dss/order";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRouter } from "vue-router";
 import {
-  formatCurrency,
   formatDate,
   formatDateTime,
 } from "../../../utils/time";
-
+import {formatCurrency} from "../../../utils/formatters";
 const router = useRouter();
 const loading = ref(false);
 const orderList = ref([]);
@@ -223,11 +222,11 @@ const calculateTotalAmount = (order) => {
 // Lấy nhãn trạng thái
 const getStatusLabel = (status) => {
   const statusMap = {
-    pending: "Chờ xử lý",
-    confirmed: "Đã xác nhận",
-    in_progress: "Đang xử lý",
-    completed: "Hoàn thành",
-    cancelled: "Đã hủy",
+    'pending': 'Chờ xử lý',
+    'confirmed': 'Đã xác nhận',
+    'in_progress': 'Đang xử lý',
+    'completed': 'Hoàn thành',
+    'rejected': 'Đã hủy'
   };
   return statusMap[status] || status;
 };
@@ -245,60 +244,60 @@ const getStatusType = (status) => {
 };
 
 // Xử lý cập nhật trạng thái
-const handleUpdateStatus = (order) => {
-  ElMessageBox.prompt("Chọn trạng thái mới", "Cập nhật trạng thái", {
-    confirmButtonText: "Xác nhận",
-    cancelButtonText: "Hủy",
-    inputType: "select",
-    inputValue: order.status,
-    inputPlaceholder: "Chọn trạng thái",
-    inputOptions: [
-      { value: "pending", label: "Chờ xử lý" },
-      { value: "confirmed", label: "Đã xác nhận" },
-      { value: "in_progress", label: "Đang xử lý" },
-      { value: "completed", label: "Hoàn thành" },
-    ],
-  })
-    .then(({ value }) => {
-      OrderService.updateOrderStatus(order.id, value)
-        .then(() => {
-          const index = orderList.value.findIndex(
-            (item) => item.id === order.id
-          );
-          if (index !== -1) {
-            orderList.value[index].status = value;
-          }
-          ElMessage.success("Cập nhật trạng thái thành công");
-        })
-        .catch((error) => {
-          console.error("Lỗi khi cập nhật trạng thái:", error);
-          ElMessage.error("Cập nhật trạng thái thất bại");
-        });
-    })
-    .catch(() => {
-      // Người dùng đã hủy cập nhật
-    });
-};
+// const handleUpdateStatus = (order) => {
+//   ElMessageBox.prompt('Chọn trạng thái mới', 'Cập nhật trạng thái', {
+//     confirmButtonText: 'Xác nhận',
+//     cancelButtonText: 'Hủy',
+//     inputType: 'select',
+//     inputValue: order.status,
+//     inputPlaceholder: 'Chọn trạng thái',
+//     inputOptions: [
+//       { value: 'pending', label: 'Chờ xử lý' },
+//       { value: 'confirmed', label: 'Đã xác nhận' },
+//       { value: 'in_progress', label: 'Đang xử lý' },
+//       { value: 'completed', label: 'Hoàn thành' }
+//     ]
+//   }).then(({ value }) => {
+//     OrderService.updateOrderStatus(order.id, value)
+//       .then(() => {
+//         const index = orderList.value.findIndex(item => item.id === order.id);
+//         if (index !== -1) {
+//           orderList.value[index].status = value;
+//         }
+//         ElMessage.success('Cập nhật trạng thái thành công');
+//       })
+//       .catch((error) => {
+//         console.error('Lỗi khi cập nhật trạng thái:', error);
+//         ElMessage.error('Cập nhật trạng thái thất bại');
+//       });
+//   }).catch(() => {
+//     // Người dùng đã hủy cập nhật
+//   });
+// };
 
 // Xử lý hủy đơn hàng
 const handleCancelOrder = (order) => {
-  ElMessageBox.confirm(
-    "Bạn có chắc chắn muốn hủy đơn hàng này?",
+  ElMessageBox.prompt(
+    "Vui lòng nhập lý do hủy đơn hàng",
     "Xác nhận hủy",
     {
       confirmButtonText: "Xác nhận",
       cancelButtonText: "Hủy",
       type: "warning",
+      inputType: "textarea",
+      inputPlaceholder: "Nhập lý do hủy đơn hàng..."
     }
   )
-    .then(() => {
-      OrderService.updateOrderStatus(order.id, "cancelled")
+    .then(({ value: reason }) => {
+      // Sử dụng phương thức mới để hủy đơn hàng và ghi log
+      OrderService.rejectOrder(order.id, reason)
         .then(() => {
+          // Cập nhật trạng thái trong danh sách
           const index = orderList.value.findIndex(
             (item) => item.id === order.id
           );
           if (index !== -1) {
-            orderList.value[index].status = "cancelled";
+            orderList.value[index].status = "rejected";
           }
           ElMessage.success("Hủy đơn hàng thành công");
         })

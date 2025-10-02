@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
 const router = useRouter();
+const { t } = useI18n();
+
 const goToCreateOrder = () => router.push('/dss/orders/create');
 const goContact = () => router.push('/dss/contact');
 </script>
@@ -17,22 +21,21 @@ const goContact = () => router.push('/dss/contact');
       
       <div class="hero-content">
         <div class="hero-text">
-          <p class="eyebrow">Về chúng tôi</p>
-          <h1 class="title">Công Ty Dọn Dẹp – <span>tận tâm</span> & <span>chuẩn mực</span> từ năm 19xx</h1>
+          <p class="eyebrow">{{ t('about_hero_eyebrow') }}</p>
+          <h1 class="title" v-html="t('about_hero_title')"></h1>
           <p class="sub">
-            Chúng tôi bắt đầu từ một đội ngũ nhỏ với niềm tin: vệ sinh chất lượng không chỉ sạch
-            mà còn mang lại sự an tâm. Hơn nhiều thập kỷ, giá trị ấy vẫn không đổi.
+            {{ t('about_hero_description') }}
           </p>
           <div class="cta-row">
-            <button class="btn" @click="goToCreateOrder">Đặt dịch vụ</button>
-            <button class="btn ghost" @click="goContact">Liên hệ tư vấn</button>
+            <button class="btn" @click="goToCreateOrder">{{ t('about_hero_cta1') }}</button>
+            <button class="btn ghost" @click="goContact">{{ t('about_hero_cta2') }}</button>
           </div>
 
           <!-- Logos/Badges -->
           <ul class="badges">
-            <li>ISO 9001</li>
-            <li>ISO 14001</li>
-            <li>Trusted Service</li>
+            <li>{{ t('about_hero_badge1') }}</li>
+            <li>{{ t('about_hero_badge2') }}</li>
+            <li>{{ t('about_hero_badge3') }}</li>
           </ul>
         </div>
       </div>
@@ -41,36 +44,36 @@ const goContact = () => router.push('/dss/contact');
     <!-- LỊCH SỬ (BE) -->
     <section class="stripe white">
       <div class="container">
-        <h2>Lịch sử lâu đời</h2>
-        <p class="section-subtitle">Những cột mốc đánh dấu hành trình lớn mạnh và chuyên nghiệp hóa.</p>
+        <h2>{{ t('about_history_title') }}</h2>
+        <p class="section-subtitle">{{ t('about_history_subtitle') }}</p>
 
         <div class="timeline-grid">
           <div class="t-item">
             <div class="t-year">19xx</div>
             <div class="t-card">
-              <h3>Khởi đầu</h3>
-              <p>Thành lập tại TP. HCM, cung cấp dịch vụ vệ sinh nhà ở và văn phòng nhỏ.</p>
+              <h3>{{ t('about_history_1990_title') }}</h3>
+              <p>{{ t('about_history_1990_desc') }}</p>
             </div>
           </div>
           <div class="t-item">
             <div class="t-year">200x</div>
             <div class="t-card">
-              <h3>Mở rộng</h3>
-              <p>Mở rộng quy mô, đầu tư máy móc hiện đại, chuẩn hóa quy trình vận hành.</p>
+              <h3>{{ t('about_history_2000_title') }}</h3>
+              <p>{{ t('about_history_2000_desc') }}</p>
             </div>
           </div>
           <div class="t-item">
             <div class="t-year">201x</div>
             <div class="t-card">
-              <h3>Chuyển đổi số</h3>
-              <p>Đưa nền tảng đặt lịch trực tuyến, báo cáo chất lượng theo thời gian thực.</p>
+              <h3>{{ t('about_history_2010_title') }}</h3>
+              <p>{{ t('about_history_2010_desc') }}</p>
             </div>
           </div>
           <div class="t-item">
             <div class="t-year">202x</div>
             <div class="t-card">
-              <h3>Chuẩn quốc tế</h3>
-              <p>Đạt các chứng nhận ISO, cam kết an toàn – môi trường – khách hàng là trung tâm.</p>
+              <h3>{{ t('about_history_2020_title') }}</h3>
+              <p>{{ t('about_history_2020_desc') }}</p>
             </div>
           </div>
         </div>
@@ -80,24 +83,24 @@ const goContact = () => router.push('/dss/contact');
     <!-- TẦM NHÌN | SỨ MỆNH | GIÁ TRỊ (TRẮNG) -->
     <section class="stripe beige">
       <div class="container vmv">
-        <h2>Tầm nhìn · Sứ mệnh · Giá trị cốt lõi</h2>
+        <h2>{{ t('about_vmv_title') }}</h2>
 
         <div class="vmv-grid">
           <div class="card">
-            <h3>Tầm nhìn</h3>
-            <p>Trở thành đơn vị vệ sinh đáng tin cậy nhất tại Việt Nam, dẫn đầu về chất lượng và trải nghiệm.</p>
+            <h3>{{ t('about_vision_title') }}</h3>
+            <p>{{ t('about_vision_desc') }}</p>
           </div>
           <div class="card">
-            <h3>Sứ mệnh</h3>
-            <p>Mang đến không gian sạch – gọn – an toàn, giúp khách hàng tập trung vào điều quan trọng hơn.</p>
+            <h3>{{ t('about_mission_title') }}</h3>
+            <p>{{ t('about_mission_desc') }}</p>
           </div>
           <div class="card">
-            <h3>Giá trị cốt lõi</h3>
+            <h3>{{ t('about_values_title') }}</h3>
             <ul class="bullets">
-              <li>Tận tâm và trung thực</li>
-              <li>Chuẩn hóa quy trình</li>
-              <li>An toàn – Xanh – Bền vững</li>
-              <li>Không ngừng cải tiến</li>
+              <li>{{ t('about_values_1') }}</li>
+              <li>{{ t('about_values_2') }}</li>
+              <li>{{ t('about_values_3') }}</li>
+              <li>{{ t('about_values_4') }}</li>
             </ul>
           </div>
         </div>
@@ -107,25 +110,25 @@ const goContact = () => router.push('/dss/contact');
     <!-- NĂNG LỰC & SỐ LIỆU (BE) -->
     <section class="stripe white">
       <div class="container stats">
-        <h2>Năng lực đã được chứng minh</h2>
-        <p class="section-subtitle">Sự tin tưởng của khách hàng thể hiện qua những con số biết nói.</p>
+        <h2>{{ t('about_stats_title') }}</h2>
+        <p class="section-subtitle">{{ t('about_stats_subtitle') }}</p>
 
         <div class="stats-grid">
           <div class="s-card">
-            <div class="s-num">5000+</div>
-            <div class="s-label">Công trình mỗi năm</div>
+            <div class="s-num">{{ t('about_stats_projects') }}</div>
+            <div class="s-label">{{ t('about_stats_projects_label') }}</div>
           </div>
           <div class="s-card">
-            <div class="s-num">98.7%</div>
-            <div class="s-label">Mức hài lòng</div>
+            <div class="s-num">{{ t('about_stats_satisfaction') }}</div>
+            <div class="s-label">{{ t('about_stats_satisfaction_label') }}</div>
           </div>
           <div class="s-card">
-            <div class="s-num">24/7</div>
-            <div class="s-label">Hỗ trợ</div>
+            <div class="s-num">{{ t('about_stats_support') }}</div>
+            <div class="s-label">{{ t('about_stats_support_label') }}</div>
           </div>
           <div class="s-card">
-            <div class="s-num">30+</div>
-            <div class="s-label">Tỉnh thành phục vụ</div>
+            <div class="s-num">{{ t('about_stats_coverage') }}</div>
+            <div class="s-label">{{ t('about_stats_coverage_label') }}</div>
           </div>
         </div>
       </div>
@@ -134,24 +137,24 @@ const goContact = () => router.push('/dss/contact');
     <!-- ĐỘI NGŨ LÃNH ĐẠO (TRẮNG) -->
     <section class="stripe beige">
       <div class="container team">
-        <h2>Đội ngũ lãnh đạo</h2>
-        <p class="section-subtitle">Những người dẫn dắt tầm nhìn và chất lượng dịch vụ.</p>
+        <h2>{{ t('about_team_title') }}</h2>
+        <p class="section-subtitle">{{ t('about_team_subtitle') }}</p>
 
         <div class="team-grid">
           <div class="member">
             <img src="@/assets/images/a0.png" alt="CEO" />
-            <h3>Nguyễn Văn A</h3>
-            <p class="role">Tổng Giám Đốc</p>
+            <h3>{{ t('about_team_ceo') }}</h3>
+            <p class="role">{{ t('about_team_ceo_role') }}</p>
           </div>
           <div class="member">
             <img src="@/assets/images/a0.png" alt="COO" />
-            <h3>Trần Thị B</h3>
-            <p class="role">Giám Đốc Vận Hành</p>
+            <h3>{{ t('about_team_coo') }}</h3>
+            <p class="role">{{ t('about_team_coo_role') }}</p>
           </div>
           <div class="member">
             <img src="@/assets/images/a0.png" alt="QA" />
-            <h3>Lê Văn C</h3>
-            <p class="role">Giám Đốc Chất Lượng</p>
+            <h3>{{ t('about_team_qa') }}</h3>
+            <p class="role">{{ t('about_team_qa_role') }}</p>
           </div>
         </div>
       </div>
@@ -160,12 +163,12 @@ const goContact = () => router.push('/dss/contact');
     <!-- CHỨNG NHẬN | ĐỐI TÁC (BE) -->
     <section class="stripe white">
       <div class="container certs">
-        <h2>Chứng nhận & Đối tác</h2>
+        <h2>{{ t('about_certs_title') }}</h2>
         <div class="certs-row">
-          <div class="cert">ISO 9001</div>
-          <div class="cert">ISO 14001</div>
-          <div class="cert">Green Cleaning</div>
-          <div class="cert">Trusted Partner</div>
+          <div class="cert">{{ t('about_cert_iso9001') }}</div>
+          <div class="cert">{{ t('about_cert_iso14001') }}</div>
+          <div class="cert">{{ t('about_cert_green') }}</div>
+          <div class="cert">{{ t('about_cert_trusted') }}</div>
         </div>
       </div>
     </section>
@@ -173,11 +176,11 @@ const goContact = () => router.push('/dss/contact');
     <!-- CTA CUỐI TRANG (TRẮNG) -->
     <section class="stripe beige">
       <div class="container final-cta">
-        <h2>Bắt đầu với chúng tôi hôm nay</h2>
-        <p>Hẹn lịch nhanh, báo giá minh bạch, đội ngũ chuyên nghiệp.</p>
+        <h2>{{ t('about_final_cta_title') }}</h2>
+        <p>{{ t('about_final_cta_desc') }}</p>
         <div class="cta-row">
-          <button class="btn" @click="goToCreateOrder">Đặt dịch vụ ngay</button>
-          <button class="btn ghost" @click="goContact">Gặp chuyên gia</button>
+          <button class="btn" @click="goToCreateOrder">{{ t('about_final_cta1') }}</button>
+          <button class="btn ghost" @click="goContact">{{ t('about_final_cta2') }}</button>
         </div>
       </div>
     </section>
@@ -185,6 +188,4 @@ const goContact = () => router.push('/dss/contact');
   </div>
 </template>
 
-<style scoped>
-/* Styles đã được chuyển sang customer.css */
-</style>
+

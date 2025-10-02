@@ -173,10 +173,10 @@ import OrderService from "../../../services/dss/order";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
 import {
-  formatCurrency,
   formatDate,
   formatDateTime,
 } from "../../../utils/time";
+import {formatCurrency} from "../../../utils/formatters";
 
 const router = useRouter();
 const route = useRoute();

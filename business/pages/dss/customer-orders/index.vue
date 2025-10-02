@@ -1,119 +1,205 @@
 <template>
-  <div class="orders-container">
-    <div class="content-wrapper">
-      <div class="content-header">
-        <h2 class="form-title">Đơn hàng của bạn</h2>
-        <p class="form-subtitle">Xem và quản lý các đơn hàng đã đặt</p>
-      </div>
+  <div class="about-page">
+    <section class="stripe white">
+      <div class="container">
+        <div class="content-header">
+          <h2 class="section-title">{{ t('orders_page_title') }}</h2>
+          <p class="section-subtitle">{{ t('orders_page_subtitle') }}</p>
+        </div>
 
-      <div v-if="loading" class="loading-state">
-        <div class="loading-text">Đang tải...</div>
-      </div>
-      
-      <div v-else class="content-body">
-        <div v-if="error" class="error-message">{{ error }}</div>
-        
-        <div v-if="orders.length" class="orders-table-wrapper">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>Dịch vụ</th>
-                <th>Diện tích (m2)</th>
-                <th>Thời gian bắt đầu</th>
-                <th>Thời gian kết thúc</th>
-                <th>Giá ước tính</th>
-                <th>Trạng thái</th>
-                <th>Ghi chú</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="order in orders" :key="order.id" class="order-row">
-                <td>{{ order.service_details?.name }}</td>
-                <td>{{ formatArea(order.area_m2) }}</td>
-                <td>{{ formatDateTime(order.preferred_start_time) }}</td>
-                <td>{{ formatDateTime(order.preferred_end_time) }}</td>
-                <td>{{ order.cost_confirm ? formatPrice(order.cost_confirm) : 'Chưa xác định' }}</td>
-                <td><span class="status-badge">{{ order.status }}</span></td>
-                <td>{{ order.note || 'Không có' }}</td>
-                <td>
-                  <button @click="viewInvoice(order)" class="action-btn view-invoice" title="Xem hóa đơn">
-                    🧾 Hóa đơn
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Tabs -->
+        <div class="tabs-container">
+          <div class="tabs">
+            <button 
+              v-for="tab in tabs" 
+              :key="tab.status" 
+              @click="activeTab = tab.status"
+              :class="['tab-button', { active: activeTab === tab.status }]"
+            >
+              {{ tab.name }}
+              <span v-if="getOrderCountByStatus(tab.status) > 0" class="tab-badge">
+                {{ getOrderCountByStatus(tab.status) }}
+              </span>
+            </button>
+          </div>
+        </div>
+
+              <div v-if="loading" class="loading-state">
+          <div class="loading-text">{{ t('orders_loading') }}</div>
         </div>
         
-        <div v-else class="empty-state">
-          <p>Không có đơn hàng nào.</p>
-          <RouterLink to="/dss/orders/create" class="button-submit">Đặt dịch vụ ngay</RouterLink>
+        <div v-else class="content-body">
+          <div v-if="error" class="error-message">{{ error }}</div>
+          
+          <div v-if="filteredOrders.length" class="orders-table-wrapper">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>{{ t('orders_table_service') }}</th>
+                  <th>{{ t('orders_table_area') }}</th>
+                  <th>{{ t('orders_table_start_time') }}</th>
+                  <th>{{ t('orders_table_end_time') }}</th>
+                  <th>{{ t('orders_table_estimated_price') }}</th>
+                  <th>{{ t('orders_table_status') }}</th>
+                  <th>{{ t('orders_table_note') }}</th>
+                  <th>{{ t('orders_table_actions') }}</th>
+                  <th v-if="activeTab === 'completed' || activeTab === 'rejected'">
+                    {{ activeTab === 'completed' ? t('orders_table_feedback') : t('orders_table_reject_reason') }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="order in filteredOrders" :key="order.id">
+                  <tr class="order-row">
+                    <td>{{ order.service_details?.name }}</td>
+                    <td>{{ formatArea(order.area_m2) }}</td>
+                    <td>{{ formatDateTime(order.preferred_start_time) }}</td>
+                    <td>{{ formatDateTime(order.preferred_end_time) }}</td>
+                    <td>{{ order.cost_confirm ? formatPrice(order.cost_confirm) : t('orders_price_tbd') }}</td>
+                    <td><span :class="['status-badge', getStatusClass(order.status)]">{{ getStatusText(order.status) }}</span></td>
+                    <td>{{ order.note || t('orders_note_none') }}</td>
+                    <td>
+                      <button 
+                        v-if="order.status !== 'rejected'"
+                        @click="viewInvoice(order)" 
+                        class="action-btn view-invoice" 
+                        title="Xem hóa đơn"
+                      >
+                        {{ t('orders_action_invoice') }}
+                      </button>
+                      <span v-else class="no-invoice-text">-</span>
+                    </td>
+                    <!-- Cột feedback/admin log cho completed và rejected -->
+                    <td v-if="activeTab === 'completed' || activeTab === 'rejected'">
+                      <button 
+                        @click="toggleOrderExpanded(order.id)" 
+                        class="action-btn"
+                        :class="activeTab === 'completed' ? 'show-feedback' : 'show-reject'"
+                      >
+                        {{ expandedOrders.has(order.id) ? 
+                          (activeTab === 'completed' ? t('orders_action_hide_feedback') : t('orders_action_hide_reason')) : 
+                          (activeTab === 'completed' ? t('orders_action_show_feedback') : t('orders_action_show_reason'))
+                        }}
+                      </button>
+                    </td>
+                  </tr>
+                  
+                  <!-- Expanded row cho feedback/admin log -->
+                  <tr v-if="(activeTab === 'completed' || activeTab === 'rejected') && expandedOrders.has(order.id)" 
+                      class="expanded-row">
+                    <td :colspan="activeTab === 'completed' || activeTab === 'rejected' ? 9 : 8" class="expanded-content">
+                      <!-- Customer Feedback cho completed -->
+                      <div v-if="activeTab === 'completed'" class="feedback-content">
+                        <h4 class="expanded-title">{{ t('orders_feedback_title', { serviceName: order.service_details?.name }) }}</h4>
+                        <div v-if="order.customer_feedback" class="existing-feedback">
+                          <div class="feedback-label">{{ t('orders_feedback_label') }}</div>
+                          <div class="feedback-text">{{ order.customer_feedback }}</div>
+                        </div>
+                        <div v-else class="feedback-input-section">
+                          <div class="feedback-label">{{ t('orders_feedback_input_label') }}</div>
+                          <textarea 
+                            v-model="feedbackInputs[order.id]" 
+                            :placeholder="t('orders_feedback_placeholder')"
+                            class="feedback-textarea"
+                            rows="3"
+                          ></textarea>
+                          <button 
+                            @click="submitFeedback(order.id)" 
+                            class="submit-feedback-btn"
+                            :disabled="!feedbackInputs[order.id]?.trim()"
+                          >
+                            {{ t('orders_feedback_submit') }}
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <!-- Admin Log cho rejected -->
+                      <div v-else-if="activeTab === 'rejected'" class="admin-log-content">
+                        <h4 class="expanded-title">{{ t('orders_reject_title', { serviceName: order.service_details?.name }) }}</h4>
+                        <div v-if="order.admin_log" class="admin-log">
+                          <div class="admin-log-label">{{ t('orders_reject_label') }}</div>
+                          <div class="admin-log-text">{{ order.admin_log }}</div>
+                        </div>
+                        <div v-else class="no-admin-log">
+                          <em>{{ t('orders_reject_none') }}</em>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          
+          <div v-else class="empty-state">
+            <p>{{ getEmptyMessage() }}</p>
+            <RouterLink to="/dss/orders/create" class="featured-cta">{{ t('orders_empty_cta') }}</RouterLink>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Modal Hóa đơn -->
     <div v-if="showInvoiceModal && selectedInvoice" class="modal-overlay" @click="closeInvoiceModal">
       <div class="modal-content invoice-modal" @click.stop>
         <div class="modal-header">
-          <h2>🧾 Hóa đơn dịch vụ</h2>
+          <h2>{{ t('invoice_title') }}</h2>
           <button class="close-btn" @click="closeInvoiceModal">×</button>
         </div>
         
         <div class="modal-body">
           <div class="invoice-header">
-            <div class="invoice-title">HÓA ĐƠN DỊCH VỤ</div>
-            <div class="invoice-number">Số: {{ selectedInvoice.invoiceNumber }}</div>
+            <div class="invoice-title">{{ t('invoice_header_title') }}</div>
+            <div class="invoice-number">{{ t('invoice_number', { number: selectedInvoice.invoiceNumber }) }}</div>
             <div class="invoice-date">
-              <div>Ngày xuất: {{ selectedInvoice.issueDate }}</div>
-              <div>Hạn thanh toán: {{ selectedInvoice.dueDate }}</div>
+              <div>{{ t('invoice_issue_date', { date: selectedInvoice.issueDate }) }}</div>
+              <div>{{ t('invoice_due_date', { date: selectedInvoice.dueDate }) }}</div>
             </div>
           </div>
 
           <div class="invoice-section">
-            <h4>Chi tiết dịch vụ</h4>
+            <h4>{{ t('invoice_service_details') }}</h4>
             <div class="service-details">
               <div class="info-row">
-                <span>Dịch vụ:</span>
+                <span>{{ t('invoice_service') }}</span>
                 <span>{{ selectedInvoice.orderInfo.serviceName }}</span>
               </div>
               <div class="info-row">
-                <span>Diện tích:</span>
+                <span>{{ t('invoice_area') }}</span>
                 <span>{{ selectedInvoice.orderInfo.area }} m²</span>
               </div>
               <div class="info-row">
-                <span>Thời gian bắt đầu:</span>
+                <span>{{ t('invoice_start_time') }}</span>
                 <span>{{ formatDateTime(selectedInvoice.orderInfo.startTime) }}</span>
               </div>
               <div class="info-row">
-                <span>Thời gian kết thúc:</span>
+                <span>{{ t('invoice_end_time') }}</span>
                 <span>{{ formatDateTime(selectedInvoice.orderInfo.endTime) }}</span>
               </div>
               <div class="info-row">
-                <span>Phương thức thanh toán:</span>
+                <span>{{ t('invoice_payment_method') }}</span>
                 <span>{{ selectedInvoice.orderInfo.paymentMethod }}</span>
               </div>
-              <div class="info-row" v-if="selectedInvoice.orderInfo.note !== 'Không có'">
-                <span>Ghi chú:</span>
+              <div v-if="selectedInvoice.orderInfo.note !== t('orders_note_none')" class="info-row">
+                <span>{{ t('invoice_note') }}</span>
                 <span>{{ selectedInvoice.orderInfo.note }}</span>
               </div>
             </div>
           </div>
 
           <div class="invoice-section">
-            <h4>Thanh toán</h4>
+            <h4>{{ t('invoice_payment_title') }}</h4>
             <div class="pricing-details">
               <div class="info-row">
-                <span>Tạm tính:</span>
+                <span>{{ t('invoice_subtotal') }}</span>
                 <span>{{ selectedInvoice.pricing.subtotal.toLocaleString('vi-VN') }} VNĐ</span>
               </div>
               <div class="info-row">
-                <span>VAT (10%):</span>
+                <span>{{ t('invoice_tax') }}</span>
                 <span>{{ selectedInvoice.pricing.tax.toLocaleString('vi-VN') }} VNĐ</span>
               </div>
-              <div class="info-row total-amount">
-                <span><strong>Tổng cộng:</strong></span>
+              <div class="total-amount">
+                <span><strong>{{ t('invoice_total') }}</strong></span>
                 <span class="total-price"><strong>{{ selectedInvoice.pricing.total.toLocaleString('vi-VN') }} VNĐ</strong></span>
               </div>
             </div>
@@ -121,26 +207,107 @@
         </div>
 
         <div class="modal-footer">
-          <button class="btn-download" @click="downloadInvoice">� Tải xuống PDF</button>
-          <button class="btn-close" @click="closeInvoiceModal">Đóng</button>
+          <button class="btn-download" @click="downloadInvoice">{{ t('invoice_download') }}</button>
+          <button class="btn-close" @click="closeInvoiceModal">{{ t('invoice_close') }}</button>
         </div>
       </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div v-if="showToast" :class="['toast-notification', toastType]">
+      {{ toastMessage }}
     </div>
     
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import CustomerOrderService from '@/services/dss/users/customer'
+import '@/assets/css/customer.css'
+
+// Apply role-based middleware
+definePageMeta({
+  middleware: 'role-based'
+})
+
+const { t } = useI18n()
 
 const orders = ref([])
 const loading = ref(false)
 const error = ref('')
+const activeTab = ref('pending')
 
 // Modal hóa đơn
 const showInvoiceModal = ref(false)
 const selectedInvoice = ref(null)
+
+// Feedback inputs cho completed orders
+const feedbackInputs = ref({})
+
+// Toast notification
+const showToast = ref(false)
+const toastMessage = ref('')
+const toastType = ref('success') // 'success' hoặc 'error'
+
+// Expanded orders for feedback/admin log
+const expandedOrders = ref(new Set())
+
+// Tabs configuration
+const tabs = computed(() => [
+  { status: 'pending', name: t('orders_tab_pending') },
+  { status: 'confirmed', name: t('orders_tab_confirmed') },
+  { status: 'in_progress', name: t('orders_tab_in_progress') },
+  { status: 'completed', name: t('orders_tab_completed') },
+  { status: 'rejected', name: t('orders_tab_rejected') }
+])
+
+// Computed property to filter orders by active tab
+const filteredOrders = computed(() => {
+  return orders.value.filter(order => order.status === activeTab.value)
+})
+
+// Get order count by status
+const getOrderCountByStatus = (status) => {
+  return orders.value.filter(order => order.status === status).length
+}
+
+// Get status display text
+const getStatusText = (status) => {
+  const statusMap = {
+    'pending': t('orders_status_pending'),
+    'confirmed': t('orders_status_confirmed'),
+    'rejected': t('orders_status_rejected'),
+    'in_progress': t('orders_status_in_progress'),
+    'completed': t('orders_status_completed')
+  }
+  return statusMap[status] || status
+}
+
+// Get status CSS class
+const getStatusClass = (status) => {
+  const classMap = {
+    'pending': 'status-pending',
+    'confirmed': 'status-confirmed',
+    'rejected': 'status-rejected',
+    'in_progress': 'status-in-progress',
+    'completed': 'status-completed'
+  }
+  return classMap[status] || ''
+}
+
+// Get empty message based on active tab
+const getEmptyMessage = () => {
+  const messageMap = {
+    'pending': t('orders_empty_pending'),
+    'confirmed': t('orders_empty_confirmed'),
+    'rejected': t('orders_empty_rejected'),
+    'in_progress': t('orders_empty_in_progress'),
+    'completed': t('orders_empty_completed')
+  }
+  return messageMap[activeTab.value] || t('orders_empty_pending')
+}
 
 const formatDateTime = (datetime) => {
   return datetime ? new Date(datetime).toLocaleString() : ''
@@ -166,19 +333,85 @@ const fetchOrders = async () => {
   try {
     const res = await CustomerOrderService.getOrders()
     console.log('API Response:', res)
-    orders.value = Array.isArray(res) ? res : (res.results || [])
+    console.log('Type of response:', typeof res)
+    
+    // Xử lý nhiều format response khác nhau
+    let ordersData = []
+    if (Array.isArray(res)) {
+      ordersData = res
+    } else if (res.results && Array.isArray(res.results)) {
+      ordersData = res.results
+    } else if (res.data && Array.isArray(res.data)) {
+      ordersData = res.data
+    } else {
+      console.warn('Unexpected response format:', res)
+      ordersData = []
+    }
+    
+    orders.value = ordersData
+    console.log('Orders after processing:', orders.value)
+    console.log('Orders length:', orders.value.length)
   } catch (e) {
-    console.error('Error:', e)
-    error.value = 'Không thể tải danh sách đơn hàng'
+    console.error('Error fetching orders:', e)
+    error.value = 'Không thể tải danh sách đơn hàng: ' + e.message
   } finally {
     loading.value = false
+  }
+}
+
+// Phương thức gửi feedback cho completed orders
+const submitFeedback = async (orderId) => {
+  const feedback = feedbackInputs.value[orderId]?.trim()
+  if (!feedback) return
+  
+  try {
+    // Gọi API để cập nhật feedback
+    await CustomerOrderService.updateOrderFeedback(orderId, feedback)
+    
+    // Cập nhật local data
+    const order = orders.value.find(o => o.id === orderId)
+    if (order) {
+      order.customer_feedback = feedback
+    }
+    
+    // Clear input
+    feedbackInputs.value[orderId] = ''
+    
+    // Hiển thị thông báo thành công
+    showToastMessage(t('orders_feedback_success'), 'success')
+    
+  } catch (e) {
+    console.error('Error submitting feedback:', e)
+    showToastMessage(t('orders_feedback_error'), 'error')
+  }
+}
+
+// Hiển thị toast notification
+const showToastMessage = (message, type = 'success') => {
+  toastMessage.value = message
+  toastType.value = type
+  showToast.value = true
+  
+  // Tự động ẩn sau 3 giây
+  setTimeout(() => {
+    showToast.value = false
+  }, 3000)
+}
+
+// Toggle expanded state cho order
+const toggleOrderExpanded = (orderId) => {
+  if (expandedOrders.value.has(orderId)) {
+    expandedOrders.value.delete(orderId)
+  } else {
+    expandedOrders.value.add(orderId)
   }
 }
 
 // Hàm xem hóa đơn
 const viewInvoice = (order) => {
   const currentDate = new Date(order.created_at || new Date())
-  const invoiceNumber = `HD${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(currentDate.getDate()).padStart(2, '0')}${String(order.id).padStart(4, '0')}`
+  // Sử dụng ID của đơn hàng làm invoiceNumber trực tiếp
+  const invoiceNumber = order.id
   
   selectedInvoice.value = {
     invoiceNumber,
@@ -187,8 +420,8 @@ const viewInvoice = (order) => {
       area: formatArea(order.area_m2),
       startTime: order.preferred_start_time,
       endTime: order.preferred_end_time,
-      note: order.note || 'Không có',
-      paymentMethod: order.payment_method === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'
+      note: order.note || t('orders_note_none'),
+      paymentMethod: order.payment_method === 'cash' ? t('payment_cash') : t('payment_transfer')
     },
     pricing: {
       subtotal: parseInt(order.cost_confirm) || 0,
@@ -216,7 +449,7 @@ const downloadInvoice = () => {
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Hóa đơn ${invoice.invoiceNumber}</title>
+      <title>${t('invoice_title')} ${invoice.invoiceNumber}</title>
       <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .header { text-align: center; margin-bottom: 30px; background: #f8f9fa; padding: 20px; }
@@ -230,26 +463,26 @@ const downloadInvoice = () => {
     </head>
     <body>
       <div class="header">
-        <div class="title">HÓA ĐƠN DỊCH VỤ</div>
-        <div class="invoice-number">Số: ${invoice.invoiceNumber}</div>
-        <div>Ngày xuất: ${invoice.issueDate} | Hạn thanh toán: ${invoice.dueDate}</div>
+        <div class="title">${t('invoice_header_title')}</div>
+        <div class="invoice-number">${t('invoice_number', { number: invoice.invoiceNumber })}</div>
+        <div>${t('invoice_issue_date', { date: invoice.issueDate })} | ${t('invoice_due_date', { date: invoice.dueDate })}</div>
       </div>
       
       <div class="section">
-        <h3>Chi tiết dịch vụ</h3>
-        <div class="row"><span>Dịch vụ:</span><span>${invoice.orderInfo.serviceName}</span></div>
-        <div class="row"><span>Diện tích:</span><span>${invoice.orderInfo.area} m²</span></div>
-        <div class="row"><span>Thời gian bắt đầu:</span><span>${formatDateTime(invoice.orderInfo.startTime)}</span></div>
-        <div class="row"><span>Thời gian kết thúc:</span><span>${formatDateTime(invoice.orderInfo.endTime)}</span></div>
-        <div class="row"><span>Phương thức thanh toán:</span><span>${invoice.orderInfo.paymentMethod}</span></div>
-        ${invoice.orderInfo.note !== 'Không có' ? `<div class="row"><span>Ghi chú:</span><span>${invoice.orderInfo.note}</span></div>` : ''}
+        <h3>${t('invoice_service_details')}</h3>
+        <div class="row"><span>${t('invoice_service')}</span><span>${invoice.orderInfo.serviceName}</span></div>
+        <div class="row"><span>${t('invoice_area')}</span><span>${invoice.orderInfo.area} m²</span></div>
+        <div class="row"><span>${t('invoice_start_time')}</span><span>${formatDateTime(invoice.orderInfo.startTime)}</span></div>
+        <div class="row"><span>${t('invoice_end_time')}</span><span>${formatDateTime(invoice.orderInfo.endTime)}</span></div>
+        <div class="row"><span>${t('invoice_payment_method')}</span><span>${invoice.orderInfo.paymentMethod}</span></div>
+        ${invoice.orderInfo.note !== t('orders_note_none') ? `<div class="row"><span>${t('invoice_note')}</span><span>${invoice.orderInfo.note}</span></div>` : ''}
       </div>
       
       <div class="section">
-        <h3>Thanh toán</h3>
-        <div class="row"><span>Tạm tính:</span><span>${invoice.pricing.subtotal.toLocaleString('vi-VN')} VNĐ</span></div>
-        <div class="row"><span>VAT (10%):</span><span>${invoice.pricing.tax.toLocaleString('vi-VN')} VNĐ</span></div>
-        <div class="total"><span>Tổng cộng:</span><span>${invoice.pricing.total.toLocaleString('vi-VN')} VNĐ</span></div>
+        <h3>${t('invoice_payment_title')}</h3>
+        <div class="row"><span>${t('invoice_subtotal')}</span><span>${invoice.pricing.subtotal.toLocaleString('vi-VN')} VNĐ</span></div>
+        <div class="row"><span>${t('invoice_tax')}</span><span>${invoice.pricing.tax.toLocaleString('vi-VN')} VNĐ</span></div>
+        <div class="total"><span>${t('invoice_total')}</span><span>${invoice.pricing.total.toLocaleString('vi-VN')} VNĐ</span></div>
       </div>
       
       <div style="text-align: center; margin-top: 30px; color: #666;">
@@ -271,7 +504,3 @@ const downloadInvoice = () => {
 
 onMounted(fetchOrders)
 </script>
-
-<style scoped>
-/* Styles đã được chuyển sang customer.css */
-</style>
