@@ -133,6 +133,7 @@ const en = {
   orders_table_estimated_price: 'Estimated Price',
   orders_table_status: 'Status',
   orders_table_note: 'Note',
+  orders_table_created_at: 'Created At',
   orders_table_actions: 'Actions',
   orders_table_feedback: 'Feedback',
   orders_table_reject_reason: 'Reject Reason',
@@ -146,7 +147,8 @@ const en = {
   orders_status_cancelled: 'Cancelled',
   
   // Order Actions
-  orders_action_invoice: '🧾 Invoice',
+  orders_action_invoice: 'Invoice',
+  orders_action_edit: 'Edit',
   orders_action_show_feedback: ' Show feedback',
   orders_action_hide_feedback: ' Hide feedback',
   orders_action_show_reason: ' Show reason',
@@ -166,21 +168,21 @@ const en = {
   orders_empty_cta: 'Book Service Now',
   
   // Feedback Section
-  orders_feedback_title: '💬 Service feedback: {serviceName}',
+  orders_feedback_title: 'Service feedback: {serviceName}',
   orders_feedback_label: 'Your feedback:',
   orders_feedback_input_label: 'Leave feedback about the service:',
   orders_feedback_placeholder: 'Share your experience with this service...',
-  orders_feedback_submit: '📝 Submit feedback',
+  orders_feedback_submit: 'Submit feedback',
   orders_feedback_success: 'Feedback has been submitted successfully!',
   orders_feedback_error: 'An error occurred while submitting feedback. Please try again.',
   
   // Reject Reason Section
-  orders_reject_title: '❌ Reject reason: {serviceName}',
+  orders_reject_title: 'Reject reason: {serviceName}',
   orders_reject_label: 'Reject reason:',
   orders_reject_none: 'No reject reason has been provided',
   
   // Invoice Modal
-  invoice_title: '🧾 Service Invoice',
+  invoice_title: 'Service Invoice',
   invoice_header_title: 'SERVICE INVOICE',
   invoice_number: 'No: {number}',
   invoice_issue_date: 'Issue date: {date}',
@@ -202,8 +204,15 @@ const en = {
   invoice_total: 'Total:',
   
   // Invoice Actions
-  invoice_download: '📄 Download PDF',
+  invoice_download: 'Download PDF',
   invoice_close: 'Close',
+  
+  // Pagination
+  pagination_showing: 'Showing',
+  pagination_of: 'of',
+  pagination_results: 'results',
+  pagination_previous: 'Previous',
+  pagination_next: 'Next',
   
   // Payment Methods
   payment_cash: 'Cash',
@@ -1031,6 +1040,18 @@ const en = {
   create_order_customer_phone: 'Phone:',
   create_order_customer_address: 'Address:',
   
+  // Edit Order Page
+  edit_order_title: 'Edit Order',
+  edit_order_subtitle: 'Update order information',
+  edit_order_save_button: 'Save Changes',
+  edit_order_cancel_button: 'Cancel',
+  edit_order_success: 'Order updated successfully!',
+  edit_order_error: 'Update failed, please try again.',
+  edit_order_loading: 'Loading order information...',
+  edit_order_saving: 'Saving...',
+  edit_order_confirm_cancel: 'Are you sure you want to cancel? Changes will not be saved.',
+  edit_order_calculation_notice: 'Price and time will be automatically recalculated when you change information.',
+  
   // Form Fields
   create_order_service: 'Service',
   create_order_service_placeholder: 'Select service',
@@ -1113,6 +1134,32 @@ const en = {
   create_order_value_none: 'None',
   create_order_value_na: 'N/A',
   create_order_thank_you: 'Thank you for using our service!',
+  
+  // Cancel Order
+  cancel_order_button: 'Cancel Order',
+  cancel_order_title: 'Cancel Order Request',
+  cancel_order_warning: 'Important Notice',
+  cancel_order_description: 'To cancel your order, please contact our customer service directly. We will assist you in processing your request quickly.',
+  cancel_order_contact_admin: 'Contact Information:',
+  cancel_order_phone: 'Phone:',
+  cancel_order_email: 'Email:',
+  cancel_order_note_title: 'Notes:',
+  cancel_order_note_1: 'Please provide your order ID when contacting us',
+  cancel_order_note_2: 'Processing time: 1-2 business hours',
+  cancel_order_note_3: 'Cancellation fees may apply depending on timing',
+  cancel_order_close: 'Close',
+  cancel_order_call_now: 'Call Now',
+  
+  // Copy functions
+  copy_phone: 'Copy phone number',
+  copy_email: 'Copy email',
+  copy_phone_success: 'Phone number copied',
+  copy_phone_error: 'Failed to copy phone number',
+  copy_email_success: 'Email copied',
+  copy_email_error: 'Failed to copy email',
+  
+  // Search functionality
+  
 }
 
 export default en;

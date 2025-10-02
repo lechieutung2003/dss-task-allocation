@@ -38,6 +38,8 @@ const priceExplanation = ref<string>(''); // 🆕 label mô tả cách tính
 const minRequiredHours = ref<number | null>(null); // 🆕 thời gian tối thiểu
 const isTimeValid = ref<boolean>(true); // 🆕 kiểm tra thời gian hợp lệ
 const timeValidationMessage = ref<string>(''); // 🆕 thông báo lỗi thời gian
+const isStartTimeValid = ref<boolean>(true); // 🆕 kiểm tra thời gian bắt đầu hợp lệ
+const startTimeValidationMessage = ref<string>(''); // 🆕 thông báo lỗi thời gian bắt đầu
 
 // 🆕 Modal thanh toán
 const showPaymentModal = ref<boolean>(false);
@@ -141,6 +143,29 @@ const calcEstimatedHours = () => {
   minRequiredHours.value = +(order.value.estimated_hours * 0.6).toFixed(2);
 };
 
+//  Hàm kiểm tra thời gian bắt đầu hợp lệ
+const validateStartTime = () => {
+  const startTime = order.value.preferred_start_time;
+  
+  if (!startTime) {
+    isStartTimeValid.value = true;
+    startTimeValidationMessage.value = '';
+    return;
+  }
+  
+  const startDate = new Date(startTime);
+  const currentDate = new Date();
+  const oneHourLater = new Date(currentDate.getTime() + 60 * 60 * 1000); // Thêm 1 tiếng
+  
+  if (startDate < oneHourLater) {
+    isStartTimeValid.value = false;
+    startTimeValidationMessage.value = `Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 1 tiếng (sau ${oneHourLater.toLocaleString('vi-VN')})`;
+  } else {
+    isStartTimeValid.value = true;
+    startTimeValidationMessage.value = '';
+  }
+};
+
 //  Hàm kiểm tra thời gian yêu cầu hợp lệ
 const validateRequestedTime = () => {
   const requested = order.value.requested_hours;
@@ -201,12 +226,12 @@ const calcEstimatedPrice = () => {
     }
   }
 
-  let price = pricePerM2 > 0 ? pricePerM2 * area : null;
-  let explanation = `Giá cơ bản: ${pricePerM2.toLocaleString('vi-VN')} x ${area} m² = ${(price || 0).toLocaleString('vi-VN')} VNĐ`;
+  let basePrice = pricePerM2 > 0 ? pricePerM2 * area : null;
+  let explanation = `Giá cơ bản: ${pricePerM2.toLocaleString('vi-VN')} x ${area} m² = ${(basePrice || 0).toLocaleString('vi-VN')} VNĐ`;
 
   const requested = order.value.requested_hours;
   const estimated = order.value.estimated_hours;
-  if (price && requested && estimated && requested < estimated) {
+  if (basePrice && requested && estimated && requested < estimated) {
     const diff = estimated - requested;
     let factor = 1;
     if (diff > 0.1 && diff <= 1) factor = 1.2;
@@ -215,17 +240,29 @@ const calcEstimatedPrice = () => {
 
     if (factor > 1) {
       explanation += ` (áp dụng hệ số ${factor} do số giờ yêu cầu < số giờ ước tính)`;
-      price = price * factor;
+      basePrice = basePrice * factor;
     }
   }
 
-  estimatedPrice.value = price;
+  // Thêm 10% VAT vào giá cuối cùng
+  if (basePrice) {
+    const vatAmount = Math.round(basePrice * 0.1);
+    const finalPrice = basePrice + vatAmount;
+    explanation += `\nGiá gốc: ${basePrice.toLocaleString('vi-VN')} VNĐ + VAT 10% (${vatAmount.toLocaleString('vi-VN')} VNĐ) = ${finalPrice.toLocaleString('vi-VN')} VNĐ`;
+    estimatedPrice.value = finalPrice;
+  } else {
+    estimatedPrice.value = null;
+  }
+
   priceExplanation.value = explanation;
 };
 
 // Theo dõi thay đổi để tính toán
 watch(() => [order.value.service_type], calcProductivity);
 watch(() => [order.value.area_m2, productivity.value], calcEstimatedHours);
+watch(() => [order.value.preferred_start_time], () => {
+  validateStartTime();
+});
 watch(() => [order.value.preferred_start_time, order.value.preferred_end_time], () => {
   calcRequestedHours();
   validateRequestedTime();
@@ -236,6 +273,11 @@ watch(() => [order.value.requested_hours, minRequiredHours.value], validateReque
 const openPaymentModal = () => {
   if (!isTimeValid.value) {
     alert(t('create_order_validation_error', { message: timeValidationMessage.value }));
+    return;
+  }
+  
+  if (!isStartTimeValid.value) {
+    alert(`Lỗi thời gian: ${startTimeValidationMessage.value}`);
     return;
   }
   
@@ -253,6 +295,11 @@ const generateInvoice = (orderResponse: any) => {
   const currentDate = new Date();
   // Sử dụng ID của đơn hàng làm invoiceNumber trực tiếp
   const invoiceNumber = orderResponse.id;
+  
+  // estimatedPrice đã bao gồm VAT, cần tính ngược lại để lấy giá gốc
+  const totalPrice = estimatedPrice.value || 0;
+  const subtotal = Math.round(totalPrice / 1.1); // Giá gốc (không bao gồm VAT)
+  const tax = totalPrice - subtotal; // VAT = 10% của giá gốc
   
   invoiceData.value = {
     invoiceNumber,
@@ -272,9 +319,9 @@ const generateInvoice = (orderResponse: any) => {
       phone: customerInfo.value?.phone || ''
     },
     pricing: {
-      subtotal: estimatedPrice.value || 0,
-      tax: Math.round((estimatedPrice.value || 0) * 0.1), // VAT 10%
-      total: Math.round((estimatedPrice.value || 0) * 1.1)
+      subtotal: subtotal,
+      tax: tax,
+      total: totalPrice
     },
     issueDate: currentDate.toLocaleDateString('vi-VN'),
     dueDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('vi-VN') // 7 ngày sau
@@ -537,9 +584,15 @@ onMounted(() => {
               </div>
               <div class="form-group">
                 <label>{{ t('create_order_start_time') }}</label>
-                <div class="input-wrapper">
+                <div class="input-wrapper" :class="{ 'error': !isStartTimeValid }">
                   <input v-model="order.preferred_start_time" type="datetime-local" class="form-input" required />
                 </div>
+                <div v-if="!isStartTimeValid && startTimeValidationMessage" class="error-message">
+                  {{ startTimeValidationMessage }}
+                </div>
+                <small class="form-hint">
+                  Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 1 tiếng
+                </small>
               </div>
               <div class="form-group">
                 <label>{{ t('create_order_end_time') }}</label>
@@ -596,8 +649,8 @@ onMounted(() => {
             </div>
           </div>
           
-          <button type="button" class="featured-cta" :disabled="!isTimeValid" @click="openPaymentModal">
-            {{ !isTimeValid ? t('create_order_time_invalid') : t('create_order_create_button') }}
+          <button type="button" class="featured-cta" :disabled="!isTimeValid || !isStartTimeValid" @click="openPaymentModal">
+            {{ !isTimeValid || !isStartTimeValid ? t('create_order_time_invalid') : t('create_order_create_button') }}
           </button>
         </form>
       </div>

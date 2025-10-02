@@ -133,6 +133,7 @@ const vi = {
   orders_table_estimated_price: 'Giá ước tính',
   orders_table_status: 'Trạng thái',
   orders_table_note: 'Ghi chú',
+  orders_table_created_at: 'Thời gian tạo',
   orders_table_actions: 'Hành động',
   orders_table_feedback: 'Phản hồi',
   orders_table_reject_reason: 'Lý do từ chối',
@@ -146,12 +147,13 @@ const vi = {
   orders_status_cancelled: 'Đã hủy',
   
   // Order Actions
-  orders_action_invoice: '🧾 Hóa đơn',
-  orders_action_show_feedback: ' Xem phản hồi',
-  orders_action_hide_feedback: ' Ẩn phản hồi',
-  orders_action_show_reason: ' Xem lý do',
-  orders_action_hide_reason: ' Ẩn lý do',
-  
+  orders_action_invoice: 'Hóa đơn',
+  orders_action_edit: 'Chỉnh sửa',
+  orders_action_show_feedback: 'Xem phản hồi',
+  orders_action_hide_feedback: 'Ẩn phản hồi',
+  orders_action_show_reason: 'Xem lý do',
+  orders_action_hide_reason: 'Ẩn lý do',
+
   // Order Values
   orders_price_tbd: 'Chưa xác định',
   orders_note_none: 'Không có',
@@ -166,21 +168,21 @@ const vi = {
   orders_empty_cta: 'Đặt dịch vụ ngay',
   
   // Feedback Section
-  orders_feedback_title: '💬 Phản hồi về dịch vụ: {serviceName}',
+  orders_feedback_title: 'Phản hồi về dịch vụ: {serviceName}',
   orders_feedback_label: 'Phản hồi của bạn:',
   orders_feedback_input_label: 'Để lại phản hồi về dịch vụ:',
   orders_feedback_placeholder: 'Chia sẻ trải nghiệm của bạn về dịch vụ này...',
-  orders_feedback_submit: '📝 Gửi phản hồi',
+  orders_feedback_submit: 'Gửi phản hồi',
   orders_feedback_success: 'Phản hồi đã được gửi thành công!',
   orders_feedback_error: 'Có lỗi xảy ra khi gửi phản hồi. Vui lòng thử lại.',
   
   // Reject Reason Section
-  orders_reject_title: '❌ Lý do từ chối: {serviceName}',
+  orders_reject_title: 'Lý do từ chối: {serviceName}',
   orders_reject_label: 'Lý do từ chối:',
   orders_reject_none: 'Chưa có lý do từ chối được cung cấp',
   
   // Invoice Modal
-  invoice_title: '🧾 Hóa đơn dịch vụ',
+  invoice_title: 'Hóa đơn dịch vụ',
   invoice_header_title: 'HÓA ĐƠN DỊCH VỤ',
   invoice_number: 'Số: {number}',
   invoice_issue_date: 'Ngày xuất: {date}',
@@ -202,8 +204,15 @@ const vi = {
   invoice_total: 'Tổng cộng:',
   
   // Invoice Actions
-  invoice_download: '📄 Tải xuống PDF',
+  invoice_download: 'Tải xuống PDF',
   invoice_close: 'Đóng',
+  
+  // Pagination
+  pagination_showing: 'Hiển thị',
+  pagination_of: 'trong tổng số',
+  pagination_results: 'kết quả',
+  pagination_previous: 'Trước',
+  pagination_next: 'Tiếp',
   
   // Payment Methods
   payment_cash: 'Tiền mặt',
@@ -1043,6 +1052,18 @@ const vi = {
   create_order_customer_phone: 'SĐT:',
   create_order_customer_address: 'Địa chỉ:',
   
+  // Edit Order Page
+  edit_order_title: 'Chỉnh sửa đơn hàng',
+  edit_order_subtitle: 'Cập nhật thông tin đơn hàng',
+  edit_order_save_button: 'Lưu thay đổi',
+  edit_order_cancel_button: 'Hủy',
+  edit_order_success: 'Cập nhật đơn hàng thành công!',
+  edit_order_error: 'Cập nhật thất bại, vui lòng thử lại.',
+  edit_order_loading: 'Đang tải thông tin đơn hàng...',
+  edit_order_saving: 'Đang lưu...',
+  edit_order_confirm_cancel: 'Bạn có chắc muốn hủy? Các thay đổi sẽ không được lưu.',
+  edit_order_calculation_notice: 'Giá và thời gian sẽ được tính lại tự động khi bạn thay đổi thông tin.',
+  
   // Form Fields
   create_order_service: 'Dịch vụ',
   create_order_service_placeholder: 'Chọn dịch vụ',
@@ -1125,6 +1146,32 @@ const vi = {
   create_order_value_none: 'Không có',
   create_order_value_na: 'N/A',
   create_order_thank_you: 'Cảm ơn bạn đã sử dụng dịch vụ!',
+  
+  // Cancel Order
+  cancel_order_button: 'Hủy đơn hàng',
+  cancel_order_title: 'Yêu cầu hủy đơn hàng',
+  cancel_order_warning: 'Lưu ý quan trọng',
+  cancel_order_description: 'Để hủy đơn hàng, vui lòng liên hệ trực tiếp với bộ phận chăm sóc khách hàng. Chúng tôi sẽ hỗ trợ bạn xử lý yêu cầu nhanh chóng.',
+  cancel_order_contact_admin: 'Thông tin liên hệ:',
+  cancel_order_phone: 'Điện thoại:',
+  cancel_order_email: 'Email:',
+  cancel_order_note_title: 'Lưu ý:',
+  cancel_order_note_1: 'Vui lòng cung cấp mã đơn hàng khi liên hệ',
+  cancel_order_note_2: 'Thời gian xử lý: 1-2 giờ làm việc',
+  cancel_order_note_3: 'Phí hủy có thể áp dụng tùy theo thời điểm hủy',
+  cancel_order_close: 'Đóng',
+  cancel_order_call_now: 'Gọi ngay',
+  
+  // Copy functions
+  copy_phone: 'Sao chép số điện thoại',
+  copy_email: 'Sao chép email',
+  copy_phone_success: 'Đã sao chép số điện thoại',
+  copy_phone_error: 'Không thể sao chép số điện thoại',
+  copy_email_success: 'Đã sao chép email',
+  copy_email_error: 'Không thể sao chép email',
+  
+  // Search functionality
+  
 };
 
 export default vi;

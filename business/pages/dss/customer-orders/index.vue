@@ -24,6 +24,9 @@
           </div>
         </div>
 
+        <!-- Search Bar -->
+        
+
               <div v-if="loading" class="loading-state">
           <div class="loading-text">{{ t('orders_loading') }}</div>
         </div>
@@ -31,7 +34,7 @@
         <div v-else class="content-body">
           <div v-if="error" class="error-message">{{ error }}</div>
           
-          <div v-if="filteredOrders.length" class="orders-table-wrapper">
+          <div v-if="filteredAndSearchedOrders.length" class="orders-table-wrapper">
             <table class="orders-table">
               <thead>
                 <tr>
@@ -42,6 +45,7 @@
                   <th>{{ t('orders_table_estimated_price') }}</th>
                   <th>{{ t('orders_table_status') }}</th>
                   <th>{{ t('orders_table_note') }}</th>
+                  <th>{{ t('orders_table_created_at') || 'Thời gian tạo' }}</th>
                   <th>{{ t('orders_table_actions') }}</th>
                   <th v-if="activeTab === 'completed' || activeTab === 'rejected'">
                     {{ activeTab === 'completed' ? t('orders_table_feedback') : t('orders_table_reject_reason') }}
@@ -49,7 +53,7 @@
                 </tr>
               </thead>
               <tbody>
-                <template v-for="order in filteredOrders" :key="order.id">
+                <template v-for="order in paginatedOrders" :key="order.id">
                   <tr class="order-row">
                     <td>{{ order.service_details?.name }}</td>
                     <td>{{ formatArea(order.area_m2) }}</td>
@@ -58,16 +62,31 @@
                     <td>{{ order.cost_confirm ? formatPrice(order.cost_confirm) : t('orders_price_tbd') }}</td>
                     <td><span :class="['status-badge', getStatusClass(order.status)]">{{ getStatusText(order.status) }}</span></td>
                     <td>{{ order.note || t('orders_note_none') }}</td>
+                    <td>{{ formatDateTime(order.created_at) }}</td>
                     <td>
-                      <button 
-                        v-if="order.status !== 'rejected'"
-                        @click="viewInvoice(order)" 
-                        class="action-btn view-invoice" 
-                        title="Xem hóa đơn"
-                      >
-                        {{ t('orders_action_invoice') }}
-                      </button>
-                      <span v-else class="no-invoice-text">-</span>
+                      <div class="action-buttons">
+                        <!-- Edit button for pending orders -->
+                        <RouterLink 
+                          v-if="order.status === 'pending'"
+                          :to="`/dss/customer-orders/edit/${order.id}`"
+                          class="action-btn edit-order" 
+                          :title="t('orders_action_edit')"
+                        >
+                          {{ t('orders_action_edit') }}
+                        </RouterLink>
+                        
+                        <!-- Invoice button for non-rejected orders -->
+                        <button 
+                          v-if="order.status !== 'rejected'"
+                          @click="viewInvoice(order)" 
+                          class="action-btn view-invoice" 
+                          :title="t('orders_action_invoice')"
+                        >
+                          {{ t('orders_action_invoice') }}
+                        </button>
+                        
+                        <span v-if="order.status === 'rejected'" class="no-actions-text">-</span>
+                      </div>
                     </td>
                     <!-- Cột feedback/admin log cho completed và rejected -->
                     <td v-if="activeTab === 'completed' || activeTab === 'rejected'">
@@ -87,7 +106,7 @@
                   <!-- Expanded row cho feedback/admin log -->
                   <tr v-if="(activeTab === 'completed' || activeTab === 'rejected') && expandedOrders.has(order.id)" 
                       class="expanded-row">
-                    <td :colspan="activeTab === 'completed' || activeTab === 'rejected' ? 9 : 8" class="expanded-content">
+                    <td :colspan="activeTab === 'completed' || activeTab === 'rejected' ? 10 : 9" class="expanded-content">
                       <!-- Customer Feedback cho completed -->
                       <div v-if="activeTab === 'completed'" class="feedback-content">
                         <h4 class="expanded-title">{{ t('orders_feedback_title', { serviceName: order.service_details?.name }) }}</h4>
@@ -129,6 +148,39 @@
                 </template>
               </tbody>
             </table>
+            
+            <!-- Pagination -->
+            <div v-if="totalPages > 1" class="pagination-wrapper">
+              <div class="pagination-info">
+                {{ t('pagination_showing') }} {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ Math.min(currentPage * itemsPerPage, filteredAndSearchedOrders.length) }} {{ t('pagination_of') }} {{ filteredAndSearchedOrders.length }} {{ t('pagination_results') }}
+              </div>
+              <div class="pagination-controls">
+                <button 
+                  @click="currentPage = currentPage - 1" 
+                  :disabled="currentPage <= 1"
+                  class="pagination-btn"
+                >
+                  {{ t('pagination_previous') }}
+                </button>
+                
+                <span v-for="page in totalPages" :key="page">
+                  <button 
+                    @click="currentPage = page"
+                    :class="['pagination-btn', { active: currentPage === page }]"
+                  >
+                    {{ page }}
+                  </button>
+                </span>
+                
+                <button 
+                  @click="currentPage = currentPage + 1" 
+                  :disabled="currentPage >= totalPages"
+                  class="pagination-btn"
+                >
+                  {{ t('pagination_next') }}
+                </button>
+              </div>
+            </div>
           </div>
           
           <div v-else class="empty-state">
@@ -151,10 +203,10 @@
           <div class="invoice-header">
             <div class="invoice-title">{{ t('invoice_header_title') }}</div>
             <div class="invoice-number">{{ t('invoice_number', { number: selectedInvoice.invoiceNumber }) }}</div>
-            <div class="invoice-date">
+            <!-- <div class="invoice-date">
               <div>{{ t('invoice_issue_date', { date: selectedInvoice.issueDate }) }}</div>
               <div>{{ t('invoice_due_date', { date: selectedInvoice.dueDate }) }}</div>
-            </div>
+            </div> -->
           </div>
 
           <div class="invoice-section">
@@ -222,7 +274,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import CustomerOrderService from '@/services/dss/users/customer'
 import '@/assets/css/customer.css'
@@ -253,6 +305,56 @@ const toastType = ref('success') // 'success' hoặc 'error'
 
 // Expanded orders for feedback/admin log
 const expandedOrders = ref(new Set())
+
+// Pagination
+const itemsPerPage = 5
+const currentPage = ref(1)
+
+// Search functionality
+const searchQuery = ref('')
+
+// Computed property for filtered and searched orders
+const filteredAndSearchedOrders = computed(() => {
+  let filtered = orders.value.filter(order => order.status === activeTab.value)
+  
+  if (!searchQuery.value.trim()) {
+    return filtered
+  }
+  
+  const query = searchQuery.value.toLowerCase().trim()
+  
+  return filtered.filter(order => {
+    return (
+      order.service_details?.name?.toLowerCase().includes(query) ||
+      order.id?.toLowerCase().includes(query) ||
+      order.note?.toLowerCase().includes(query) ||
+      order.cost_confirm?.toString().includes(query) ||
+      order.area_m2?.toString().includes(query)
+    )
+  })
+})
+
+// Computed property for paginated orders (updated to use search results)
+const paginatedOrders = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredAndSearchedOrders.value.slice(start, end)
+})
+
+// Computed property for total pages (updated to use search results)
+const totalPages = computed(() => {
+  return Math.ceil(filteredAndSearchedOrders.value.length / itemsPerPage)
+})
+
+// Watch for tab changes to reset pagination
+watch(activeTab, () => {
+  currentPage.value = 1
+})
+
+// Watch for search changes to reset pagination
+watch(searchQuery, () => {
+  currentPage.value = 1
+})
 
 // Tabs configuration
 const tabs = computed(() => [
@@ -413,6 +515,11 @@ const viewInvoice = (order) => {
   // Sử dụng ID của đơn hàng làm invoiceNumber trực tiếp
   const invoiceNumber = order.id
   
+  // cost_confirm đã bao gồm VAT, cần tính ngược lại để lấy giá gốc
+  const totalPrice = parseInt(order.cost_confirm) || 0
+  const subtotal = Math.round(totalPrice / 1.1) // Giá gốc (không bao gồm VAT)
+  const tax = totalPrice - subtotal // VAT = 10% của giá gốc
+  
   selectedInvoice.value = {
     invoiceNumber,
     orderInfo: {
@@ -421,15 +528,15 @@ const viewInvoice = (order) => {
       startTime: order.preferred_start_time,
       endTime: order.preferred_end_time,
       note: order.note || t('orders_note_none'),
-      paymentMethod: order.payment_method === 'cash' ? t('payment_cash') : t('payment_transfer')
+      paymentMethod: t('payment_cash')
     },
     pricing: {
-      subtotal: parseInt(order.cost_confirm) || 0,
-      tax: Math.round((parseInt(order.cost_confirm) || 0) * 0.1),
-      total: Math.round((parseInt(order.cost_confirm) || 0) * 1.1)
+      subtotal: subtotal,
+      tax: tax,
+      total: totalPrice
     },
-    issueDate: currentDate.toLocaleDateString('vi-VN'),
-    dueDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('vi-VN')
+    // ueDate: currissentDate.toLocaleDateString('vi-VN'),
+    // dueDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('vi-VN')
   }
   
   showInvoiceModal.value = true
@@ -502,5 +609,201 @@ const downloadInvoice = () => {
   }
 }
 
+// Search functions
+const handleSearch = () => {
+  // Search được xử lý tự động qua computed property
+  // Function này có thể dùng để thêm debounce sau này
+}
+
+const clearSearch = () => {
+  searchQuery.value = ''
+}
+
 onMounted(fetchOrders)
 </script>
+
+<style scoped>
+/* Search Container */
+.search-container {
+  margin: 20px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.search-wrapper {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-input-group {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #6c757d;
+  font-size: 16px;
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.clear-search-btn:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.search-results-info {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #d1ecf1;
+  color: #0c5460;
+  border-radius: 4px;
+  font-size: 14px;
+  border: 1px solid #bee5eb;
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 15px 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #666;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pagination-btn {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #bbb;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination-btn.active:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  min-width: 60px;
+}
+
+.action-btn.edit-order {
+  background: #28a745;
+  color: white;
+}
+
+.action-btn.edit-order:hover {
+  background: #218838;
+}
+
+.action-btn.view-invoice {
+  background: #007bff;
+  color: white;
+}
+
+.action-btn.view-invoice:hover {
+  background: #0056b3;
+}
+
+.no-actions-text {
+  color: #999;
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* Responsive design for search */
+@media (max-width: 768px) {
+  .search-input-group {
+    max-width: 100%;
+  }
+}
+</style>
