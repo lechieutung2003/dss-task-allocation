@@ -57,7 +57,7 @@ class RecommendationService:
         
         print(f"After skill check: {score}")
         
-        # 4. Kiểm tra mức lương (25%) - Nhân viên có mức lương thấp hơn được ưu tiên
+        # 4. Kiểm tra mức lương (30%) - Nhân viên có mức lương thấp hơn được ưu tiên
         try:
             # Lấy mức lương của nhân viên
             employee_salary = getattr(employee, 'salary', 0) or 0
@@ -86,7 +86,7 @@ class RecommendationService:
                 print("salary_score (default):", 12.5)
         except Exception as e:
             print("Error calculating salary score:", e)
-            score += 15  # 50% của 25 điểm
+            score += 0  # 50% của 25 điểm
 
         # 5. Kiểm tra khối lượng công việc (10%)
         try:
@@ -105,7 +105,7 @@ class RecommendationService:
                 score += Decimal('5')
         except Exception as e:
             print("Error calculating workload score:", e)
-            score += 5
+            score += 0
 
         print("Final score:", score)
             

@@ -4,7 +4,7 @@ from .views.employee_order import EmployeeOrdersAPIView
 from base import routers as base_routers  
 from hr.views.customer import RegisterCustomerAPIView, CustomerInfoAPIView  
 from hr.views.customer_order import SimpleCreateOrderAPIView
-from hr.views.customer_order import CustomerOrdersAPIView, UpdateOrderFeedbackAPIView
+from hr.views.customer_order import CustomerOrdersAPIView, UpdateOrderFeedbackAPIView, UpdateOrderAPIView
 from .views import (
     GroupViewSet,
     OfficeViewSet,
@@ -62,6 +62,7 @@ urlpatterns = [
     path('api/v1/register-customer', RegisterCustomerAPIView.as_view(), name='register-customer'),
     path('api/v1/customer/info', CustomerInfoAPIView.as_view(), name='customer-info'),
     path('api/v1/customer/orders', CustomerOrdersAPIView.as_view(), name='customer-orders'),
+    path('api/v1/customer/orders/<uuid:order_id>', UpdateOrderAPIView.as_view(), name='customer-order-detail'),
     path('api/v1/customer/orders/<uuid:order_id>/feedback', UpdateOrderFeedbackAPIView.as_view(), name='update-order-feedback'),
     path('api/v1/customer/create-order', SimpleCreateOrderAPIView.as_view(), name='simple-create-order'),
 ]

@@ -22,6 +22,11 @@ const customerApi = {
 		return ApiService.post(`${baseUrl}/create-order`, orderData);
 	},
 
+	// Cập nhật đơn hàng (chỉ cho trạng thái pending)
+	async updateOrder(orderId, orderData) {
+		return ApiService.put(`${baseUrl}/orders/${orderId}`, orderData);
+	},
+
 	// Cập nhật feedback cho đơn hàng đã hoàn thành
 	async updateOrderFeedback(orderId, feedback) {
 		return ApiService.put(`${baseUrl}/orders/${orderId}/feedback`, {

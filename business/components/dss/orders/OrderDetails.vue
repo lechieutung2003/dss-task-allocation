@@ -20,17 +20,21 @@
             <i class="el-icon-document mr-2"></i>Thông tin đơn hàng
           </h3>
           <div class="space-y-2">
-            <div class="flex justify-between">
+            <!-- <div class="flex justify-between">
               <span class="text-gray-600">Diện tích:</span>
               <strong>{{ order.area_m2 }} m²</strong>
-            </div>
+            </div> -->
             <div class="flex justify-between">
               <span class="text-gray-600">Thời gian yêu cầu:</span>
               <strong>{{ order.requested_hours }} giờ</strong>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-600">Thời gian ước tính:</span>
-              <strong>{{ order.estimated_hours }} giờ</strong>
+              <span class="text-gray-600">Thời gian bắt đầu:</span>
+              <strong>{{ formatDateTime(order.preferred_start_time) }}</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Thời gian kết thúc:</span>
+              <strong>{{ formatDateTime(order.preferred_end_time) }}</strong>
             </div>
             <div>
               <span class="text-gray-600 block">Ghi chú:</span>
@@ -89,7 +93,7 @@
               </div>
               <div>
                 <p class="text-gray-600 mb-1">Tổng giá tiền</p>
-                <p class="font-semibold text-lg text-green-600">{{ formatCurrency(calculateTotalAmount(order)) }}</p>
+                <p class="font-semibold text-lg text-green-600">{{ order.cost_confirm }}</p>
               </div>
             </div>
           </div>
@@ -97,7 +101,7 @@
       </div>
       
       <!-- Thời gian dự kiến - Timeline style -->
-      <div class="mb-6">
+      <!-- <div class="mb-6">
         <div class="shadow-sm border rounded-lg overflow-hidden">
           <div class="bg-purple-50 p-3 border-b border-purple-100">
             <h3 class="text-lg font-medium flex items-center">
@@ -117,7 +121,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Hành động - Buttons clean layout -->
       <div v-if="order.status !== 'cancelled'" class="mt-8">
