@@ -1170,7 +1170,14 @@ const vi = {
   copy_email_success: 'Đã sao chép email',
   copy_email_error: 'Không thể sao chép email',
   
-  // Search functionality
+  search_orders_placeholder: 'Tìm kiếm đơn hàng...',
+  search_type_all: 'Tất cả',
+  search_type_service: 'Dịch vụ',
+  search_type_id: 'Mã đơn',
+  search_type_note: 'Ghi chú',
+  search_type_price: 'Giá tiền',
+  search_results_found: 'Tìm thấy {count} kết quả',
+  search_no_results: 'Không tìm thấy kết quả nào',
   
 };
 
