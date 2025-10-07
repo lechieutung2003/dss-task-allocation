@@ -11,7 +11,9 @@ from rest_framework.response import Response
 from common.constants.http import Http
 from django.db.models import Q
 from hr.permissions import IsAdmin, IsEmployee, IsCustomer
+from businesses.models.employee import EmployeeWorkingStatus
 from rest_framework import status
+from decimal import Decimal
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
@@ -42,6 +44,8 @@ class OrderViewSet(BaseViewSet):
         "list": [["roles:edit"], ["roles:view"]],
         "get_assignments": [["roles:edit"], ["roles:view"]],
         "updateStatus": [["roles:edit"]],
+        "update_admin_log": [["roles:edit"]],
+        "complete": [["roles:edit"]]
     }
 
     def get_serializer_class(self):
@@ -130,6 +134,9 @@ class OrderViewSet(BaseViewSet):
                 
                 if serializer.is_valid():
                     assignment = serializer.save()
+                    employee = assignment.employee
+                    employee.status = EmployeeWorkingStatus.INACTIVE
+                    employee.save()
                     created_assignments.append(assignment)
                 else:
                     print("Validation errors:", serializer.errors)  # Thêm log để debug
@@ -208,6 +215,23 @@ class OrderViewSet(BaseViewSet):
         # Trả về đơn hàng đã cập nhật
         serializer = self.get_serializer(order)
         return Response(serializer.data)
+    
+    @action(methods=['POST'], detail=True, url_path="complete")
+    def complete_order(self, request, pk=None):
+        order = self.get_object()
+        print(f"Completing order {order.id}")
+        requested_hours = Decimal(str(order.requested_hours))  # Sửa ở đây
+        print(f"Requested hours: {requested_hours}")
+        assignments = Assignment.objects.filter(order=order)
+        print(f"Found {assignments.count()} assignments")
+        for assignment in assignments:
+            employee = assignment.employee
+            employee.total_hours_worked = (employee.total_hours_worked or Decimal('0')) + requested_hours
+            employee.completed_orders_count = (employee.completed_orders_count or 0) + 1
+            employee.status = EmployeeWorkingStatus.ACTIVE
+            employee.save()
+        assignments.delete()
+        return Response({"detail": "Đã hoàn thành đơn hàng và cập nhật nhân viên."}, status=status.HTTP_200_OK)
     
 
 class AssignmentViewSet(BaseViewSet):

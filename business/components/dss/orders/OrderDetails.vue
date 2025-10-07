@@ -65,9 +65,9 @@
               <span class="text-gray-600">Email:</span>
               <strong>{{ order.customer_details.email }}</strong>
             </div>
-            <div v-if="order.customer_details?.address">
-              <span class="text-gray-600 block">Địa chỉ:</span>
-              <p class="mt-1 text-gray-700">{{ order.customer_details.address }}</p>
+            <div v-if="order.customer_details?.area" class="flex justify-between">
+              <span class="text-gray-600 block">Khu vực:</span>
+              <strong class="mt-1 text-gray-700">{{ order.customer_details.area }}</strong>
             </div>
           </div>
         </div>
@@ -128,19 +128,27 @@
       </div> -->
 
       <!-- Hành động - Buttons clean layout -->
-      <div v-if="order.status !== 'cancelled'" class="mt-8">
+      <div v-if="order.status !== 'completed' && order.status !== 'rejected'" class="mt-8">
         <h3 class="text-lg font-medium mb-3">Hành động</h3>
         <div class="flex space-x-3">
           <el-button 
             type="danger" 
-            @click="handleCancelOrder" 
-            v-if="order.status !== 'completed'"
+            @click="handleCancelOrder"
             size="medium" 
             plain
             icon="el-icon-close"
           >
             Hủy đơn hàng
           </el-button>
+          <!-- <el-button
+            type="primary"
+            @click="$emit('assign-employee')"
+            size="medium"
+            plain
+            icon="el-icon-user"
+          >
+            Phân công nhân viên
+          </el-button> -->
         </div>
       </div>
     </div>
@@ -191,6 +199,7 @@ import { defineProps, defineEmits } from 'vue';
 import { ElMessageBox } from 'element-plus';
 import { formatCurrency} from '../../../utils/formatters'
 import { formatDate, formatDateTime } from '../../../utils/time';
+import OrderService from '../../../services/dss/order';
 
 const props = defineProps({
   order: Object,
@@ -262,6 +271,7 @@ const handleCancelOrder = () => {
     inputPlaceholder: 'Nhập lý do hủy đơn hàng...'
   }).then(async ({ value: reason }) => {
     const orderId = props.order.id;
+    console.log('Hủy đơn hàng', orderId, 'Lý do:', reason);
     
     // Gọi API để hủy đơn hàng và ghi log
     await OrderService.rejectOrder(orderId, reason);
@@ -269,10 +279,10 @@ const handleCancelOrder = () => {
     //Cập nhật trạng thái
     await OrderService.updateOrderStatus(orderId, 'rejected');
     
-    
     props.order.status = 'rejected';
-  }).catch(() => {
+  }).catch((error) => {
     // User cancelled
+    console.log('Hủy bỏ hủy đơn hàng', error);
   });
 };
 </script>

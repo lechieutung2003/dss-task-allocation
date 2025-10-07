@@ -84,7 +84,7 @@
               type="warning"
               size="small"
               @click="navigateToOrderAssignment(row.id)"
-              v-if="row.status !== 'cancelled'"
+              v-if="row.status !== 'completed' && row.status !== 'rejected'"
             >
               Phân công
             </el-button>
@@ -92,7 +92,7 @@
               type="danger"
               size="small"
               @click="handleCancelOrder(row)"
-              v-if="row.status !== 'completed' && row.status !== 'cancelled'"
+              v-if="row.status !== 'completed' && row.status !== 'rejected'"
             >
               Hủy
             </el-button>
@@ -313,8 +313,12 @@ const handleCancelOrder = (order) => {
     }
   )
     .then(({ value: reason }) => {
-      // Sử dụng phương thức mới để hủy đơn hàng và ghi log
+      // Ghi log lý do hủy
       OrderService.rejectOrder(order.id, reason)
+        .then(() => {
+          // Cập nhật trạng thái đơn hàng thành "rejected"
+          return OrderService.updateOrderStatus(order.id, "rejected");
+        })
         .then(() => {
           // Cập nhật trạng thái trong danh sách
           const index = orderList.value.findIndex(

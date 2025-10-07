@@ -6,9 +6,9 @@
       <div class="order-summary bg-blue-50 p-3 rounded mb-4 border-l-4 border-blue-400">
         <div class="grid grid-cols-4 md:grid-cols-7 gap-2">
             <!-- Khu vực - mở rộng gấp đôi -->
-            <div class="col-span-2 md:col-span-2">
+            <div class="col-span-1 md:col-span-1">
             <span class="text-xs text-gray-500 block">Khu vực</span>
-            <strong class="text-sm truncate block">{{ order.customer_details?.address || 'Không có' }}</strong>
+            <strong class="text-sm truncate block">{{ order.customer_details?.area || 'Không có' }}</strong>
             </div>
             
             <!-- Khách hàng - thu nhỏ -->
@@ -62,21 +62,20 @@
 
       <!-- Component bảng danh sách nhân viên - Thủ công hoặc DSS -->
       <EmployeeSelectionTable
-        v-bind="{ 
-          order, 
-          useDSS, 
-          recommendations, 
-          loadingRecommendations, 
-          loadingEmployees,
-          allEmployees,
-          filteredEmployees,
-          employeeFilter,
-          pagination,
-          showOnlyAvailable,
-          availableAreas
-        }"
+        :order="order"
+        :useDSS="useDSS"
+        :recommendations="recommendations"
+        :loadingRecommendations="loadingRecommendations"
+        :loadingEmployees="loadingEmployees"
+        :allEmployees="allEmployees"
+        :filteredEmployees="filteredEmployees"
+        :employeeFilter="employeeFilter"
+        :pagination="pagination"
+        :showOnlyAvailable="showOnlyAvailable"
+        :availableAreas="availableAreas"
         @assign-employee="assignEmployee"
         @get-recommendations="getRecommendations"
+        @filter-employees="filterEmployees"
       />
 
       <!-- Component bảng nhân viên đã phân công -->
@@ -221,7 +220,7 @@ const getRecommendations = async () => {
     tempRecommendations.sort((a, b) => b.score - a.score);
     
     // Lấy 5 nhân viên có score cao nhất
-    recommendations.value = tempRecommendations.slice(0, 5);
+    recommendations.value = tempRecommendations;
     
     console.log('Top 5 recommendations:', recommendations.value);
     
@@ -241,49 +240,7 @@ const getRecommendations = async () => {
 };
 
 const getEmployeeAvailability = (employee) => {
-  if (!props.order) return false;
-  
-  try {
-    // 1. Kiểm tra working hours
-    if (!employee.working_start_time || !employee.working_end_time) {
-      return false;
-    }
-
-    // 2. Kiểm tra thời gian đơn hàng
-    if (!props.order?.preferred_start_time) {
-      return false;
-    }
-
-    // 3. Parse và chuẩn hóa thời gian đơn hàng 
-    const orderDateTime = new Date(props.order.preferred_start_time);
-    const orderStartHour = orderDateTime.getHours();
-    const orderStartMin = orderDateTime.getMinutes();
-    const orderEndHour = orderStartHour + 2; // Cộng thêm 2 tiếng
-    const orderEndMin = orderStartMin;
-
-    // 4. Parse thời gian làm việc của nhân viên
-    const [empStartHour, empStartMin] = employee.working_start_time.split(':');
-    const [empEndHour, empEndMin] = employee.working_end_time.split(':');
-
-    // 5. Chuyển tất cả về phút để so sánh
-    const orderStartMins = orderStartHour * 60 + orderStartMin;
-    const orderEndMins = orderEndHour * 60 + orderEndMin;
-    const empStartMins = parseInt(empStartHour) * 60 + parseInt(empStartMin);
-    const empEndMins = parseInt(empEndHour) * 60 + parseInt(empEndMin);
-
-    // 6. So sánh thời gian
-    if (empStartMins <= empEndMins) {
-      // Ca làm việc bình thường (không qua đêm)
-      return orderStartMins >= empStartMins && orderEndMins <= empEndMins;
-    } else {
-      // Ca làm việc qua đêm
-      return (orderStartMins >= empStartMins) || (orderEndMins <= empEndMins);
-    }
-
-  } catch (error) {
-    console.error('Error in getEmployeeAvailability:', error);
-    return false;
-  }
+  return employee.status === 1;   
 };
 
 // Fetch all employees
@@ -334,7 +291,7 @@ const filterEmployees = (resetPage = false) => {
     return;
   }
 
-  let result = [...allEmployees.value];
+  let result = allEmployees.value.map(emp => ({...emp}));
   
   // Lọc theo từ khóa
   if (employeeFilter.keyword) {
@@ -356,19 +313,49 @@ const filterEmployees = (resetPage = false) => {
     result = result.filter(emp => getEmployeeAvailability(emp));
   }
 
+  console.log('Check filtered employees with skills:', result.map(emp => ({
+    name: `${emp.first_name} ${emp.last_name}`,
+    skills: emp.skills
+  })));
+  
+
   result.sort((a, b) => {
+    // Lấy thông tin trạng thái và khu vực
     const aAvailable = getEmployeeAvailability(a);
     const bAvailable = getEmployeeAvailability(b);
+    const orderArea = props.order?.customer_details?.area || '';
+    const aSameArea = a.area === orderArea;
+    const bSameArea = b.area === orderArea;
     
-    // Nhân viên "sẵn sàng" lên đầu
-    if (aAvailable && !bAvailable) return -1;
-    if (!aAvailable && bAvailable) return 1;
+    // Tính điểm cho nhân viên a và b
+    // - Sẵn sàng + cùng khu vực: 3 điểm
+    // - Chỉ sẵn sàng: 2 điểm
+    // - Chỉ cùng khu vực: 1 điểm
+    // - Không đáp ứng gì: 0 điểm
     
-    // Nếu cùng trạng thái, sắp xếp theo tên
-    const aName = `${a.first_name || ''} ${a.last_name || ''}`;
-    const bName = `${b.first_name || ''} ${b.last_name || ''}`;
-    return aName.localeCompare(bName);
+    let aScore = 0;
+    let bScore = 0;
+    
+    if (aAvailable && aSameArea) aScore = 3;
+    else if (aAvailable) aScore = 2;
+    else if (aSameArea) aScore = 1;
+    
+    if (bAvailable && bSameArea) bScore = 3;
+    else if (bAvailable) bScore = 2;
+    else if (bSameArea) bScore = 1;
+    
+    // So sánh điểm
+    if (aScore !== bScore) {
+      return bScore - aScore; // Sắp xếp theo điểm giảm dần
+    }
+    
+    // // Nếu cùng điểm, sắp xếp theo tên
+    // const aName = `${a.first_name || ''} ${a.last_name || ''}`;
+    // const bName = `${b.first_name || ''} ${b.last_name || ''}`;
+    // return aName.localeCompare(bName);
   });
+
+  
   
   filteredEmployees.value = result;
   
@@ -495,8 +482,8 @@ const resetAssignments = async () => {
     } catch (error) {
       ElMessage.error('Không thể đặt lại phân công.');
     }
-  }).catch(() => {
-    // User cancelled
+  }).catch((error) => {
+    console.log('User cancelled reset:', error);
   });
 };
 

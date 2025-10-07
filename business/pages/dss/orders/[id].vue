@@ -22,7 +22,10 @@
         />
       </el-tab-pane>
 
-      <el-tab-pane label="Phân công nhân viên" name="assignment">
+      <el-tab-pane 
+        v-if="order && order.status !== 'completed' && order.status !== 'rejected'" 
+        label="Phân công nhân viên" 
+        name="assignment">
         <EmployeeAssignment 
           :order="order" 
           :loading="loading" 

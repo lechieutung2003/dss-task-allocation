@@ -23,8 +23,15 @@
           <div class="text-sm font-medium text-gray-900">
             {{ employee.first_name }} {{ employee.last_name }}
           </div>
-          <div class="text-sm text-gray-500">
-            ID: {{ employee.id }}
+          <div class="text-sm text-gray-500 flex items-center">
+            ID:
+            <span
+              class="ml-1 truncate"
+              :title="employee.id"
+              style="max-width: 100px; display: inline-block; white-space: nowrap;" 
+            >
+              {{ employee.id }}
+            </span>
           </div>
         </div>
       </div>

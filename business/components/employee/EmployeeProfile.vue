@@ -84,6 +84,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router' 
 import { useI18n } from 'vue-i18n'
 import SkillService from '@/services/dss/users/skill'
 import ProfileHeader from './profile/ProfileHeader.vue'
@@ -123,6 +124,9 @@ const activeTab = ref('personal')
 const skillsList = ref([])
 const skillsLoading = ref(false)
 const showSkillDropdown = ref(false)
+const loading = ref(false)
+const employee = ref(null)
+const route = useRoute()
 
 const currentTime = ref(new Date())
 let timeInterval: NodeJS.Timeout | null = null
@@ -158,6 +162,20 @@ const loadSkills = async () => {
     skillsList.value = response.results || []
   } catch (error) {
     skillsList.value = []
+  }
+}
+
+const loadEmployee = async (employeeId: string) => {
+  loading.value = true
+  try {
+    const response = await EmployeeService.getEmployee(employeeId)
+    employee.value = response
+    console.log('Thông tin chi tiết employee:', response)
+  } catch (error) {
+    employee.value = null
+    console.error('Lỗi lấy thông tin employee:', error)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -363,6 +381,11 @@ onMounted(() => {
     if (!Array.isArray(editableEmployee.value.skills)) {
       editableEmployee.value.skills = []
     }
+  }
+
+  const employeeId = route.params.id // hoặc lấy từ nguồn khác
+  if (employeeId) {
+    loadEmployee(employeeId)
   }
   startTimeUpdate()
 })

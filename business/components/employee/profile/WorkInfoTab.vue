@@ -68,6 +68,17 @@
             {{ skill.name }}
           </div>
         </div>
+        <!-- Hiển thị kỹ năng thực tế của nhân viên -->
+        <!-- <div v-if="employee.skills && employee.skills.length" class="mt-2 flex flex-wrap gap-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('skills') }}</label>
+          <span
+            v-for="skill in employee.skills"
+            :key="skill"
+            class="inline-block bg-green-100 text-green-700 px-2 py-1 rounded text-xs"
+          >
+            {{ skill }}
+          </span>
+        </div> -->
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700">{{ $t('working_start_time') }}</label>
@@ -127,6 +138,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import EmployeeService from '@/services/dss/users/employees'
+
 const { t } = useI18n()
 defineProps<{
   employee: any,

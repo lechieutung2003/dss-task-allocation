@@ -230,7 +230,15 @@ const handleUpdateStatus = async () => {
     await OrderService.updateOrderStatus(order.value.id, newStatus.value);
     order.value.status = newStatus.value;
     showStatusDialog.value = false;
-    newStatus.value = "";
+
+    console.log("Order status updated to:", order.value.status);
+
+    // Nếu trạng thái mới là completed, gọi API xử lý assignment và employee
+    if (newStatus.value === "completed") {
+      console.log("Completing order...");
+      await OrderService.completeOrder(order.value.id, order.value.requested_hours);
+    }
+
     ElMessage.success("Cập nhật trạng thái thành công!");
   } catch (error) {
     console.error("Lỗi khi cập nhật trạng thái:", error);

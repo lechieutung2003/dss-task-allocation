@@ -77,7 +77,7 @@
         </el-table-column>
         <el-table-column label="Tổng tiền" width="120" show-overflow-tooltip>
           <template #default="{ row }">
-            {{ formatCurrency(calculateTotalAmount(row.order_details)) }}
+            {{ row.order_details.cost_confirm }}
           </template>
         </el-table-column>
         <el-table-column label="Trạng thái" width="100">

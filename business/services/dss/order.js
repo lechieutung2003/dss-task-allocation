@@ -104,7 +104,7 @@ class OrderService extends BaseService {
     const reasondata = typeof reason === 'string' ? { reason } : reason;
 
     const payload = {
-    admin_log: reasondata || 'Không có lý do'
+      admin_log: reasondata || 'Không có lý do'
     };
     
     // Lấy token
@@ -127,6 +127,32 @@ class OrderService extends BaseService {
       })
       .catch(error => {
         console.error('Error rejecting order:', error);
+        throw error;
+      });
+  }
+
+  completeOrder(orderId, requestedHours) {
+    const token = localStorage.getItem('access_token');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const baseUrl = 'http://127.0.0.1:8008/api/v1/orders';
+    const url = `${baseUrl}/${orderId}/complete`;
+
+    const payload = {
+      requested_hours: requestedHours
+    };
+
+    // Đổi PATCH thành POST
+    return this.request().post(url, payload, { headers })
+      .then(response => {
+        console.log('Order completed successfully:', response);
+        return response;
+      })
+      .catch(error => {
+        console.error('Error completing order:', error);
         throw error;
       });
   }

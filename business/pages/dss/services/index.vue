@@ -86,7 +86,7 @@ onMounted(fetchServices);
           >
             Xem
           </el-button>
-          <template v-if="isAdmin.value">
+          <template v-if="isAdmin">
             <el-button
               size="small"
               type="warning"

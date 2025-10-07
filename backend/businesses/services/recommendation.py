@@ -47,13 +47,33 @@ class RecommendationService:
         employee_skill_records = EmployeeSkill.objects.filter(employee=employee)
         if employee_skill_records:
             employee_skills = [es.skill.name for es in employee_skill_records]
+            
+        print("required_skills:", required_skills)
+        print("employee_skills:", employee_skills)
         
         if required_skills and employee_skills:
-            required_skills_set = set(required_skills)
-            employee_skills_set = set(employee_skills)
-            skill_match = len(required_skills_set.intersection(employee_skills_set))
-            if skill_match > 0:
+            # Tìm kiếm từ khóa thay vì so khớp chính xác
+            skill_match = False
+            for req_skill in required_skills:
+                # Tách từ khóa chính từ tên kỹ năng
+                keywords = req_skill.lower().split()
+                for emp_skill in employee_skills:
+                    emp_skill_lower = emp_skill.lower()
+                    # Kiểm tra từng từ khóa
+                    for keyword in keywords:
+                        if len(keyword) > 3 and keyword in emp_skill_lower:  # Chỉ kiểm tra từ khóa có ít nhất 4 ký tự
+                            skill_match = True
+                            break
+                    if skill_match:
+                        break
+                if skill_match:
+                    break
+            
+            if skill_match:
                 score += 15
+                print(f"Skill match found: {req_skill} matches with {emp_skill}")
+            else:
+                print(f"No skill match found between {required_skills} and {employee_skills}")
         
         print(f"After skill check: {score}")
         
@@ -75,18 +95,18 @@ class RecommendationService:
             
             # Tính điểm ngược: càng thấp lương thì điểm càng cao
             if salary_range > 0:  # Tránh chia cho 0
-                # Công thức: 25 * (1 - (lương nhân viên - lương thấp nhất) / (lương cao nhất - lương thấp nhất))
+                # Công thức: 30 * (1 - (lương nhân viên - lương thấp nhất) / (lương cao nhất - lương thấp nhất))
                 normalized_salary = (employee_salary - min_salary) / salary_range
                 salary_score = round(30 * (1 - normalized_salary), 2)
                 score += salary_score
                 print("salary_score:", salary_score)
             else:
                 # Nếu tất cả nhân viên có cùng mức lương
-                score += 15  # 50% của 25 điểm
-                print("salary_score (default):", 12.5)
+                score += 0  # 50% của 30 điểm
+                print("salary_score (default):", 15)
         except Exception as e:
             print("Error calculating salary score:", e)
-            score += 0  # 50% của 25 điểm
+            score += 0  # 50% của 30 điểm
 
         # 5. Kiểm tra khối lượng công việc (10%)
         try:
@@ -102,7 +122,7 @@ class RecommendationService:
                 # Chuyển đổi thành Decimal trước khi cộng
                 score += Decimal(str(experience_score))
             else:
-                score += Decimal('5')
+                score += Decimal('0')
         except Exception as e:
             print("Error calculating workload score:", e)
             score += 0
@@ -144,11 +164,29 @@ class RecommendationService:
             employee_skills = [es.skill.name for es in employee_skill_records]
         
         if required_skills and employee_skills:
-            required_skills_set = set(required_skills)
-            employee_skills_set = set(employee_skills)
-            matching_skills = required_skills_set.intersection(employee_skills_set)
+            # Tìm kiếm kỹ năng phù hợp dựa trên từ khóa
+            matching_skills = []
+            matched_pairs = []
+            
+            for req_skill in required_skills:
+                req_keywords = req_skill.lower().split()
+                for emp_skill in employee_skills:
+                    emp_skill_lower = emp_skill.lower()
+                    # Kiểm tra từng từ khóa
+                    for keyword in req_keywords:
+                        if len(keyword) > 3 and keyword in emp_skill_lower:  # Chỉ kiểm tra từ khóa có ít nhất 4 ký tự
+                            matched_pairs.append((req_skill, emp_skill))
+                            if req_skill not in matching_skills:
+                                matching_skills.append(req_skill)
+                            break
+            
             if matching_skills:
-                reasons.append(f"Có kỹ năng phù hợp: {', '.join(matching_skills)}")
+                # Hiển thị kỹ năng yêu cầu và kỹ năng tương ứng của nhân viên
+                match_descriptions = []
+                for req_skill, emp_skill in matched_pairs:
+                    match_descriptions.append(f"{req_skill} (khớp với {emp_skill})")
+                
+                reasons.append(f"Có kỹ năng phù hợp: {', '.join(match_descriptions)}")
         
         # Kiểm tra mức lương
         try:

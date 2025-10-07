@@ -131,47 +131,50 @@
           >
         </div>
       </div>
-       <!-- Skills Dropdown Multi-select -->
+       
+      <!-- Skills Dropdown Multi-select -->
       <div class="relative mt-4">
-    <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('skills') }}</label>
-    <div
-      class="flex items-center justify-between border px-3 py-2 rounded-md cursor-pointer"
-      :class="['w-full', 'border-gray-300', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'bg-white']"
-      @click="showSkillDropdown = !showSkillDropdown"
-    >
-      <span>
-        <template v-if="localEmployee.skills && localEmployee.skills.length">
-          {{ localEmployee.skills.join(', ') }}
-        </template>
-        <template v-else>
-          {{ $t('select_skills') }}
-        </template>
-      </span>
-      <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-      </svg>
-    </div>
-    <div
-      v-if="showSkillDropdown"
-      class="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-auto"
-      @click.stop
-    >
-      <div
-        v-for="skill in props.skillsList"
-        :key="skill.id"
-        class="px-3 py-2 hover:bg-blue-50 cursor-pointer flex items-center"
-        @click="toggleSkill(skill.name)"
-      >
-        <input
-          type="checkbox"
-          :checked="localEmployee.skills.includes(skill.name)"
-          @change="toggleSkill(skill.name)"
-          class="mr-2"
-        />
-        {{ skill.name }}
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('skills') }}</label>
+        <div
+          class="flex items-center justify-between border px-3 py-2 rounded-md cursor-pointer"
+          :class="['w-full', 'border-gray-300', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'bg-white']"
+          @click="showSkillDropdown = !showSkillDropdown"
+        >
+          <span>
+            <template v-if="localEmployee.skills && localEmployee.skills.length">
+              {{ localEmployee.skills.join(', ') }}
+            </template>
+            <template v-else>
+              {{ $t('select_skills') }}
+            </template>
+          </span>
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <div
+          v-if="showSkillDropdown"
+          class="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-auto"
+          @click.stop
+        >
+          <div
+            v-for="skill in props.skillsList"
+            :key="skill.id"
+            class="px-3 py-2 hover:bg-blue-50 cursor-pointer flex items-center"
+            @click="toggleSkill(skill.name)"
+          >
+            <input
+              type="checkbox"
+              :checked="localEmployee.skills.includes(skill.name)"
+              @change="toggleSkill(skill.name)"
+              class="mr-2"
+            />
+            {{ skill.name }}
+          </div>
+        </div>
+
+        
       </div>
-    </div>
-  </div>
     </div>
 
     <!-- Modal Footer -->

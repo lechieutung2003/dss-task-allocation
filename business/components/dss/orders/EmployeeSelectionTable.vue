@@ -3,7 +3,7 @@
     <!-- Phần hiển thị khuyến nghị khi bật DSS -->
     <div v-if="useDSS" class="bg-blue-50 p-4 rounded mb-4">
       <div class="flex justify-between items-center">
-        <span class="font-medium">Top 5 nhân viên phù hợp nhất</span>
+        <span class="font-medium">Top nhân viên phù hợp nhất</span>
         <el-button
           type="primary"
           size="small"
@@ -16,11 +16,15 @@
       
       <el-table
         v-if="recommendations.length > 0"
-        :data="recommendations"
+        :data="paginatedRecommendations"
         style="width: 100%"
         class="mt-4"
       >
-        <el-table-column label="Xếp hạng" width="80" type="index" :index="1" />
+        <el-table-column label="Xếp hạng" width="80">
+          <template #default="{ $index }">
+            {{ (dssLocalPagination.currentPage - 1) * dssLocalPagination.pageSize + $index + 1 }}
+          </template>
+        </el-table-column>
         
         <el-table-column label="Nhân viên" width="300">
           <template #default="{ row }">
@@ -84,6 +88,16 @@
         </el-table-column>
       </el-table>
       
+      <div v-if="recommendations.length > dssLocalPagination.pageSize" class="flex justify-center mt-4">
+        <el-pagination
+          v-model:currentPage="dssLocalPagination.currentPage"
+          :page-size="dssLocalPagination.pageSize"
+          :total="recommendations.length"
+          layout="total, prev, pager, next"
+          @current-change="handleDSSCurrentChange"
+        />
+      </div>
+
       <el-empty 
         v-else-if="!loadingRecommendations"
         description="Chưa có đề xuất nào"
@@ -98,7 +112,7 @@
     <!-- Bảng danh sách nhân viên (thủ công) -->
     <div class="mb-6" v-if="!useDSS">
       <!-- Công cụ tìm kiếm và lọc nhân viên -->
-      <div class="mb-4">
+      <!-- <div class="mb-4">
           <div class="grid grid-cols-2 gap-4">
           <el-input 
               v-model="localEmployeeFilter.keyword" 
@@ -125,7 +139,7 @@
               />
           </el-select>
           </div>
-      </div>
+      </div> -->
       
       <el-table 
         :data="paginatedEmployees" 
@@ -133,7 +147,7 @@
         v-loading="loadingEmployees"
         row-class-name="employee-row"
       >
-        <el-table-column prop="id" label="Mã NV" width="150" sortable />
+        <el-table-column prop="id" label="Mã NV" width="140" sortable />
         <el-table-column label="Tên nhân viên" sortable>
           <template #default="{ row }">
             {{ row.first_name }} {{ row.last_name }}
@@ -152,10 +166,15 @@
             </el-tag>
             <el-tooltip 
               v-if="(row.skills || []).length > 2" 
-              :content="row.skills.slice(2).join(', ')"
+              :content="(row.skills || []).slice(2).join(', ')"
             >
-              <el-tag size="small" type="info">+{{ row.skills.length - 2 }}</el-tag>
+              <el-tag size="small" type="info">+{{ (row.skills || []).length - 2 }}</el-tag>
             </el-tooltip>
+            <span v-if="!row.skills || !row.skills.length" class="text-gray-400 text-sm">
+              Không có kỹ năng
+            </span>
+            <!-- Thêm log debug để xem dữ liệu -->
+            <div class="d-none">{{ console.log('Row data:', row) }}</div>
           </template>
         </el-table-column>
         <el-table-column label="Trạng thái" width="120">
@@ -227,6 +246,11 @@ const localPagination = reactive({
   pageSize: props.pagination?.pageSize || 4
 });
 
+const dssLocalPagination = reactive({
+  currentPage: 1,
+  pageSize: 4
+});
+
 // Keep local filters in sync with props
 watch(() => props.employeeFilter, (newFilter) => {
   if (newFilter) {
@@ -242,6 +266,11 @@ watch(() => props.pagination, (newPagination) => {
   }
 }, { deep: true });
 
+// Reset DSS pagination when recommendations change
+watch(() => props.recommendations, () => {
+  dssLocalPagination.currentPage = 1;
+});
+
 // Computed properties
 const paginatedEmployees = computed(() => {
   if (!Array.isArray(props.filteredEmployees)) return [];
@@ -249,6 +278,15 @@ const paginatedEmployees = computed(() => {
   const start = (localPagination.currentPage - 1) * localPagination.pageSize;
   const end = start + localPagination.pageSize;
   return props.filteredEmployees.slice(start, end);
+});
+
+// Computed property để phân trang cho recommendations
+const paginatedRecommendations = computed(() => {
+  if (!Array.isArray(props.recommendations)) return [];
+  
+  const start = (dssLocalPagination.currentPage - 1) * dssLocalPagination.pageSize;
+  const end = start + dssLocalPagination.pageSize;
+  return props.recommendations.slice(start, end);
 });
 
 // Methods
@@ -259,9 +297,7 @@ const getMatchColor = (score) => {
 };
 
 const getEmployeeAvailability = (employee) => {
-  // Rely on parent component's implementation
-  // In a real component we would implement this logic here
-  return true; // Placeholder for demo
+  return employee.status === 1;
 };
 
 const isEmployeeAssigned = (employeeId) => {
@@ -277,6 +313,11 @@ const assignEmployee = (employee) => {
 const handleCurrentChange = (currentPage) => {
   localPagination.currentPage = currentPage;
   // You might want to emit an event to update pagination in parent
+};
+
+// Thêm xử lý cho phân trang DSS
+const handleDSSCurrentChange = (currentPage) => {
+  dssLocalPagination.currentPage = currentPage;
 };
 
 const filterChanged = () => {

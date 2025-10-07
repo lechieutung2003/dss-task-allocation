@@ -26,14 +26,19 @@ class EmployeeSerializer(WritableNestedSerializer):
     computed_status = serializers.SerializerMethodField()
     status_text = serializers.SerializerMethodField()
     skills = serializers.ListField(
-    child=serializers.CharField(),
-    write_only=True,
-    required=False,
-    help_text="List of skill names to assign to the employee"
+        child=serializers.CharField(),
+        required=False,
+        help_text="List of skill names to assign to the employee"
     )
 
     def get_skills(self, obj):
         return [es.skill.name for es in EmployeeSkill.objects.filter(employee=obj)]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Thêm skills từ hàm get_skills
+        data['skills'] = self.get_skills(instance)
+        return data
 
     class Meta:
         model = Employee
@@ -86,6 +91,7 @@ class EmployeeSerializer(WritableNestedSerializer):
             'completed_orders_count': {'required': False},
             'salary': {'required': False},
             'total_hours_worked': {'required': False},
+            'skills': {'required': False},
         }
         nested_create_fields = ["user"]
         nested_update_fields = ["additional_information"]
