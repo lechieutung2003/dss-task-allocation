@@ -2,21 +2,34 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-
+from rest_framework.validators import UniqueValidator
 from hr.models.customer import Customer
 
 User = get_user_model()
 
 class RegisterCustomerSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    #email = serializers.EmailField()
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=User.objects.all(), message="Email đã tồn tại!")]
+    )
     password = serializers.CharField(write_only=True)
     first_name = serializers.CharField(max_length=50, required=False, allow_blank=True)
     last_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
     # name sẽ tự động được tạo từ first_name và last_name, không cần nhập từ frontend
-    phone = serializers.CharField(max_length=20)
+    
+    #phone = serializers.CharField(max_length=20)
+    phone = serializers.CharField(
+        max_length=20,
+        validators=[UniqueValidator(queryset=Customer.objects.all(), message="Số điện thoại đã tồn tại!")]
+    )
     address = serializers.CharField(max_length=255)
     area = serializers.ChoiceField(choices=Customer.AREA_CHOICES)
 
+    def validate_password(self, value):
+        if len(value) < 6:
+            raise serializers.ValidationError("Mật khẩu phải có ít nhất 6 ký tự.")
+        return value
+    
     def create(self, validated_data):
         password = validated_data.pop('password')
         email = validated_data.get('email')

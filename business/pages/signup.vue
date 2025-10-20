@@ -9,27 +9,33 @@
         <!-- First Name -->
         <div class="flex-column">
           <label>{{ $t('first_name') }}</label>
-          <div class="inputForm">
+          <div class="inputForm" :class="{ 'error-border': firstNameError }">
             <input
               v-model="form.first_name"
               type="text"
               class="input"
               :placeholder="$t('first_name')"
+              @blur="validateFirstName"
+              @input="validateFirstName"
             />
           </div>
+          <span v-if="firstNameError" class="error-text">{{ firstNameError }}</span>
         </div>
 
         <!-- Last Name -->
         <div class="flex-column">
           <label>{{ $t('last_name') }}</label>
-          <div class="inputForm">
+          <div class="inputForm" :class="{ 'error-border': lastNameError }">
             <input
               v-model="form.last_name"
               type="text"
               class="input"
               :placeholder="$t('last_name')"
+              @blur="validateLastName"
+              @input="validateLastName"
             />
           </div>
+          <span v-if="lastNameError" class="error-text">{{ lastNameError }}</span>
         </div>
 
         <!-- Email -->
@@ -42,6 +48,7 @@
               class="input"
               :placeholder="$t('email')"
               @blur="validateEmail"
+              @input="validateEmail"
             />
           </div>
           <span v-if="emailError" class="error-text">{{ emailError }}</span>
@@ -57,6 +64,7 @@
               class="input"
               :placeholder="$t('password')"
               @blur="validatePassword"
+              @input="validatePassword"
             />
           </div>
           <span v-if="passwordError" class="error-text">{{ passwordError }}</span>
@@ -65,41 +73,47 @@
         <!-- Phone -->
         <div class="flex-column">
           <label>{{ $t('phone') }}</label>
-          <div class="inputForm">
+          <div class="inputForm" :class="{ 'error-border': phoneError }">
             <input
               v-model="form.phone"
               type="text"
               class="input"
               :placeholder="$t('phone')"
+              @blur="validatePhone"
+              @input="validatePhone"
             />
           </div>
+          <span v-if="phoneError" class="error-text">{{ phoneError }}</span>
         </div>
 
         <!-- Address -->
         <div class="flex-column">
           <label>{{ $t('Address') }}</label>
-          <div class="inputForm">
+          <div class="inputForm" :class="{ 'error-border': addressError }">
             <input
               v-model="form.address"
               type="text"
               class="input"
               :placeholder="$t('Address')"
+              @blur="validateAddress"
+              @input="validateAddress"
             />
           </div>
+          <span v-if="addressError" class="error-text">{{ addressError }}</span>
         </div>
 
         <!-- Area -->
         <div class="flex-column col-span-2">
           <label>{{ $t('area') }}</label>
-          <div class="inputForm" style="position: relative;">
+          <div class="inputForm" :class="{ 'error-border': areaError }" style="position: relative;">
             <input
               v-model="form.area"
               type="text"
               class="input"
               :placeholder="$t('area_placeholder')"
-              @input="filterAreas"
+              @input="filterAreas(); validateArea()"
               @focus="showAreaList = true"
-              @blur="hideAreaList"
+              @blur="hideAreaList(); validateArea()"
               autocomplete="off"
             />
             <!-- Dropdown danh sách khu vực -->
@@ -115,6 +129,7 @@
               </div>
             </div>
           </div>
+          <span v-if="areaError" class="error-text">{{ areaError }}</span>
         </div>
 
         <!-- Submit Button -->
@@ -148,7 +163,7 @@
 import IconAmoz from '~/assets/icons/BigLogo.svg'
 import { ref, computed, watch, onMounted } from 'vue'
 import { ElNotification } from 'element-plus'
-import OAuthService from '@/services/oauth'
+import customerApi from '@/services/dss/users/customer'
 import '@/assets/css/form.css'
 
 definePageMeta({
@@ -160,7 +175,6 @@ const form = ref({
   password: '',
   first_name: '',
   last_name: '',
-  // name sẽ tự động tạo từ first_name + last_name ở backend
   phone: '',
   address: '',
   area: ''
@@ -170,72 +184,29 @@ const isLoading = ref(false)
 const isSubmitted = ref(false)
 const emailError = ref('')
 const passwordError = ref('')
+const areaError = ref('')
+const addressError = ref('')
+const phoneError = ref('')
+const firstNameError = ref('')
+const lastNameError = ref('')
 
 // Area search functionality
 const showAreaList = ref(false)
 const filteredAreas = ref<string[]>([])
 
-// Area keys for translation
-const areaKeys: string[] = [
-  // Các quận
-  'haichau', 'nguhanhson', 'lienchieu', 'sontra', 'camle', 'thanhkhe',
-  // Các phường xã
-  'anhai', 'ankhe', 'anthang', 'avuong', 'bana', 'banthach', 'bengiang', 'benhien',
-  'chiendan', 'dacpring', 'dailoc', 'dienban', 'dienbanbac', 'dienbandong', 'dienbantay',
-  'dongduong', 'donggiang', 'ducphu', 'duynghia', 'duyxuyen', 'gonoi', 'hanha',
-  'haivan', 'hiepduc', 'hoacuong', 'hoakhanh', 'hoatien', 'hoavang', 'hoaxuan',
-  'hoangsa', 'hoian', 'hoiandong', 'hoiantay', 'hungson', 'huongtra', 'khamduc',
-  'ladee', 'laee', 'lanhngoc', 'namgiang', 'namphuoc', 'namtramy', 'nongson',
-  'nuithanh', 'phuninh', 'phuthuan', 'phuocchanh', 'phuochiep', 'phuocnang',
-  'phuocthanh', 'phuoctra', 'quangphu', 'quephuoc', 'queson', 'quesontrung',
-  'soncamha', 'songkon', 'songvang', 'tamanh', 'tamhai', 'tamky', 'tammy',
-  'tamxuan', 'tanhiep', 'taygiang', 'tayho', 'thangan', 'thangbinh', 'thangdien',
-  'thangphu', 'thangtruong', 'thanhbinh', 'thanhmy', 'thubon', 'thuongduc',
-  'tienphuoc', 'tradoc', 'tragiap', 'traleng', 'tralien', 'tralinh', 'tramy',
-  'tratan', 'tratap', 'travan', 'vietan', 'vugia', 'xuanphu'
-]
-
 // Fallback static areas (Vietnamese)
 const staticAreas = [
-  'Hải Châu', 'Ngũ Hành Sơn', 'Liên Chiểu', 'Sơn Trà', 'Cẩm Lệ', 'Thanh Khê',
-  'An Hải', 'An Khê', 'An Thắng', 'Avương', 'Bà Nà', 'Bàn Thạch', 'Bến Giằng', 'Bến Hiên',
-  'Chiên Đàn', 'Đắc Pring', 'Đại Lộc', 'Điện Bàn', 'Điện Bàn Bắc', 'Điện Bàn Đông', 'Điện Bàn Tây',
-  'Đồng Dương', 'Đông Giang', 'Đức Phú', 'Duy Nghĩa', 'Duy Xuyên', 'Gò Nổi', 'Hà Nha',
-  'Hải Vân', 'Hiệp Đức', 'Hòa Cường', 'Hòa Khánh', 'Hòa Tiến', 'Hòa Vang', 'Hòa Xuân',
-  'Hoàng Sa', 'Hội An', 'Hội An Đông', 'Hội An Tây', 'Hùng Sơn', 'Hương Trà', 'Khâm Đức',
-  'La Dêê', 'La Êê', 'Lãnh Ngọc', 'Nam Giang', 'Nam Phước', 'Nam Trà My', 'Nông Sơn',
-  'Núi Thành', 'Phú Ninh', 'Phú Thuận', 'Phước Chánh', 'Phước Hiệp', 'Phước Năng',
-  'Phước Thành', 'Phước Trà', 'Quảng Phú', 'Quế Phước', 'Quế Sơn', 'Quế Sơn Trung',
-  'Sơn Cẩm Hà', 'Sông Kôn', 'Sông Vàng', 'Tam Anh', 'Tam Hải', 'Tam Kỳ', 'Tam Mỹ',
-  'Tam Xuân', 'Tân Hiệp', 'Tây Giang', 'Tây Hồ', 'Thăng An', 'Thăng Bình', 'Thăng Điền',
-  'Thăng Phú', 'Thăng Trường', 'Thạnh Bình', 'Thạnh Mỹ', 'Thu Bồn', 'Thượng Đức',
-  'Tiên Phước', 'Trà Đốc', 'Trà Giáp', 'Trà Leng', 'Trà Liên', 'Trà Linh', 'Trà My',
-  'Trà Tân', 'Trà Tập', 'Trà Vân', 'Việt An', 'Vu Gia', 'Xuân Phú'
+  'Hải Châu', 'Ngũ Hành Sơn', 'Liên Chiểu', 'Sơn Trà', 'Cẩm Lệ', 'Thanh Khê'
 ]
 
 // Get translated areas with fallback
 const allAreas = computed(() => {
-  try {
-    const { $t } = useNuxtApp()
-    return areaKeys.map(key => $t(key) || key)
-  } catch (error) {
-    // Fallback to static areas if translation fails
-    return staticAreas
-  }
+  return staticAreas
 })
 
 // Initialize with all areas
 onMounted(() => {
   filteredAreas.value = allAreas.value
-})
-
-// Watch for language changes to update filtered areas
-watch(allAreas, (newAreas) => {
-  if (!form.value.area) {
-    filteredAreas.value = newAreas
-  } else {
-    filterAreas()
-  }
 })
 
 // Area search functions
@@ -262,6 +233,26 @@ const selectArea = (area: string) => {
   showAreaList.value = false
 }
 
+const validateFirstName = () => {
+  if (!form.value.first_name.trim()) {
+    firstNameError.value = 'Họ không được để trống'
+  } else if (form.value.first_name.length > 50) {
+    firstNameError.value = 'Họ không được vượt quá 50 ký tự'
+  } else {
+    firstNameError.value = ''
+  }
+}
+
+const validateLastName = () => {
+  if (!form.value.last_name.trim()) {
+    lastNameError.value = 'Tên không được để trống'
+  } else if (form.value.last_name.length > 150) {
+    lastNameError.value = 'Tên không được vượt quá 150 ký tự'
+  } else {
+    lastNameError.value = ''
+  }
+}
+
 const validateEmail = () => {
   if (!form.value.email) {
     emailError.value = 'Email không được để trống'
@@ -276,24 +267,77 @@ const validatePassword = () => {
   if (!form.value.password) {
     passwordError.value = 'Mật khẩu không được để trống'
   } else if (form.value.password.length < 6) {
-    passwordError.value = 'Mật khẩu tối thiểu 6 ký tự'
+    passwordError.value = 'Mật khẩu phải có ít nhất 6 ký tự'
   } else {
     passwordError.value = ''
   }
 }
 
+const validatePhone = () => {
+  if (!form.value.phone.trim()) {
+    phoneError.value = 'Số điện thoại không được để trống'
+  } else if (form.value.phone.length > 20) {
+    phoneError.value = 'Số điện thoại không được vượt quá 20 ký tự'
+  } else if (!/^[0-9+\-\s()]+$/.test(form.value.phone)) {
+    phoneError.value = 'Số điện thoại chỉ được chứa số và các ký tự đặc biệt'
+  } else {
+    phoneError.value = ''
+  }
+}
+
+const validateAddress = () => {
+  if (!form.value.address.trim()) {
+    addressError.value = 'Địa chỉ không được để trống'
+  } else if (form.value.address.length > 255) {
+    addressError.value = 'Địa chỉ không được vượt quá 255 ký tự'
+  } else {
+    addressError.value = ''
+  }
+}
+
+const validateArea = () => {
+  if (!form.value.area.trim()) {
+    areaError.value = 'Khu vực không được để trống'
+  } else if (!allAreas.value.includes(form.value.area)) {
+    areaError.value = 'Khu vực không hợp lệ, vui lòng chọn từ danh sách'
+  } else {
+    areaError.value = ''
+  }
+}
+
 const validateForm = () => {
+  validateFirstName()
+  validateLastName()
   validateEmail()
   validatePassword()
-  return !emailError.value && !passwordError.value
+  validatePhone()
+  validateAddress()
+  validateArea()
+  
+  return !firstNameError.value && 
+         !lastNameError.value && 
+         !emailError.value && 
+         !passwordError.value && 
+         !phoneError.value && 
+         !addressError.value && 
+         !areaError.value
 }
 
 const submitForm = async () => {
-  if (!validateForm()) return
-  
+  if (!validateForm()) {
+    ElNotification({
+      title: 'Vui lòng kiểm tra lại thông tin',
+      message: 'Có một số trường thông tin chưa hợp lệ. Vui lòng sửa lại!',
+      type: 'warning',
+      duration: 5000
+    })
+    return
+  }
+
   isLoading.value = true
   try {
-    await OAuthService.registerCustomer(form.value)
+    const response = await customerApi.registerCustomer(form.value)
+    
     isSubmitted.value = true
     ElNotification({
       title: 'Thành công',
@@ -301,31 +345,83 @@ const submitForm = async () => {
       type: 'success',
       duration: 5000
     })
-  } catch (error: any) {
-    console.error('Registration error:', error)
     
+    // Reset form và lỗi sau khi đăng ký thành công
+    form.value = {
+      email: '',
+      password: '',
+      first_name: '',
+      last_name: '',
+      phone: '',
+      address: '',
+      area: ''
+    }
+    firstNameError.value = ''
+    lastNameError.value = ''
+    emailError.value = ''
+    passwordError.value = ''
+    phoneError.value = ''
+    addressError.value = ''
+    areaError.value = ''
+  } catch (error: any) {
+    console.log('Registration error:', error)
     let errorMessage = 'Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!'
     
-    // Handle specific error cases
-    if (error?.response?.status === 400) {
-      const errorData = error.response.data
-      if (errorData?.email) {
-        errorMessage = 'Email này đã được sử dụng. Vui lòng chọn email khác!'
-      } else if (errorData?.phone) {
-        errorMessage = 'Số điện thoại này đã được sử dụng. Vui lòng chọn số khác!'
-      } else if (errorData?.area) {
-        errorMessage = 'Khu vực không hợp lệ. Vui lòng chọn khu vực từ danh sách!'
-      } else if (errorData?.non_field_errors) {
-        errorMessage = errorData.non_field_errors[0] || errorMessage
-      } else if (typeof errorData === 'string') {
-        errorMessage = errorData
+    if (error?.status === 400 || error?.response?.status === 400) {
+      // Thử nhiều cách lấy error data
+      const errorData = error?._data || error?.data || error?.response?.data || error?.response?._data
+      console.log('Error data from backend:', errorData)
+      
+      if (errorData && typeof errorData === 'object') {
+        if (errorData?.email) {
+          const emailMsg = Array.isArray(errorData.email) ? errorData.email[0] : errorData.email
+          emailError.value = emailMsg
+          errorMessage = 'Email này đã được sử dụng!'
+        }
+        if (errorData?.password) {
+          const passwordMsg = Array.isArray(errorData.password) ? errorData.password[0] : errorData.password
+          passwordError.value = passwordMsg
+          errorMessage = 'Lỗi mật khẩu: ' + passwordMsg
+        }
+        if (errorData?.phone) {
+          const phoneMsg = Array.isArray(errorData.phone) ? errorData.phone[0] : errorData.phone
+          phoneError.value = phoneMsg
+          errorMessage = 'Số điện thoại này đã được sử dụng!'
+        }
+        if (errorData?.address) {
+          const addressMsg = Array.isArray(errorData.address) ? errorData.address[0] : errorData.address
+          addressError.value = addressMsg
+          errorMessage = 'Lỗi địa chỉ: ' + addressMsg
+        }
+        if (errorData?.area) {
+          const areaMsg = Array.isArray(errorData.area) ? errorData.area[0] : errorData.area
+          areaError.value = areaMsg
+          errorMessage = 'Lỗi khu vực: ' + areaMsg
+        }
+        if (errorData?.first_name) {
+          const firstNameMsg = Array.isArray(errorData.first_name) ? errorData.first_name[0] : errorData.first_name
+          firstNameError.value = firstNameMsg
+          errorMessage = 'Lỗi họ: ' + firstNameMsg
+        }
+        if (errorData?.last_name) {
+          const lastNameMsg = Array.isArray(errorData.last_name) ? errorData.last_name[0] : errorData.last_name
+          lastNameError.value = lastNameMsg
+          errorMessage = 'Lỗi tên: ' + lastNameMsg
+        }
+        if (errorData?.non_field_errors) {
+          const nonFieldMsg = Array.isArray(errorData.non_field_errors) ? errorData.non_field_errors[0] : errorData.non_field_errors
+          errorMessage = nonFieldMsg
+        }
+        
+        const errorKeys = Object.keys(errorData)
+        if (errorKeys.length > 1) {
+          errorMessage = 'Có một số lỗi trong thông tin đăng ký. Vui lòng kiểm tra lại các trường có đánh dấu đỏ!'
+        }
       }
-    } else if (error?.response?.status === 500) {
+    } else if (error?.status === 500 || error?.response?.status === 500) {
       errorMessage = 'Lỗi server. Vui lòng thử lại sau!'
     } else if (error?.code === 'NETWORK_ERROR' || !error?.response) {
       errorMessage = 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối internet!'
-    } else if (error?.message && !error.message.includes('POST')) {
-      errorMessage = error.message
     }
     
     ElNotification({
@@ -339,6 +435,7 @@ const submitForm = async () => {
   }
 }
 </script>
+
 <style scoped>
 .form {
   width: 70%;
@@ -350,11 +447,21 @@ const submitForm = async () => {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
   margin-top: 5%;
 }
+
 .input {
   width: 400px; 
 }
+
 .error-text {
-  margin-top: 0.25rem; 
+  color: #ef4444;
+  font-size: 14px;
+  margin-top: 4px;
+  display: block;
+}
+
+.error-border {
+  border-color: #ef4444 !important;
+  border-width: 2px !important;
 }
 
 /* Area search dropdown styles */
