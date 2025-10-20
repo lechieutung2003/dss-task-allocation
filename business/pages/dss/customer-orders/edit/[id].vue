@@ -383,36 +383,45 @@ const selectedServicePrice = computed(() => {
 // Calculation functions similar to create page
 const calcProductivity = () => {
   const serviceId = formData.value.service_type
+  console.log('calcProductivity - serviceId:', serviceId)
+  
   if (!serviceId) {
     productivity.value = null
+    console.log('calcProductivity - no serviceId, set to null')
     return
   }
+  
   const service = services.value.find(s => s.id === serviceId)
+  console.log('calcProductivity - found service:', service)
+  console.log('calcProductivity - all services:', services.value)
+  
   if (service) {
     if (service.cleaning_rate_m2_per_h) {
       productivity.value = Number(service.cleaning_rate_m2_per_h)
     } else if (service.name?.toLowerCase().includes('regular cleaning')) {
-      productivity.value = 40
+      productivity.value = 50
     } else if (service.name?.toLowerCase().includes('deep cleaning')) {
       productivity.value = 35
     } else {
-      productivity.value = null
+      productivity.value = 50 // Default value
     }
   } else {
-    productivity.value = null
+    productivity.value = 50 // Fallback default
   }
+  
+  console.log('calcProductivity - final productivity:', productivity.value)
 }
 
 const calcEstimatedHours = () => {
-  const area = formData.value.area_m2
+  const area = formData.value.area_m2;
   if (!area || !productivity.value || productivity.value <= 0) {
-    formData.value.estimated_hours = null
-    minRequiredHours.value = null
-    return
+    formData.value.estimated_hours = null;
+    minRequiredHours.value = null;
+    return;
   }
-  formData.value.estimated_hours = +(area / productivity.value).toFixed(2)
+  formData.value.estimated_hours = +(area / productivity.value).toFixed(2);
   // Tính thời gian tối thiểu = 60% thời gian ước tính
-  minRequiredHours.value = +(formData.value.estimated_hours * 0.6).toFixed(2)
+  minRequiredHours.value = +(formData.value.estimated_hours * 0.6).toFixed(2);
 }
 
 const validateRequestedTime = () => {
@@ -510,13 +519,28 @@ const calcEstimatedPrice = () => {
 }
 
 // Watch for changes similar to create page
-watch(() => [formData.value.service_type], calcProductivity)
-watch(() => [formData.value.area_m2, productivity.value], calcEstimatedHours)
+watch(() => [formData.value.service_type], () => {
+  console.log('Service type changed:', formData.value.service_type)
+  calcProductivity()
+  // Force recalculation after productivity is set
+  setTimeout(() => {
+    calcEstimatedHours()
+    calcEstimatedPrice()
+  }, 50)
+})
+
+watch(() => [formData.value.area_m2, productivity.value], () => {
+  console.log('Area or productivity changed:', formData.value.area_m2, productivity.value)
+  calcEstimatedHours()
+})
+
 watch(() => [formData.value.preferred_start_time, formData.value.preferred_end_time], () => {
   calcRequestedHours()
   validateRequestedTime()
 })
+
 watch(() => [formData.value.service_type, formData.value.area_m2, formData.value.requested_hours, formData.value.estimated_hours], calcEstimatedPrice)
+
 watch(() => [formData.value.requested_hours, minRequiredHours.value], validateRequestedTime)
 
 // Load customer info (similar to create page)
@@ -571,6 +595,15 @@ const loadOrder = async () => {
       estimated_hours: parseFloat(order.value.estimated_hours),
       cost_confirm: parseInt(order.value.cost_confirm)
     }
+    
+    // ✅ Tính toán lại sau khi load order data
+    setTimeout(() => {
+      calcProductivity()
+      calcEstimatedHours()
+      calcRequestedHours()
+      calcEstimatedPrice()
+      validateRequestedTime()
+    }, 100)
     
   } catch (e) {
     console.error('Error loading order:', e)
@@ -767,10 +800,15 @@ const formatPrice = (price) => {
 }
 
 const formatTime = (hours) => {
-  if (!hours || isNaN(hours)) return ''
+  console.log('formatTime input:', hours, typeof hours)
+  
+  if (hours === null || hours === undefined || isNaN(hours)) return '0 giờ'
+  if (hours === 0) return '0 giờ'
   if (hours > 0 && hours * 60 < 1) return t('create_order_time_one_minute')
+  
   const h = Math.floor(hours)
   let m = Math.round((hours - h) * 60)
+  
   if (h === 0) return t('create_order_time_minutes', { minutes: m })
   if (m === 0) return t('create_order_time_hours', { hours: h })
   return t('create_order_time_hours_minutes', { hours: h, minutes: m })
@@ -793,10 +831,15 @@ const showToastMessage = (message, type = 'success') => {
   }, 3000)
 }
 
-onMounted(() => {
-  loadServices()
+onMounted(async () => {
+  // ✅ Load services trước
+  await loadServices()
+  
+  // ✅ Load customer info song song
   loadCustomerInfo()
-  loadOrder()
+  
+  // ✅ Load order sau cùng để có đủ dữ liệu tính toán
+  await loadOrder()
 })
 </script>
 
