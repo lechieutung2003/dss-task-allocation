@@ -1,7 +1,14 @@
 import ApiService from "@/services/api";
 
 const baseUrl = "http://127.0.0.1:8008/api/v1/customer";
+const registerUrl = "http://127.0.0.1:8008/api/v1";
+
 const customerApi = {
+	// Đăng ký customer mới
+	async registerCustomer(customerData) {
+		return ApiService.post(registerUrl + "/register-customer", customerData);
+	},
+
 	// Lấy thông tin chi tiết customer
 	async getUser() {
 		return ApiService.get(baseUrl + "/info");

@@ -40,8 +40,11 @@ const isTimeValid = ref<boolean>(true); // 🆕 kiểm tra thời gian hợp l�
 const timeValidationMessage = ref<string>(''); // 🆕 thông báo lỗi thời gian
 const isStartTimeValid = ref<boolean>(true); // 🆕 kiểm tra thời gian bắt đầu hợp lệ
 const startTimeValidationMessage = ref<string>(''); // 🆕 thông báo lỗi thời gian bắt đầu
-
-// 🆕 Modal thanh toán
+const areaError = ref<string>('');
+const endTimeError = ref<string>('');
+const noteError = ref<string>('');
+const formErrors = ref<string[]>([]);
+// Modal thanh toán
 const showPaymentModal = ref<boolean>(false);
 const paymentMethod = ref<'cash' | 'transfer'>('cash');
 const isSubmitting = ref<boolean>(false);
@@ -189,6 +192,92 @@ const validateRequestedTime = () => {
   }
 };
 
+const validateArea = () => {
+  const area = order.value.area_m2;
+  if (area !== null && area < 0) {
+    areaError.value = 'Diện tích không được âm';
+    return false;
+  } else if (area !== null && area === 0) {
+    areaError.value = 'Diện tích phải lớn hơn 0';
+    return false;
+  } else {
+    areaError.value = '';
+    return true;
+  }
+};
+
+const validateEndTime = () => {
+  const startTime = order.value.preferred_start_time;
+  const endTime = order.value.preferred_end_time;
+  
+  if (!startTime || !endTime) {
+    endTimeError.value = '';
+    return true;
+  }
+  
+  const startDate = new Date(startTime);
+  const endDate = new Date(endTime);
+  
+  if (endDate <= startDate) {
+    endTimeError.value = 'Thời gian kết thúc phải sau thời gian bắt đầu';
+    return false;
+  } else {
+    endTimeError.value = '';
+    return true;
+  }
+};
+
+const validateNote = () => {
+  const note = order.value.note || '';
+  const wordCount = note.trim().split(/\s+/).filter(word => word.length > 0).length;
+  
+  if (wordCount > 50) {
+    noteError.value = `Ghi chú chỉ được tối đa 50 từ (hiện tại: ${wordCount} từ)`;
+    return false;
+  } else {
+    noteError.value = '';
+    return true;
+  }
+};
+
+const validateForm = () => {
+  const errors: string[] = [];
+  
+  // Kiểm tra các trường bắt buộc
+  if (!order.value.service_type) {
+    errors.push('Vui lòng chọn loại dịch vụ');
+  }
+  
+  if (!order.value.area_m2 || order.value.area_m2 <= 0) {
+    errors.push('Vui lòng nhập diện tích hợp lệ');
+  }
+  
+  if (!order.value.preferred_start_time) {
+    errors.push('Vui lòng chọn thời gian bắt đầu');
+  }
+  
+  if (!order.value.preferred_end_time) {
+    errors.push('Vui lòng chọn thời gian kết thúc');
+  }
+  
+  // Kiểm tra validation riêng lẻ
+  if (!validateArea()) {
+    errors.push(areaError.value);
+  }
+  
+  if (!validateEndTime()) {
+    errors.push(endTimeError.value);
+  }
+  
+  if (!validateNote()) {
+    errors.push(noteError.value);
+  }
+  
+  formErrors.value = errors;
+  return errors.length === 0;
+};
+
+
 const calcRequestedHours = () => {
   const start = order.value.preferred_start_time;
   const end = order.value.preferred_end_time;
@@ -259,18 +348,45 @@ const calcEstimatedPrice = () => {
 
 // Theo dõi thay đổi để tính toán
 watch(() => [order.value.service_type], calcProductivity);
+watch(() => order.value.area_m2, () => {
+  validateArea();
+  calcEstimatedHours();
+});
 watch(() => [order.value.area_m2, productivity.value], calcEstimatedHours);
 watch(() => [order.value.preferred_start_time], () => {
   validateStartTime();
 });
 watch(() => [order.value.preferred_start_time, order.value.preferred_end_time], () => {
   calcRequestedHours();
+  validateEndTime();
   validateRequestedTime();
 });
 watch(() => [order.value.service_type, order.value.area_m2, order.value.requested_hours, order.value.estimated_hours], calcEstimatedPrice);
 watch(() => [order.value.requested_hours, minRequiredHours.value], validateRequestedTime);
+watch(() => order.value.note, validateNote);
 
+// Theo dõi tất cả các thay đổi để validate form liên tục
+watch(() => [
+  order.value.service_type,
+  order.value.area_m2,
+  order.value.preferred_start_time,
+  order.value.preferred_end_time,
+  order.value.note,
+  areaError.value,
+  endTimeError.value,
+  noteError.value
+], () => {
+  validateForm();
+}, { deep: true });
 const openPaymentModal = () => {
+  if (!validateForm()) {
+    // Hiển thị lỗi đầu tiên
+    if (formErrors.value.length > 0) {
+      alert(`Lỗi: ${formErrors.value[0]}`);
+    }
+    return;
+  }
+  
   if (!isTimeValid.value) {
     alert(t('create_order_validation_error', { message: timeValidationMessage.value }));
     return;
@@ -410,42 +526,6 @@ const downloadInvoice = () => {
   }
 };
 
-// const submitOrder = async () => {
-//   if (isSubmitting.value) return;
-  
-//   try {
-//     isSubmitting.value = true;
-//     const payload = { ...order.value };
-    
-//     if (estimatedPrice.value !== null) {
-//       payload.cost_confirm = String(estimatedPrice.value);
-//     }
-    
-//     // Thêm thông tin thanh toán
-//     payload.payment_method = paymentMethod.value;
-
-//     const response = await CreateOrderService.createOrder(payload) as any;
-//     console.log('API response:', response);
-    
-//     if (response && response.id) {
-//       closePaymentModal();
-      
-//       // Tạo hóa đơn sau khi đặt đơn thành công
-//       generateInvoice(response);
-      
-//       // Không chuyển trang ngay mà cho người dùng xem hóa đơn trước
-//       // router.push('/dss/customer-orders');
-//     } else {
-//       alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
-//     }
-//   } catch (error: any) {
-//     console.error('Failed to create order', error?.response?.data || error);
-//     alert('Tạo đơn thất bại, vui lòng kiểm tra thông tin.');
-//   } finally {
-//     isSubmitting.value = false;
-//   }
-// };
-
 
 const submitOrder = async () => {
   if (isSubmitting.value) return;
@@ -557,15 +637,24 @@ onMounted(() => {
               </div>
               <div class="form-group">
                 <label>{{ t('create_order_area') }}</label>
-                <div class="input-wrapper">
+                <div class="input-wrapper" :class="{ 'error': areaError }">
                   <input v-model="order.area_m2" type="number" class="form-input" min="0" step="any" :placeholder="t('create_order_area_placeholder')" required />
+                </div>
+                <div v-if="areaError" class="error-message">
+                  {{ areaError }}
                 </div>
               </div>
               <div class="form-group">
                 <label>{{ t('create_order_note') }}</label>
-                <div class="input-wrapper">
+                <div class="input-wrapper" :class="{ 'error': noteError }">
                   <textarea v-model="order.note" class="form-input" :placeholder="t('create_order_note_placeholder')" rows="3"></textarea>
                 </div>
+                <div v-if="noteError" class="error-message">
+                  {{ noteError }}
+                </div>
+                <small class="form-hint">
+                  Ghi chú không được vượt quá 50 từ
+                </small>
               </div>
             </div>
             
@@ -596,9 +685,15 @@ onMounted(() => {
               </div>
               <div class="form-group">
                 <label>{{ t('create_order_end_time') }}</label>
-                <div class="input-wrapper">
+                <div class="input-wrapper" :class="{ 'error': endTimeError }">
                   <input v-model="order.preferred_end_time" type="datetime-local" class="form-input" required />
                 </div>
+                <div v-if="endTimeError" class="error-message">
+                  {{ endTimeError }}
+                </div>
+                <small class="form-hint">
+                  Thời gian kết thúc phải sau thời gian bắt đầu
+                </small>
               </div>
             </div>
           </div>
@@ -649,8 +744,18 @@ onMounted(() => {
             </div>
           </div>
           
-          <button type="button" class="featured-cta" :disabled="!isTimeValid || !isStartTimeValid" @click="openPaymentModal">
-            {{ !isTimeValid || !isStartTimeValid ? t('create_order_time_invalid') : t('create_order_create_button') }}
+          <!-- Hiển thị lỗi form validation -->
+          <div v-if="formErrors.length > 0" class="form-errors">
+            <h4>Vui lòng kiểm tra lại:</h4>
+            <ul>
+              <li v-for="error in formErrors" :key="error" class="error-item">
+                {{ error }}
+              </li>
+            </ul>
+          </div>
+          
+          <button type="button" class="featured-cta" :disabled="!isTimeValid || !isStartTimeValid || formErrors.length > 0" @click="openPaymentModal">
+            {{ !isTimeValid || !isStartTimeValid ? t('create_order_time_invalid') : formErrors.length > 0 ? 'Vui lòng kiểm tra thông tin' : t('create_order_create_button') }}
           </button>
         </form>
       </div>
@@ -970,6 +1075,40 @@ onMounted(() => {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: 8px;
+}
+
+/* Form errors styles */
+.form-errors {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.form-errors h4 {
+  color: #ef4444;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+}
+
+.form-errors ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.error-item {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #fecaca;
+}
+
+.error-item:last-child {
+  border-bottom: none;
 }
 
 /* Calculation section */
