@@ -11,7 +11,6 @@ class RecommendationService:
     def calculate_match_score(employee, order):
         # print("================================")
         # print(f"Calculating match score for employee: {employee.first_name}")
-        # print(f"Order details: {order}")
         
         score = 0
 
