@@ -26,7 +26,12 @@ const customerApi = {
 
 	// Tạo đơn hàng mới cho customer
 	async createOrder(orderData) {
-		return ApiService.post(`${baseUrl}/create-order`, orderData);
+		return ApiService.post(`http://127.0.0.1:8008/api/v1/orders`, orderData);
+	},
+	
+	// Kiểm tra trạng thái thanh toán
+	async checkPaymentStatus(orderCode) {
+		return ApiService.get(`http://127.0.0.1:8008/api/payments/status/${orderCode}/`);
 	},
 
 	// Cập nhật đơn hàng (chỉ cho trạng thái pending)

@@ -29,7 +29,7 @@ const order = ref({
   status: 'pending',
   note: '',
   cost_confirm: '',
-  payment_method: 'cash' as 'cash' | 'transfer'
+  payment_method: 'CASH' as 'CASH' | 'BANK_TRANSFER'
 });
 
 const productivity = ref<number | null>(null);
@@ -46,7 +46,7 @@ const noteError = ref<string>('');
 const formErrors = ref<string[]>([]);
 // Modal thanh toán
 const showPaymentModal = ref<boolean>(false);
-const paymentMethod = ref<'cash' | 'transfer'>('cash');
+const paymentMethod = ref<'CASH' | 'BANK_TRANSFER'>('CASH');
 const isSubmitting = ref<boolean>(false);
 
 // 🆕 Modal hóa đơn
@@ -402,7 +402,7 @@ const openPaymentModal = () => {
 
 const closePaymentModal = () => {
   showPaymentModal.value = false;
-  paymentMethod.value = 'cash';
+  paymentMethod.value = 'CASH';
   isSubmitting.value = false;
 };
 
@@ -427,7 +427,7 @@ const generateInvoice = (orderResponse: any) => {
       startTime: order.value.preferred_start_time,
       endTime: order.value.preferred_end_time,
       note: order.value.note || t('create_order_value_none'),
-      paymentMethod: paymentMethod.value === 'cash' ? t('payment_cash') : t('payment_transfer')
+      paymentMethod: paymentMethod.value === 'CASH' ? t('payment_cash') : t('payment_bank_transfer')
     },
     customerInfo: {
       name: customerInfo.value?.name || t('Customer'),
@@ -541,8 +541,9 @@ const submitOrder = async () => {
       preferred_start_time: order.value.preferred_start_time,
       preferred_end_time: order.value.preferred_end_time,
       estimated_hours: order.value.estimated_hours,
-      status: order.value.status,
+      status: 'PENDING_PAYMENT',
       note: order.value.note || "",
+      payment_method: paymentMethod.value
     };
     
     // Thêm cost_confirm nếu có
@@ -554,13 +555,61 @@ const submitOrder = async () => {
     console.log('Payload gửi lên (format Postman):', payload);
 
     const response = await CreateOrderService.createOrder(payload) as any;
-    console.log('API response:', response);
+    console.log('=== CREATE ORDER RESPONSE ===');
+    console.log('Full response:', response);
+    console.log('Response type:', typeof response);
+    console.log('Payment method selected:', paymentMethod.value);
+    console.log('Response.payment:', response?.payment);
+    console.log('Response.data:', response?.data);
+    console.log('Response.data?.payment:', response?.data?.payment);
     
-    if (response && response.id) {
+    // Xử lý response - có thể data nằm trong response.data
+    const orderData = response?.data || response;
+    console.log('Order data:', orderData);
+    
+    if (orderData && orderData.id) {
+      console.log('✅ Order created successfully with ID:', orderData.id);
+      
+      // ⚠️ LƯU payment method TRƯỚC KHI đóng modal (vì closePaymentModal sẽ reset nó)
+      const selectedPaymentMethod = paymentMethod.value;
+      console.log('Selected payment method (saved):', selectedPaymentMethod);
+      
       closePaymentModal();
-      generateInvoice(response);
-      // Có thể chuyển trang sau khi xem hóa đơn
+      
+      // Nếu chọn Bank Transfer, chuyển đến trang thanh toán
+      if (selectedPaymentMethod === 'BANK_TRANSFER') {
+        console.log('✅ Bank Transfer selected - redirecting to payment page');
+        console.log('Order ID:', orderData.id);
+        console.log('Payment info available:', !!orderData.payment);
+        console.log('Router available:', !!router);
+        
+        // Lưu payment info vào sessionStorage để trang payment có thể đọc
+        if (orderData.payment) {
+          sessionStorage.setItem(`payment_${orderData.id}`, JSON.stringify(orderData.payment));
+          console.log('💾 Saved payment info to sessionStorage');
+        }
+        
+        const paymentUrl = `/dss/customer-orders/payment/${orderData.id}`;
+        console.log('Redirect URL:', paymentUrl);
+        
+        // Thử redirect ngay lập tức
+        try {
+          console.log('Attempting to navigate...');
+          await router.push(paymentUrl);
+          console.log('Navigation successful!');
+        } catch (navError) {
+          console.error('Navigation error:', navError);
+          // Nếu router.push fail, thử dùng window.location
+          console.log('Trying window.location.href instead...');
+          window.location.href = paymentUrl;
+        }
+      } else {
+        // Nếu là Cash, hiển thị invoice như cũ
+        console.log('💵 Cash payment selected - showing invoice');
+        generateInvoice(orderData);
+      }
     } else {
+      console.error('❌ No order ID in response');
       alert(t('create_order_error'));
     }
   } catch (error: any) {
@@ -797,10 +846,27 @@ onMounted(() => {
             
             <div class="payment-option">
               <label class="radio-container">
-                <input type="radio" v-model="paymentMethod" value="cash" checked>
+                <input type="radio" v-model="paymentMethod" value="BANK_TRANSFER">
                 <span class="checkmark"></span>
                 <div class="payment-info">
-                  <div class="payment-title">{{ t('create_order_cash_payment') }}</div>
+                  <div class="payment-title">
+                    <span class="payment-icon">🏦</span>
+                    {{ t('payment_bank_transfer') }}
+                  </div>
+                  <div class="payment-desc">{{ t('create_order_bank_description') }}</div>
+                </div>
+              </label>
+            </div>
+            
+            <div class="payment-option">
+              <label class="radio-container">
+                <input type="radio" v-model="paymentMethod" value="CASH" checked>
+                <span class="checkmark"></span>
+                <div class="payment-info">
+                  <div class="payment-title">
+                    <span class="payment-icon">💵</span>
+                    {{ t('create_order_cash_payment') }}
+                  </div>
                   <div class="payment-desc">{{ t('create_order_cash_description') }}</div>
                 </div>
               </label>
@@ -1200,6 +1266,13 @@ onMounted(() => {
   font-weight: 600;
   color: var(--text-dark);
   margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.payment-icon {
+  font-size: 1.25rem;
 }
 
 .payment-desc {

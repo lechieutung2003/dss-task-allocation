@@ -5,45 +5,52 @@
         <div class="content-header">
           <div class="header-top">
             <div class="header-info">
-              <h1 class="section-title">{{ t('edit_order_title') }}</h1>
-              <p class="section-subtitle">{{ t('edit_order_subtitle') }}</p>
+              <h1 class="section-title">{{ t("edit_order_title") }}</h1>
+              <p class="section-subtitle">{{ t("edit_order_subtitle") }}</p>
             </div>
-            
+
             <div class="header-actions">
-              <button 
-                type="button" 
-                @click="showCancelModal = true" 
+              <button
+                type="button"
+                @click="showCancelModal = true"
                 class="btn-cancel-order"
                 v-if="order && order.status === 'pending'"
               >
                 <span class="icon">🚫</span>
-                {{ t('cancel_order_button') }}
+                {{ t("cancel_order_button") }}
               </button>
             </div>
-
           </div>
-          
+
           <!-- Customer info display -->
           <div v-if="loading" class="customer-info loading">
-            <p>{{ t('edit_order_loading') }}</p>
+            <p>{{ t("edit_order_loading") }}</p>
           </div>
           <div v-else-if="customerInfo.customer_name" class="customer-info">
-            <h3>{{ t('create_order_customer_info') }}</h3>
+            <h3>{{ t("create_order_customer_info") }}</h3>
             <div class="customer-details">
               <div class="customer-item">
-                <span class="label">{{ t('create_order_customer_name') }}</span>
-                <span class="value">{{ customerInfo.customer_name || 'N/A' }}</span>
+                <span class="label">{{ t("create_order_customer_name") }}</span>
+                <span class="value">{{
+                  customerInfo.customer_name || "N/A"
+                }}</span>
               </div>
               <div class="customer-item">
-                <span class="label">{{ t('create_order_customer_email') }}</span>
-                <span class="value">{{ customerInfo.email || 'N/A' }}</span>
+                <span class="label">{{
+                  t("create_order_customer_email")
+                }}</span>
+                <span class="value">{{ customerInfo.email || "N/A" }}</span>
               </div>
               <div class="customer-item" v-if="customerInfo.phone">
-                <span class="label">{{ t('create_order_customer_phone') }}</span>
+                <span class="label">{{
+                  t("create_order_customer_phone")
+                }}</span>
                 <span class="value">{{ customerInfo.phone }}</span>
               </div>
               <div class="customer-item" v-if="customerInfo.address">
-                <span class="label">{{ t('create_order_customer_address') }}</span>
+                <span class="label">{{
+                  t("create_order_customer_address")
+                }}</span>
                 <span class="value">{{ customerInfo.address }}</span>
               </div>
             </div>
@@ -52,7 +59,9 @@
 
         <div v-if="error" class="error-state">
           <div class="error-message">{{ error }}</div>
-          <RouterLink to="/dss/customer-orders" class="back-btn">{{ t('back') }}</RouterLink>
+          <RouterLink to="/dss/customer-orders" class="back-btn">{{
+            t("back")
+          }}</RouterLink>
         </div>
 
         <form v-else-if="order" class="order-form" @submit.prevent="saveOrder">
@@ -60,12 +69,27 @@
             <div class="form-column">
               <!-- Service Selection -->
               <div class="form-group">
-                <label>{{ t('create_order_service') }} <span class="required">*</span></label>
+                <label
+                  >{{ t("create_order_service") }}
+                  <span class="required">*</span></label
+                >
                 <div class="input-wrapper">
-                  <select v-model="formData.service_type" @change="handleServiceChange" class="form-input" required>
-                    <option value="">{{ t('create_order_service_placeholder') }}</option>
-                    <option v-for="service in services" :key="service.id" :value="service.id">
-                      {{ service.name }} - {{ formatPrice(service.price_per_m2) }}/m²
+                  <select
+                    v-model="formData.service_type"
+                    @change="handleServiceChange"
+                    class="form-input"
+                    required
+                  >
+                    <option value="">
+                      {{ t("create_order_service_placeholder") }}
+                    </option>
+                    <option
+                      v-for="service in services"
+                      :key="service.id"
+                      :value="service.id"
+                    >
+                      {{ service.name }} -
+                      {{ formatPrice(service.price_per_m2) }}/m²
                     </option>
                   </select>
                 </div>
@@ -73,11 +97,14 @@
 
               <!-- Area -->
               <div class="form-group">
-                <label>{{ t('create_order_area') }} <span class="required">*</span></label>
+                <label
+                  >{{ t("create_order_area") }}
+                  <span class="required">*</span></label
+                >
                 <div class="input-wrapper">
-                  <input 
-                    type="number" 
-                    v-model="formData.area_m2" 
+                  <input
+                    type="number"
+                    v-model="formData.area_m2"
                     :placeholder="t('create_order_area_placeholder')"
                     @input="handleAreaChange"
                     min="1"
@@ -90,25 +117,62 @@
 
               <!-- Note -->
               <div class="form-group">
-                <label>{{ t('create_order_note') }}</label>
+                <label>{{ t("create_order_note") }}</label>
                 <div class="input-wrapper">
-                  <textarea 
-                    v-model="formData.note" 
+                  <textarea
+                    v-model="formData.note"
                     :placeholder="t('create_order_note_placeholder')"
                     class="form-input"
                     rows="3"
                   ></textarea>
                 </div>
               </div>
+
+              <!-- Payment Method -->
+              <div class="form-group">
+                <label
+                  >{{ t("create_order_payment_method") }}
+                  <span class="required">*</span></label
+                >
+                <div class="payment-methods">
+                  <label class="payment-option">
+                    <input
+                      type="radio"
+                      v-model="formData.payment_method"
+                      value="BANK_TRANSFER"
+                      required
+                    />
+                    <span class="payment-label">
+                      <span class="payment-icon">🏦</span>
+                      {{ t("payment_bank_transfer") }}
+                    </span>
+                  </label>
+                  <label class="payment-option">
+                    <input
+                      type="radio"
+                      v-model="formData.payment_method"
+                      value="CASH"
+                      required
+                    />
+                    <span class="payment-label">
+                      <span class="payment-icon">💵</span>
+                      {{ t("payment_cash") }}
+                    </span>
+                  </label>
+                </div>
+              </div>
             </div>
-            
+
             <div class="form-column">
               <!-- Start Time -->
               <div class="form-group">
-                <label>{{ t('create_order_start_time') }} <span class="required">*</span></label>
+                <label
+                  >{{ t("create_order_start_time") }}
+                  <span class="required">*</span></label
+                >
                 <div class="input-wrapper">
-                  <input 
-                    type="datetime-local" 
+                  <input
+                    type="datetime-local"
                     v-model="formData.preferred_start_time"
                     @change="handleTimeChange"
                     class="form-input"
@@ -119,10 +183,13 @@
 
               <!-- End Time -->
               <div class="form-group">
-                <label>{{ t('create_order_end_time') }} <span class="required">*</span></label>
+                <label
+                  >{{ t("create_order_end_time") }}
+                  <span class="required">*</span></label
+                >
                 <div class="input-wrapper">
-                  <input 
-                    type="datetime-local" 
+                  <input
+                    type="datetime-local"
                     v-model="formData.preferred_end_time"
                     @change="handleTimeChange"
                     class="form-input"
@@ -133,11 +200,11 @@
 
               <!-- Price per m2 Display -->
               <div class="form-group" v-if="selectedServicePrice">
-                <label>{{ t('create_order_price_per_m2') }}</label>
+                <label>{{ t("create_order_price_per_m2") }}</label>
                 <div class="input-wrapper">
-                  <input 
-                    type="text" 
-                    :value="formatPrice(selectedServicePrice)" 
+                  <input
+                    type="text"
+                    :value="formatPrice(selectedServicePrice)"
                     class="form-input price-display"
                     readonly
                   />
@@ -148,16 +215,18 @@
 
           <!-- Calculation section -->
           <div class="calculation-section">
-            <h3 class="calculation-title">{{ t('create_order_calculation_title') }}</h3>
-            <div class="notice">{{ t('edit_order_calculation_notice') }}</div>
-            
+            <h3 class="calculation-title">
+              {{ t("create_order_calculation_title") }}
+            </h3>
+            <div class="notice">{{ t("edit_order_calculation_notice") }}</div>
+
             <div class="calculation-grid">
               <div class="form-group">
-                <label>{{ t('create_order_estimated_hours') }}</label>
+                <label>{{ t("create_order_estimated_hours") }}</label>
                 <div class="input-wrapper">
-                  <input 
-                    type="text" 
-                    :value="formatTime(formData.estimated_hours)" 
+                  <input
+                    type="text"
+                    :value="formatTime(formData.estimated_hours)"
                     :placeholder="t('create_order_estimated_hours_placeholder')"
                     class="form-input estimated-display"
                     readonly
@@ -166,11 +235,11 @@
               </div>
 
               <div class="form-group">
-                <label>{{ t('create_order_requested_hours') }}</label>
+                <label>{{ t("create_order_requested_hours") }}</label>
                 <div class="input-wrapper">
-                  <input 
-                    type="text" 
-                    :value="formatTime(formData.requested_hours)" 
+                  <input
+                    type="text"
+                    :value="formatTime(formData.requested_hours)"
                     :placeholder="t('create_order_requested_hours_placeholder')"
                     class="form-input requested-display"
                     readonly
@@ -179,11 +248,11 @@
               </div>
 
               <div class="form-group">
-                <label>{{ t('create_order_estimated_price') }}</label>
+                <label>{{ t("create_order_estimated_price") }}</label>
                 <div class="input-wrapper">
-                  <input 
-                    type="text" 
-                    :value="formatPrice(formData.cost_confirm)" 
+                  <input
+                    type="text"
+                    :value="formatPrice(formData.cost_confirm)"
                     :placeholder="t('create_order_estimated_price_placeholder')"
                     class="form-input price-estimated"
                     readonly
@@ -193,19 +262,30 @@
 
               <!-- Service details and price explanation -->
               <div class="form-group" v-if="selectedService">
-                <label>{{ t('create_order_productivity') }}</label>
+                <label>{{ t("create_order_productivity") }}</label>
                 <div class="form-hint success">
-                  {{ t('create_order_productivity', { productivity: selectedService.productivity_rate }) }}
+                  {{
+                    t("create_order_productivity", {
+                      productivity: selectedService.productivity_rate,
+                    })
+                  }}
                 </div>
                 <div class="form-hint">
-                  {{ t('create_order_min_time', { time: formatTime(selectedService.min_time_hours) }) }}
+                  {{
+                    t("create_order_min_time", {
+                      time: formatTime(selectedService.min_time_hours),
+                    })
+                  }}
                 </div>
               </div>
             </div>
 
             <!-- Price explanation -->
             <div v-if="priceExplanation" class="price-explanation">
-              <div class="explanation-text" v-html="priceExplanation.replace(/\n/g, '<br>')"></div>
+              <div
+                class="explanation-text"
+                v-html="priceExplanation.replace(/\n/g, '<br>')"
+              ></div>
             </div>
 
             <!-- Time validation -->
@@ -213,14 +293,24 @@
               {{ timeValidationMessage }}
             </div>
           </div>
-          
+
           <!-- Action buttons -->
           <div class="form-actions">
             <button type="button" @click="cancelEdit" class="btn-close">
-              {{ t('edit_order_cancel_button') }}
+              {{ t("edit_order_cancel_button") }}
             </button>
-            <button type="submit" :disabled="saving || !isTimeValid" class="featured-cta">
-              {{ saving ? t('edit_order_saving') : (!isTimeValid ? t('create_order_time_invalid') : t('edit_order_save_button')) }}
+            <button
+              type="submit"
+              :disabled="saving || !isTimeValid"
+              class="featured-cta"
+            >
+              {{
+                saving
+                  ? t("edit_order_saving")
+                  : !isTimeValid
+                  ? t("create_order_time_invalid")
+                  : t("edit_order_save_button")
+              }}
             </button>
           </div>
         </form>
@@ -236,26 +326,26 @@
     <div v-if="showCancelModal" class="modal-overlay" @click="closeCancelModal">
       <div class="modal-content cancel-modal" @click.stop>
         <div class="modal-header">
-          <h2>{{ t('cancel_order_title') }}</h2>
+          <h2>{{ t("cancel_order_title") }}</h2>
           <button class="close-btn" @click="closeCancelModal">×</button>
         </div>
-        
+
         <div class="modal-body">
           <div class="cancel-info">
             <div class="warning-icon">⚠️</div>
-            <h3>{{ t('cancel_order_warning') }}</h3>
-            <p>{{ t('cancel_order_description') }}</p>
+            <h3>{{ t("cancel_order_warning") }}</h3>
+            <p>{{ t("cancel_order_description") }}</p>
           </div>
 
           <div class="admin-contact">
-            <h4>{{ t('cancel_order_contact_admin') }}</h4>
+            <h4>{{ t("cancel_order_contact_admin") }}</h4>
             <div class="contact-item">
-              <span class="contact-label">{{ t('cancel_order_phone') }}</span>
+              <span class="contact-label">{{ t("cancel_order_phone") }}</span>
               <div class="contact-value">
                 <span class="phone-number">0123-456-789</span>
-                <button 
-                  type="button" 
-                  @click="copyPhoneNumber" 
+                <button
+                  type="button"
+                  @click="copyPhoneNumber"
                   class="copy-btn"
                   :title="t('copy_phone')"
                 >
@@ -264,12 +354,12 @@
               </div>
             </div>
             <div class="contact-item">
-              <span class="contact-label">{{ t('cancel_order_email') }}</span>
+              <span class="contact-label">{{ t("cancel_order_email") }}</span>
               <div class="contact-value">
                 <span class="email-address">admin@dss-cleaning.com</span>
-                <button 
-                  type="button" 
-                  @click="copyEmail" 
+                <button
+                  type="button"
+                  @click="copyEmail"
                   class="copy-btn"
                   :title="t('copy_email')"
                 >
@@ -280,24 +370,23 @@
           </div>
 
           <div class="cancel-note">
-            <p><strong>{{ t('cancel_order_note_title') }}</strong></p>
+            <p>
+              <strong>{{ t("cancel_order_note_title") }}</strong>
+            </p>
             <ul>
-              <li>{{ t('cancel_order_note_1') }}</li>
-              <li>{{ t('cancel_order_note_2') }}</li>
-              <li>{{ t('cancel_order_note_3') }}</li>
+              <li>{{ t("cancel_order_note_1") }}</li>
+              <li>{{ t("cancel_order_note_2") }}</li>
+              <li>{{ t("cancel_order_note_3") }}</li>
             </ul>
           </div>
         </div>
 
         <div class="modal-footer">
           <button class="btn-close" @click="closeCancelModal">
-            {{ t('cancel_order_close') }}
+            {{ t("cancel_order_close") }}
           </button>
-          <a 
-            href="tel:0123456789" 
-            class="btn-call"
-          >
-            📞 {{ t('cancel_order_call_now') }}
+          <a href="tel:0123456789" class="btn-call">
+            📞 {{ t("cancel_order_call_now") }}
           </a>
         </div>
       </div>
@@ -306,111 +395,114 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import CustomerOrderService from '@/services/dss/users/customer'
-import ServiceTypeService from '@/services/dss/order-serviceType'
-import '@/assets/css/customer.css'
+import { ref, onMounted, computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import CustomerOrderService from "@/services/dss/users/customer";
+import ServiceTypeService from "@/services/dss/order-serviceType";
+import "@/assets/css/customer.css";
 
 // Apply role-based middleware
 definePageMeta({
-  middleware: 'role-based'
-})
+  middleware: "role-based",
+});
 
-const { t } = useI18n()
-const route = useRoute()
-const router = useRouter()
+const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
 
-const orderId = route.params.id
-const loading = ref(true)
-const saving = ref(false)
-const error = ref('')
-const order = ref(null)
-const customerInfo = ref({})
-const services = ref([])
+const orderId = route.params.id;
+const loading = ref(true);
+const saving = ref(false);
+const error = ref("");
+const order = ref(null);
+const customerInfo = ref({});
+const services = ref([]);
 
 // Form data
 const formData = ref({
-  service_type: '',
-  area_m2: '',
-  preferred_start_time: '',
-  preferred_end_time: '',
-  note: '',
+  service_type: "",
+  area_m2: "",
+  preferred_start_time: "",
+  preferred_end_time: "",
+  note: "",
   requested_hours: 0,
   estimated_hours: 0,
-  cost_confirm: 0
-})
+  cost_confirm: 0,
+  payment_method: "BANK_TRANSFER",
+});
 
 // Calculation variables similar to create page
-const productivity = ref(null)
-const estimatedPrice = ref(null)
-const priceExplanation = ref('')
-const minRequiredHours = ref(null)
-const isTimeValid = ref(true)
-const timeValidationMessage = ref('')
+const productivity = ref(null);
+const estimatedPrice = ref(null);
+const priceExplanation = ref("");
+const minRequiredHours = ref(null);
+const isTimeValid = ref(true);
+const timeValidationMessage = ref("");
 
 // Toast notification
-const showToast = ref(false)
-const toastMessage = ref('')
-const toastType = ref('success')
+const showToast = ref(false);
+const toastMessage = ref("");
+const toastType = ref("success");
 
 // Cancel order modal
-const showCancelModal = ref(false)
+const showCancelModal = ref(false);
 
 // Computed properties similar to create page
 const selectedService = computed(() => {
-  return services.value.find(s => s.id === formData.value.service_type)
-})
+  return services.value.find((s) => s.id === formData.value.service_type);
+});
 
 const selectedServicePrice = computed(() => {
-  if (!formData.value.service_type) return null
-  
-  const service = services.value.find(s => s.id === formData.value.service_type)
-  if (!service) return null
-  
+  if (!formData.value.service_type) return null;
+
+  const service = services.value.find(
+    (s) => s.id === formData.value.service_type
+  );
+  if (!service) return null;
+
   if (service.price_per_m2) {
-    return Number(service.price_per_m2)
-  } else if (service.name?.toLowerCase().includes('deep cleaning')) {
-    return 3000
-  } else if (service.name?.toLowerCase().includes('regular cleaning')) {
-    return 155000
+    return Number(service.price_per_m2);
+  } else if (service.name?.toLowerCase().includes("deep cleaning")) {
+    return 3000;
+  } else if (service.name?.toLowerCase().includes("regular cleaning")) {
+    return 155000;
   }
-  
-  return null
-})
+
+  return null;
+});
 
 // Calculation functions similar to create page
 const calcProductivity = () => {
-  const serviceId = formData.value.service_type
-  console.log('calcProductivity - serviceId:', serviceId)
-  
+  const serviceId = formData.value.service_type;
+  console.log("calcProductivity - serviceId:", serviceId);
+
   if (!serviceId) {
-    productivity.value = null
-    console.log('calcProductivity - no serviceId, set to null')
-    return
+    productivity.value = null;
+    console.log("calcProductivity - no serviceId, set to null");
+    return;
   }
-  
-  const service = services.value.find(s => s.id === serviceId)
-  console.log('calcProductivity - found service:', service)
-  console.log('calcProductivity - all services:', services.value)
-  
+
+  const service = services.value.find((s) => s.id === serviceId);
+  console.log("calcProductivity - found service:", service);
+  console.log("calcProductivity - all services:", services.value);
+
   if (service) {
     if (service.cleaning_rate_m2_per_h) {
-      productivity.value = Number(service.cleaning_rate_m2_per_h)
-    } else if (service.name?.toLowerCase().includes('regular cleaning')) {
-      productivity.value = 50
-    } else if (service.name?.toLowerCase().includes('deep cleaning')) {
-      productivity.value = 35
+      productivity.value = Number(service.cleaning_rate_m2_per_h);
+    } else if (service.name?.toLowerCase().includes("regular cleaning")) {
+      productivity.value = 50;
+    } else if (service.name?.toLowerCase().includes("deep cleaning")) {
+      productivity.value = 35;
     } else {
-      productivity.value = 50 // Default value
+      productivity.value = 50; // Default value
     }
   } else {
-    productivity.value = 50 // Fallback default
+    productivity.value = 50; // Fallback default
   }
-  
-  console.log('calcProductivity - final productivity:', productivity.value)
-}
+
+  console.log("calcProductivity - final productivity:", productivity.value);
+};
 
 const calcEstimatedHours = () => {
   const area = formData.value.area_m2;
@@ -422,425 +514,493 @@ const calcEstimatedHours = () => {
   formData.value.estimated_hours = +(area / productivity.value).toFixed(2);
   // Tính thời gian tối thiểu = 60% thời gian ước tính
   minRequiredHours.value = +(formData.value.estimated_hours * 0.6).toFixed(2);
-}
+};
 
 const validateRequestedTime = () => {
-  const requested = formData.value.requested_hours
-  const minRequired = minRequiredHours.value
-  const estimated = formData.value.estimated_hours
-  
+  const requested = formData.value.requested_hours;
+  const minRequired = minRequiredHours.value;
+  const estimated = formData.value.estimated_hours;
+
   if (!requested || !minRequired || !estimated) {
-    isTimeValid.value = true
-    timeValidationMessage.value = ''
-    return
+    isTimeValid.value = true;
+    timeValidationMessage.value = "";
+    return;
   }
-  
+
   if (requested < minRequired) {
-    isTimeValid.value = false
-    timeValidationMessage.value = t('create_order_validation_error', { 
-      message: `${t('create_order_min_time', { time: formatTime(minRequired) })} (60% của ${formatTime(estimated)})` 
-    })
+    isTimeValid.value = false;
+    timeValidationMessage.value = t("create_order_validation_error", {
+      message: `${t("create_order_min_time", {
+        time: formatTime(minRequired),
+      })} (60% của ${formatTime(estimated)})`,
+    });
   } else {
-    isTimeValid.value = true
-    timeValidationMessage.value = ''
+    isTimeValid.value = true;
+    timeValidationMessage.value = "";
   }
-}
+};
 
 const calcRequestedHours = () => {
-  const start = formData.value.preferred_start_time
-  const end = formData.value.preferred_end_time
+  const start = formData.value.preferred_start_time;
+  const end = formData.value.preferred_end_time;
   if (!start || !end) {
-    formData.value.requested_hours = null
-    return
+    formData.value.requested_hours = null;
+    return;
   }
-  const startDate = new Date(start)
-  const endDate = new Date(end)
-  const diffMs = endDate.getTime() - startDate.getTime()
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const diffMs = endDate.getTime() - startDate.getTime();
   if (diffMs > 0) {
-    formData.value.requested_hours = +(diffMs / (1000 * 60 * 60)).toFixed(2)
+    formData.value.requested_hours = +(diffMs / (1000 * 60 * 60)).toFixed(2);
   } else {
-    formData.value.requested_hours = null
+    formData.value.requested_hours = null;
   }
-}
+};
 
 const calcEstimatedPrice = () => {
-  const serviceId = formData.value.service_type
-  const area = formData.value.area_m2
+  const serviceId = formData.value.service_type;
+  const area = formData.value.area_m2;
   if (!serviceId || !area || area <= 0) {
-    estimatedPrice.value = null
-    formData.value.cost_confirm = null
-    priceExplanation.value = ''
-    return
+    estimatedPrice.value = null;
+    formData.value.cost_confirm = null;
+    priceExplanation.value = "";
+    return;
   }
-  
-  let pricePerM2 = 0
-  const service = services.value.find(s => s.id === serviceId)
+
+  let pricePerM2 = 0;
+  const service = services.value.find((s) => s.id === serviceId);
   if (service) {
     if (service.price_per_m2) {
-      pricePerM2 = Number(service.price_per_m2)
-    } else if (service.name?.toLowerCase().includes('deep cleaning')) {
-      pricePerM2 = 3000
-    } else if (service.name?.toLowerCase().includes('regular cleaning')) {
-      pricePerM2 = 155000
+      pricePerM2 = Number(service.price_per_m2);
+    } else if (service.name?.toLowerCase().includes("deep cleaning")) {
+      pricePerM2 = 3000;
+    } else if (service.name?.toLowerCase().includes("regular cleaning")) {
+      pricePerM2 = 155000;
     }
   }
 
-  let basePrice = pricePerM2 > 0 ? pricePerM2 * area : null
-  let explanation = `Giá cơ bản: ${pricePerM2.toLocaleString('vi-VN')} x ${area} m² = ${(basePrice || 0).toLocaleString('vi-VN')} VNĐ`
+  let basePrice = pricePerM2 > 0 ? pricePerM2 * area : null;
+  let explanation = `Giá cơ bản: ${pricePerM2.toLocaleString(
+    "vi-VN"
+  )} x ${area} m² = ${(basePrice || 0).toLocaleString("vi-VN")} VNĐ`;
 
-  const requested = formData.value.requested_hours
-  const estimated = formData.value.estimated_hours
+  const requested = formData.value.requested_hours;
+  const estimated = formData.value.estimated_hours;
   if (basePrice && requested && estimated && requested < estimated) {
-    const diff = estimated - requested
-    let factor = 1
-    if (diff > 0.1 && diff <= 1) factor = 1.2
-    else if (diff > 1 && diff <= 2) factor = 1.3
-    else if (diff > 2) factor = 1.5
+    const diff = estimated - requested;
+    let factor = 1;
+    if (diff > 0.1 && diff <= 1) factor = 1.2;
+    else if (diff > 1 && diff <= 2) factor = 1.3;
+    else if (diff > 2) factor = 1.5;
 
     if (factor > 1) {
-      explanation += ` (áp dụng hệ số ${factor} do số giờ yêu cầu < số giờ ước tính)`
-      basePrice = basePrice * factor
+      explanation += ` (áp dụng hệ số ${factor} do số giờ yêu cầu < số giờ ước tính)`;
+      basePrice = basePrice * factor;
     }
   }
 
   // Thêm 10% VAT vào giá cuối cùng
   if (basePrice) {
-    const vatAmount = Math.round(basePrice * 0.1)
-    const finalPrice = basePrice + vatAmount
-    explanation += `\nGiá gốc: ${basePrice.toLocaleString('vi-VN')} VNĐ + VAT 10% (${vatAmount.toLocaleString('vi-VN')} VNĐ) = ${finalPrice.toLocaleString('vi-VN')} VNĐ`
-    estimatedPrice.value = finalPrice
-    formData.value.cost_confirm = finalPrice
+    const vatAmount = Math.round(basePrice * 0.1);
+    const finalPrice = basePrice + vatAmount;
+    explanation += `\nGiá gốc: ${basePrice.toLocaleString(
+      "vi-VN"
+    )} VNĐ + VAT 10% (${vatAmount.toLocaleString(
+      "vi-VN"
+    )} VNĐ) = ${finalPrice.toLocaleString("vi-VN")} VNĐ`;
+    estimatedPrice.value = finalPrice;
+    formData.value.cost_confirm = finalPrice;
   } else {
-    estimatedPrice.value = null
-    formData.value.cost_confirm = null
+    estimatedPrice.value = null;
+    formData.value.cost_confirm = null;
   }
 
-  priceExplanation.value = explanation
-}
+  priceExplanation.value = explanation;
+};
 
 // Watch for changes similar to create page
-watch(() => [formData.value.service_type], () => {
-  console.log('Service type changed:', formData.value.service_type)
-  calcProductivity()
-  // Force recalculation after productivity is set
-  setTimeout(() => {
-    calcEstimatedHours()
-    calcEstimatedPrice()
-  }, 50)
-})
+watch(
+  () => [formData.value.service_type],
+  () => {
+    console.log("Service type changed:", formData.value.service_type);
+    calcProductivity();
+    // Force recalculation after productivity is set
+    setTimeout(() => {
+      calcEstimatedHours();
+      calcEstimatedPrice();
+    }, 50);
+  }
+);
 
-watch(() => [formData.value.area_m2, productivity.value], () => {
-  console.log('Area or productivity changed:', formData.value.area_m2, productivity.value)
-  calcEstimatedHours()
-})
+watch(
+  () => [formData.value.area_m2, productivity.value],
+  () => {
+    console.log(
+      "Area or productivity changed:",
+      formData.value.area_m2,
+      productivity.value
+    );
+    calcEstimatedHours();
+  }
+);
 
-watch(() => [formData.value.preferred_start_time, formData.value.preferred_end_time], () => {
-  calcRequestedHours()
-  validateRequestedTime()
-})
+watch(
+  () => [
+    formData.value.preferred_start_time,
+    formData.value.preferred_end_time,
+  ],
+  () => {
+    calcRequestedHours();
+    validateRequestedTime();
+  }
+);
 
-watch(() => [formData.value.service_type, formData.value.area_m2, formData.value.requested_hours, formData.value.estimated_hours], calcEstimatedPrice)
+watch(
+  () => [
+    formData.value.service_type,
+    formData.value.area_m2,
+    formData.value.requested_hours,
+    formData.value.estimated_hours,
+  ],
+  calcEstimatedPrice
+);
 
-watch(() => [formData.value.requested_hours, minRequiredHours.value], validateRequestedTime)
+watch(
+  () => [formData.value.requested_hours, minRequiredHours.value],
+  validateRequestedTime
+);
 
 // Load customer info (similar to create page)
 const loadCustomerInfo = async () => {
   try {
-    console.log('Loading customer info...')
-    
-    const response = await CustomerOrderService.getUser()
-    console.log('Customer API response:', response)
-    
-    const customer = response.data || response
+    console.log("Loading customer info...");
+
+    const response = await CustomerOrderService.getUser();
+    console.log("Customer API response:", response);
+
+    const customer = response.data || response;
     customerInfo.value = {
       customer_name: customer.name || customer.customer_name,
       email: customer.email,
       phone: customer.phone,
-      address: customer.address
-    }
-    
-    console.log('Customer info loaded:', customerInfo.value)
-    
+      address: customer.address,
+    };
+
+    console.log("Customer info loaded:", customerInfo.value);
   } catch (error) {
-    console.error('Error loading customer info:', error)
-    showToastMessage('Không thể tải thông tin khách hàng', 'error')
+    console.error("Error loading customer info:", error);
+    showToastMessage("Không thể tải thông tin khách hàng", "error");
   }
-}
+};
 
 // Load order data
 const loadOrder = async () => {
   try {
-    loading.value = true
-    error.value = ''
-    
-    const orderResponse = await CustomerOrderService.getOrder(orderId)
-    console.log('Order response:', orderResponse)
-    
-    order.value = orderResponse
-    
+    loading.value = true;
+    error.value = "";
+
+    const orderResponse = await CustomerOrderService.getOrder(orderId);
+    console.log("Order response:", orderResponse);
+
+    order.value = orderResponse;
+
     // Check if order can be edited (only pending status)
-    if (order.value.status !== 'pending') {
-      error.value = 'Chỉ có thể chỉnh sửa đơn hàng ở trạng thái "Chờ xác nhận"'
-      return
+    if (order.value.status !== "pending") {
+      error.value = 'Chỉ có thể chỉnh sửa đơn hàng ở trạng thái "Chờ xác nhận"';
+      return;
     }
-    
+
     // Set form data
     formData.value = {
       service_type: order.value.service_type,
       area_m2: parseFloat(order.value.area_m2),
-      preferred_start_time: formatDateTimeForInput(order.value.preferred_start_time),
-      preferred_end_time: formatDateTimeForInput(order.value.preferred_end_time),
-      note: order.value.note || '',
+      preferred_start_time: formatDateTimeForInput(
+        order.value.preferred_start_time
+      ),
+      preferred_end_time: formatDateTimeForInput(
+        order.value.preferred_end_time
+      ),
+      note: order.value.note || "",
       requested_hours: parseFloat(order.value.requested_hours),
       estimated_hours: parseFloat(order.value.estimated_hours),
-      cost_confirm: parseInt(order.value.cost_confirm)
-    }
-    
+      cost_confirm: parseInt(order.value.cost_confirm),
+      payment_method: order.value.payment_method || "BANK_TRANSFER",
+    };
+
     // ✅ Tính toán lại sau khi load order data
     setTimeout(() => {
-      calcProductivity()
-      calcEstimatedHours()
-      calcRequestedHours()
-      calcEstimatedPrice()
-      validateRequestedTime()
-    }, 100)
-    
+      calcProductivity();
+      calcEstimatedHours();
+      calcRequestedHours();
+      calcEstimatedPrice();
+      validateRequestedTime();
+    }, 100);
   } catch (e) {
-    console.error('Error loading order:', e)
-    error.value = 'Không thể tải thông tin đơn hàng: ' + e.message
+    console.error("Error loading order:", e);
+    error.value = "Không thể tải thông tin đơn hàng: " + e.message;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Load services data
 const loadServices = async () => {
   try {
-    const response = await ServiceTypeService.getServiceTypes()
-    console.log('Services response:', response)
-    
+    const response = await ServiceTypeService.getServiceTypes();
+    console.log("Services response:", response);
+
     // Handle response format
-    let servicesData = []
+    let servicesData = [];
     if (Array.isArray(response)) {
-      servicesData = response
+      servicesData = response;
     } else if (response.results && Array.isArray(response.results)) {
-      servicesData = response.results
+      servicesData = response.results;
     } else if (response.data && Array.isArray(response.data)) {
-      servicesData = response.data
+      servicesData = response.data;
     } else {
-      console.warn('Unexpected services response format:', response)
-      servicesData = []
+      console.warn("Unexpected services response format:", response);
+      servicesData = [];
     }
-    
-    services.value = servicesData.map(service => ({
+
+    services.value = servicesData.map((service) => ({
       id: service.id,
       name: service.name,
       price_per_m2: service.price_per_m2,
       productivity_rate: service.cleaning_rate_m2_per_h || 50,
-      min_time_hours: service.min_time_hours || 2
-    }))
-    
+      min_time_hours: service.min_time_hours || 2,
+    }));
   } catch (e) {
-    console.error('Error loading services:', e)
+    console.error("Error loading services:", e);
     // Fallback to mock data if API fails
     services.value = [
       {
-        id: 'ce1d971a-dd5f-444c-804b-72709998bcf2',
-        name: 'Dọn dẹp cơ bản',
+        id: "ce1d971a-dd5f-444c-804b-72709998bcf2",
+        name: "Dọn dẹp cơ bản",
         price_per_m2: 50000,
         productivity_rate: 50,
-        min_time_hours: 2
-      }
-    ]
+        min_time_hours: 2,
+      },
+    ];
   }
-}
+};
 
 // Handle service change
 const handleServiceChange = () => {
   if (selectedService.value) {
-    calcProductivity()
-    calcEstimatedHours()
-    calcEstimatedPrice()
+    calcProductivity();
+    calcEstimatedHours();
+    calcEstimatedPrice();
   }
-}
+};
 
 // Handle area change
 const handleAreaChange = () => {
-  calcEstimatedHours()
-  calcEstimatedPrice()
-}
+  calcEstimatedHours();
+  calcEstimatedPrice();
+};
 
 // Handle time change
 const handleTimeChange = () => {
   // Validate time range
-  if (formData.value.preferred_start_time && formData.value.preferred_end_time) {
-    const startTime = new Date(formData.value.preferred_start_time)
-    const endTime = new Date(formData.value.preferred_end_time)
-    
+  if (
+    formData.value.preferred_start_time &&
+    formData.value.preferred_end_time
+  ) {
+    const startTime = new Date(formData.value.preferred_start_time);
+    const endTime = new Date(formData.value.preferred_end_time);
+
     if (endTime <= startTime) {
-      showToastMessage('Thời gian kết thúc phải sau thời gian bắt đầu', 'error')
-      return
+      showToastMessage(
+        "Thời gian kết thúc phải sau thời gian bắt đầu",
+        "error"
+      );
+      return;
     }
   }
-  
-  calcRequestedHours()
-  validateRequestedTime()
-  calcEstimatedPrice()
-}
+
+  calcRequestedHours();
+  validateRequestedTime();
+  calcEstimatedPrice();
+};
 
 // Save order
 const saveOrder = async () => {
   try {
     // Validate required fields
     if (!formData.value.service_type) {
-      showToastMessage('Vui lòng chọn dịch vụ', 'error')
-      return
+      showToastMessage("Vui lòng chọn dịch vụ", "error");
+      return;
     }
-    
+
     if (!formData.value.area_m2 || formData.value.area_m2 <= 0) {
-      showToastMessage('Vui lòng nhập diện tích hợp lệ', 'error')
-      return
+      showToastMessage("Vui lòng nhập diện tích hợp lệ", "error");
+      return;
     }
-    
-    if (!formData.value.preferred_start_time || !formData.value.preferred_end_time) {
-      showToastMessage('Vui lòng chọn thời gian bắt đầu và kết thúc', 'error')
-      return
+
+    if (
+      !formData.value.preferred_start_time ||
+      !formData.value.preferred_end_time
+    ) {
+      showToastMessage("Vui lòng chọn thời gian bắt đầu và kết thúc", "error");
+      return;
     }
-    
+
     if (!isTimeValid.value) {
-      showToastMessage(timeValidationMessage.value, 'error')
-      return
+      showToastMessage(timeValidationMessage.value, "error");
+      return;
     }
-    
+
     // Validate time range
-    const startTime = new Date(formData.value.preferred_start_time)
-    const endTime = new Date(formData.value.preferred_end_time)
-    
+    const startTime = new Date(formData.value.preferred_start_time);
+    const endTime = new Date(formData.value.preferred_end_time);
+
     if (endTime <= startTime) {
-      showToastMessage('Thời gian kết thúc phải sau thời gian bắt đầu', 'error')
-      return
+      showToastMessage(
+        "Thời gian kết thúc phải sau thời gian bắt đầu",
+        "error"
+      );
+      return;
     }
-    
+
     // Confirm before saving
-    if (!confirm('Bạn có chắc muốn lưu thay đổi? Giá và thời gian sẽ được tính lại.')) {
-      return
+    if (
+      !confirm(
+        "Bạn có chắc muốn lưu thay đổi? Giá và thời gian sẽ được tính lại."
+      )
+    ) {
+      return;
     }
-    
-    saving.value = true
-    
+
+    saving.value = true;
+
     const updateData = {
       service_type: formData.value.service_type,
       area_m2: formData.value.area_m2.toString(),
-      preferred_start_time: new Date(formData.value.preferred_start_time).toISOString(),
-      preferred_end_time: new Date(formData.value.preferred_end_time).toISOString(),
+      preferred_start_time: new Date(
+        formData.value.preferred_start_time
+      ).toISOString(),
+      preferred_end_time: new Date(
+        formData.value.preferred_end_time
+      ).toISOString(),
       note: formData.value.note,
       requested_hours: formData.value.requested_hours.toString(),
       estimated_hours: formData.value.estimated_hours.toString(),
-      cost_confirm: formData.value.cost_confirm.toString()
+      cost_confirm: formData.value.cost_confirm.toString(),
+      payment_method: formData.value.payment_method,
+      status: "PENDING_PAYMENT",
+    };
+
+    console.log("Update data being sent:", updateData);
+
+    const response = await CustomerOrderService.createOrder(updateData);
+
+    // Nếu payment method là BANK_TRANSFER và có thông tin payment, chuyển đến trang thanh toán
+    if (formData.value.payment_method === "BANK_TRANSFER" && response.payment) {
+      showToastMessage(t("edit_order_success"), "success");
+
+      // Chuyển đến trang thanh toán với order ID
+      setTimeout(() => {
+        router.push(`/dss/customer-orders/payment/${response.id}`);
+      }, 1000);
+    } else {
+      showToastMessage(t("edit_order_success"), "success");
+
+      // Redirect back to orders list after 2 seconds
+      setTimeout(() => {
+        router.push("/dss/customer-orders");
+      }, 2000);
     }
-    
-    console.log('Update data being sent:', updateData)
-    
-    await CustomerOrderService.updateOrder(orderId, updateData)
-    
-    showToastMessage(t('edit_order_success'), 'success')
-    
-    // Redirect back to orders list after 2 seconds
-    setTimeout(() => {
-      router.push('/dss/customer-orders')
-    }, 2000)
-    
   } catch (e) {
-    console.error('Error saving order:', e)
-    showToastMessage(t('edit_order_error'), 'error')
+    console.error("Error saving order:", e);
+    showToastMessage(t("edit_order_error"), "error");
   } finally {
-    saving.value = false
+    saving.value = false;
   }
-}
+};
 
 // Cancel edit
 const cancelEdit = () => {
-  if (confirm(t('edit_order_confirm_cancel'))) {
-    router.push('/dss/customer-orders')
+  if (confirm(t("edit_order_confirm_cancel"))) {
+    router.push("/dss/customer-orders");
   }
-}
+};
 
 // Cancel order modal functions
 const closeCancelModal = () => {
-  showCancelModal.value = false
-}
+  showCancelModal.value = false;
+};
 
 const copyPhoneNumber = async () => {
   try {
-    await navigator.clipboard.writeText('0123456789')
-    showToastMessage(t('copy_phone_success'), 'success')
+    await navigator.clipboard.writeText("0123456789");
+    showToastMessage(t("copy_phone_success"), "success");
   } catch (error) {
-    console.error('Failed to copy phone number:', error)
-    showToastMessage(t('copy_phone_error'), 'error')
+    console.error("Failed to copy phone number:", error);
+    showToastMessage(t("copy_phone_error"), "error");
   }
-}
+};
 
 const copyEmail = async () => {
   try {
-    await navigator.clipboard.writeText('admin@dss-cleaning.com')
-    showToastMessage(t('copy_email_success'), 'success')
+    await navigator.clipboard.writeText("admin@dss-cleaning.com");
+    showToastMessage(t("copy_email_success"), "success");
   } catch (error) {
-    console.error('Failed to copy email:', error)
-    showToastMessage(t('copy_email_error'), 'error')
+    console.error("Failed to copy email:", error);
+    showToastMessage(t("copy_email_error"), "error");
   }
-}
+};
 
 // Utility functions similar to create page
 const formatPrice = (price) => {
-  if (!price) return '0 VNĐ'
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(price)
-}
+  if (!price) return "0 VNĐ";
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(price);
+};
 
 const formatTime = (hours) => {
-  console.log('formatTime input:', hours, typeof hours)
-  
-  if (hours === null || hours === undefined || isNaN(hours)) return '0 giờ'
-  if (hours === 0) return '0 giờ'
-  if (hours > 0 && hours * 60 < 1) return t('create_order_time_one_minute')
-  
-  const h = Math.floor(hours)
-  let m = Math.round((hours - h) * 60)
-  
-  if (h === 0) return t('create_order_time_minutes', { minutes: m })
-  if (m === 0) return t('create_order_time_hours', { hours: h })
-  return t('create_order_time_hours_minutes', { hours: h, minutes: m })
-}
+  console.log("formatTime input:", hours, typeof hours);
+
+  if (hours === null || hours === undefined || isNaN(hours)) return "0 giờ";
+  if (hours === 0) return "0 giờ";
+  if (hours > 0 && hours * 60 < 1) return t("create_order_time_one_minute");
+
+  const h = Math.floor(hours);
+  let m = Math.round((hours - h) * 60);
+
+  if (h === 0) return t("create_order_time_minutes", { minutes: m });
+  if (m === 0) return t("create_order_time_hours", { hours: h });
+  return t("create_order_time_hours_minutes", { hours: h, minutes: m });
+};
 
 const formatDateTimeForInput = (datetime) => {
-  if (!datetime) return ''
-  const date = new Date(datetime)
-  return date.toISOString().slice(0, 16) // Format: YYYY-MM-DDTHH:mm
-}
+  if (!datetime) return "";
+  const date = new Date(datetime);
+  return date.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
+};
 
 // Show toast message
-const showToastMessage = (message, type = 'success') => {
-  toastMessage.value = message
-  toastType.value = type
-  showToast.value = true
-  
+const showToastMessage = (message, type = "success") => {
+  toastMessage.value = message;
+  toastType.value = type;
+  showToast.value = true;
+
   setTimeout(() => {
-    showToast.value = false
-  }, 3000)
-}
+    showToast.value = false;
+  }, 3000);
+};
 
 onMounted(async () => {
   // ✅ Load services trước
-  await loadServices()
-  
+  await loadServices();
+
   // ✅ Load customer info song song
-  loadCustomerInfo()
-  
+  loadCustomerInfo();
+
   // ✅ Load order sau cùng để có đủ dữ liệu tính toán
-  await loadOrder()
-})
+  await loadOrder();
+});
 </script>
 
 <style scoped>
@@ -1096,6 +1256,60 @@ onMounted(async () => {
   color: #92400e;
   font-size: 0.875rem;
   line-height: 1.5;
+}
+
+/* Payment Methods */
+.payment-methods {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.payment-option {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.payment-option:hover {
+  border-color: var(--primary);
+  background: #f0f9ff;
+}
+
+.payment-option input[type="radio"] {
+  margin-right: 0.75rem;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.payment-option input[type="radio"]:checked + .payment-label {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.payment-option:has(input[type="radio"]:checked) {
+  border-color: var(--primary);
+  background: #f0f9ff;
+}
+
+.payment-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.payment-icon {
+  font-size: 1.25rem;
 }
 
 /* Action buttons */
@@ -1411,15 +1625,15 @@ onMounted(async () => {
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .calculation-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .customer-details {
     grid-template-columns: 1fr;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
