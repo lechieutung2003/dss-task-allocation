@@ -16,7 +16,12 @@ import {
   Refresh,
 } from "@element-plus/icons-vue";
 import dashboardService from "~/services/dss/dashboardService";
-import ChartCard from "~/components/ChartCard.vue";
+import InfoCard from "~/components/dashboard/InfoCard.vue";
+import FilterableChart from "~/components/dashboard/FilterableChart.vue";
+import PriorityOrdersTable from "~/components/dashboard/PriorityOrdersTable.vue";
+import EmployeeKPITable from "~/components/dashboard/EmployeeKPITable.vue";
+import ChartCard from "~/components/dashboard/ChartCard.vue";
+import Card from "~/components/dashboard/Card.vue";
 
 definePageMeta({ layout: "dss", middleware: ["auth", "role-based"] });
 
@@ -46,13 +51,18 @@ const dashboardData = reactive({
     activeEmployees: 0,
     employeesWithOrders: 0,
     todayRevenue: 0,
+    totalRevenue: 0,
+    totalCost: 0,
+    totalProfit: 0,
+    profitMargin: 0,
     customerSatisfaction: 0,
     avgCompletionTime: 0,
     successRate: 0,
   },
   urgentTasks: [],
   chartData: null,
-  recentActivities: [],
+  employeeKPI: [],
+  dailySummary: [],
 });
 
 // Computed properties
@@ -118,9 +128,24 @@ const loadChartData = async () => {
   loadingStates.charts = true;
   try {
     const chartData = await dashboardService.getChartData();
+    
+    console.log("📊 Raw chart data from service:", chartData);
+    console.log("📊 Revenue array:", chartData?.revenue);
+    console.log("📊 Revenue array length:", chartData?.revenue?.length);
+    
     dashboardData.chartData = chartData;
+    
+    // Lưu daily summary để dùng cho các biểu đồ
+    dashboardData.dailySummary = chartData.dailySummary || [];
 
-    console.log("✅ Chart data loaded");
+    console.log("✅ Chart data loaded and assigned:", {
+      revenuePoints: chartData.revenue?.length || 0,
+      dailySummary: chartData.dailySummary?.length || 0,
+      tasks: chartData.tasks,
+      chartDataRevenue: dashboardData.chartData?.revenue
+    });
+    
+    console.log("📊 Data being passed to FilterableChart:", dashboardData.chartData?.revenue || []);
   } catch (error) {
     console.error("❌ Error loading chart data:", error);
   } finally {
@@ -128,17 +153,17 @@ const loadChartData = async () => {
   }
 };
 
-const loadRecentActivities = async () => {
+const loadEmployeeKPI = async () => {
   if (loadingStates.activities) return;
 
   loadingStates.activities = true;
   try {
-    const response = await dashboardService.getRecentActivities();
-    dashboardData.recentActivities = response.data || [];
+    const kpiData = await dashboardService.getEmployeeKPI();
+    dashboardData.employeeKPI = kpiData || [];
 
-    console.log("✅ Recent activities loaded");
+    console.log("✅ Employee KPI loaded:", dashboardData.employeeKPI.length);
   } catch (error) {
-    console.error("❌ Error loading recent activities:", error);
+    console.error("❌ Error loading employee KPI:", error);
   } finally {
     loadingStates.activities = false;
   }
@@ -170,7 +195,7 @@ const refreshDashboard = async (forceRefresh = false) => {
       loadDashboardStats(),
       loadUrgentTasks(),
       loadChartData(),
-      loadRecentActivities(),
+      loadEmployeeKPI(),
     ];
 
     // Đợi tất cả load xong
@@ -251,6 +276,12 @@ const getPriorityColor = (priority) => {
     default:
       return { bg: "border-gray-300", text: "bg-gray-100 text-gray-800" };
   }
+};
+
+// Handle chart period change
+const handleChartPeriodChange = (period) => {
+  console.log(`Chart period changed to: ${period}`);
+  // Data filtering is handled in FilterableChart component
 };
 </script>
 
@@ -403,15 +434,19 @@ const getPriorityColor = (priority) => {
       />
     </div>
 
-    <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <ChartCard
-        title="📊 Doanh Thu"
-        type="revenue"
-        :chart-data="dashboardData.chartData"
+    <!-- Filterable Revenue Chart (Full Width) -->
+    <div class="mb-8">
+      <FilterableChart 
+        title="📊 Biểu Đồ Doanh Thu - Chi Phí - Lợi Nhuận"
         :icon="Wallet"
+        :data="dashboardData.chartData?.revenue || []"
+        :loading="loadingStates.charts"
+        @period-change="handleChartPeriodChange"
       />
+    </div>
 
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       <ChartCard
         title="📋 Trạng Thái Công Việc"
         type="tasks"
@@ -430,11 +465,30 @@ const getPriorityColor = (priority) => {
       />
     </div>
 
+    <!-- Priority Orders Table (Full Width) -->
+    <div class="mb-8">
+      <PriorityOrdersTable 
+        :orders-data="dashboardData.urgentTasks"
+        :loading="loadingStates.tasks"
+        @refresh="loadUrgentTasks"
+        @view-detail="(id) => navigateTo(`/dss/orders/${id}`)"
+      />
+    </div>
+
+    <!-- Employee KPI Table (Full Width) -->
+    <div class="mb-8">
+      <EmployeeKPITable 
+        :employee-data="dashboardData.employeeKPI"
+        :loading="loadingStates.activities"
+        @refresh="loadEmployeeKPI"
+      />
+    </div>
+
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Urgent Tasks -->
+      <!-- Urgent Tasks (Compact View for Quick Access) -->
       <div class="w-full">
-        <Card title="🚨 Nhiệm Vụ Ưu Tiên">
+        <Card title="🚨 Top 5 Nhiệm Vụ Ưu Tiên">
           <!-- Loading skeleton for tasks -->
           <div v-if="loadingStates.tasks" class="space-y-4">
             <div
