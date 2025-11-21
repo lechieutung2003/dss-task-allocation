@@ -16,6 +16,13 @@ from .views import (
 )
 
 from .views.order import OrderViewSet, AssignmentViewSet, CustomerViewSet, ServiceTypeViewSet,AssignmentViewSet
+from .views.dashboard import (
+    DashboardOverviewView,
+    PriorityOrdersView,
+    EmployeeKPIView,
+    DailySummaryView,
+    DashboardFullView
+)
 
 app_name = "hr"
 router = base_routers.MutipleUpdateRouter(trailing_slash=False)
@@ -65,4 +72,11 @@ urlpatterns = [
     path('api/v1/customer/orders/<uuid:order_id>', UpdateOrderAPIView.as_view(), name='customer-order-detail'),
     path('api/v1/customer/orders/<uuid:order_id>/feedback', UpdateOrderFeedbackAPIView.as_view(), name='update-order-feedback'),
     path('api/v1/customer/create-order', SimpleCreateOrderAPIView.as_view(), name='simple-create-order'),
+    
+    # Dashboard API endpoints
+    path('api/v1/dashboard/overview', DashboardOverviewView.as_view(), name='dashboard-overview'),
+    path('api/v1/dashboard/priority-orders', PriorityOrdersView.as_view(), name='dashboard-priority-orders'),
+    path('api/v1/dashboard/employee-kpi', EmployeeKPIView.as_view(), name='dashboard-employee-kpi'),
+    path('api/v1/dashboard/daily-summary', DailySummaryView.as_view(), name='dashboard-daily-summary'),
+    path('api/v1/dashboard/full', DashboardFullView.as_view(), name='dashboard-full'),
 ]

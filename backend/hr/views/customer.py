@@ -23,12 +23,12 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class UserInfoAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-    def get(self, request):
-        user = request.user
-        serializer = FullUserSerializer(user)
-        return Response(serializer.data)
+# class UserInfoAPIView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     def get(self, request):
+#         user = request.user
+#         serializer = FullUserSerializer(user)
+#         return Response(serializer.data)
 
 
 class CustomerInfoAPIView(APIView):
