@@ -82,17 +82,24 @@ const props = defineProps({
 });
 
 const statusClass = computed(() => {
-  return {
-    "text-green-500": props.status === "positive",
-    "text-red-500": props.status === "negative",
-    "text-gray-500": props.status === "neutral",
-  };
+  switch (props.status) {
+    case 'positive':
+      return 'bg-green-500 border-green-500 text-white';
+    case 'negative':
+      return 'bg-red-500 border-red-500 text-white';
+    default:
+      return 'bg-gray-500 border-gray-500 text-white';
+  }
 });
+
 const statusIcon = computed(() => {
-  return {
-    CaretTop: props.status === "positive",
-    CaretBottom: props.status === "negative",
-    DCaret: props.status === "neutral",
-  };
+  switch (props.status) {
+    case 'positive':
+      return CaretTop;
+    case 'negative':
+      return CaretBottom;
+    default:
+      return DCaret;
+  }
 });
 </script>
