@@ -4,7 +4,7 @@ import random
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime, timedelta
 from django.utils import timezone
-
+from django.utils.timezone import localtime
 # Setup Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.base')
 django.setup()
@@ -104,7 +104,9 @@ for month in months_2024:
 # ===============================
 print("⏳ Tạo 10 đơn năm 2025...")
 
-months_2025 = random.sample(range(1, min(12, timezone.now().month) + 1), ORDERS_2025)
+months_2025 = random.sample(
+    range(1, min(12, timezone.localtime().month) + 1), ORDERS_2025
+)
 
 for month in months_2025:
     created_at = random_datetime_in_month(2025, month)

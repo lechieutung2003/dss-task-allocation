@@ -139,6 +139,62 @@ def create_users_with_roles():
         print(f"Employee user {'created' if user_created else 'updated'} with ID: {regular_user.id}")
         print(f"Employee profile {'created' if emp_created else 'updated'} with ID: {regular_employee.id}")
     
+    
+    with transaction.atomic():
+        extra_user, user_created = User.objects.update_or_create(
+            email="employee2@gmail.com",
+            defaults={
+                "password": make_password("123456"),
+                "first_name": "Extra",
+                "last_name": "Employee2",
+                "is_staff": True,
+                "is_superuser": False,
+                "active": True
+            }
+        )
+        extra_employee, emp_created = Employee.objects.update_or_create(
+            work_mail="employee2@gmail.com",
+            defaults={
+                "first_name": "Extra",
+                "last_name": "Employee2",
+                "personal_mail": "employee2@gmail.com",
+                "status": AccountStatus.ACTIVE,
+                "user": extra_user
+            }
+        )
+        extra_employee.roles.clear()
+        extra_employee.roles.add(employee_role)
+        extra_employee.save()
+        print(f"Extra employee created: {extra_employee.id}")
+        
+    with transaction.atomic():
+        extra_user, user_created = User.objects.update_or_create(
+            email="employee3@gmail.com",
+            defaults={
+                "password": make_password("123456"),
+                "first_name": "Extra",
+                "last_name": "Employee3",
+                "is_staff": True,
+                "is_superuser": False,
+                "active": True
+            }
+        )
+        extra_employee, emp_created = Employee.objects.update_or_create(
+            work_mail="employee3@gmail.com",
+            defaults={
+                "first_name": "Extra",
+                "last_name": "Employee3",
+                "personal_mail": "employee3@gmail.com",
+                "status": AccountStatus.ACTIVE,
+                "user": extra_user
+            }
+        )
+        extra_employee.roles.clear()
+        extra_employee.roles.add(employee_role)
+        extra_employee.save()
+        print(f"Extra employee created: {extra_employee.id}")
+    
+    
     # 3. Tạo Guest User và Employee (nhưng gắn role Guest)
     with transaction.atomic():
         # Tạo User

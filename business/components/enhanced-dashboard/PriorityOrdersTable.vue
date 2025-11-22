@@ -68,6 +68,26 @@
           </el-tag>
         </template>
       </el-table-column>
+
+      <el-table-column label="Thao tác" width="180">
+        <template #default="{ row }">
+            <el-button
+            type="primary"
+            size="small"
+            @click="goToDetail(row.order_id)"
+            >
+            Xem chi tiết
+            </el-button>
+            <el-button
+            type="success"
+            size="small"
+            @click="goToAssign(row.order_id)"
+            style="margin-left: 8px"
+            >
+            Phân công
+            </el-button>
+        </template>
+        </el-table-column>
     </el-table>
 
     <!-- Pagination -->
@@ -89,6 +109,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Clock } from '@element-plus/icons-vue'
 import enhancedDashboardService from '~/services/dss/enhancedDashboardService'
+import { useRouter } from 'vue-router'
 
 // Props
 const props = defineProps({
@@ -106,7 +127,15 @@ const pageSize = ref(5)
 const totalRecords = ref(0)
 const totalPages = ref(0)
 let refreshInterval = null
+const router = useRouter()
 
+const goToDetail = (orderId) => {
+  router.push(`/dss/orders/${orderId}`)
+}
+
+const goToAssign = (orderId) => {
+  router.push(`/dss/orders/${orderId}?tab=assignment`)
+}
 // Methods
 const fetchOrders = async () => {
   loading.value = true
