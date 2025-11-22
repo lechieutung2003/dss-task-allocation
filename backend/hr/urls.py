@@ -23,6 +23,13 @@ from .views.dashboard import (
     DailySummaryView,
     DashboardFullView
 )
+from .views.enhanced_dashboard import (
+    PriorityOrdersView as PriorityOrdersEnhancedView,
+    EmployeeKPIView as EmployeeKPIEnhancedView,
+    EmployeeKPIDetailView,
+    RevenueCostProfitView,
+    EnhancedDashboardFullView
+)
 
 app_name = "hr"
 router = base_routers.MutipleUpdateRouter(trailing_slash=False)
@@ -79,4 +86,11 @@ urlpatterns = [
     path('api/v1/dashboard/employee-kpi', EmployeeKPIView.as_view(), name='dashboard-employee-kpi'),
     path('api/v1/dashboard/daily-summary', DailySummaryView.as_view(), name='dashboard-daily-summary'),
     path('api/v1/dashboard/full', DashboardFullView.as_view(), name='dashboard-full'),
+    
+    # Enhanced Dashboard API endpoints (3 modules)
+    path('api/v1/enhanced-dashboard/priority-orders', PriorityOrdersEnhancedView.as_view(), name='enhanced-priority-orders'),
+    path('api/v1/enhanced-dashboard/employee-kpi', EmployeeKPIEnhancedView.as_view(), name='enhanced-employee-kpi'),
+    path('api/v1/enhanced-dashboard/employee-kpi/<int:employee_id>', EmployeeKPIDetailView.as_view(), name='enhanced-employee-kpi-detail'),
+    path('api/v1/enhanced-dashboard/revenue-cost-profit', RevenueCostProfitView.as_view(), name='enhanced-revenue-cost-profit'),
+    path('api/v1/enhanced-dashboard/full', EnhancedDashboardFullView.as_view(), name='enhanced-dashboard-full'),
 ]
