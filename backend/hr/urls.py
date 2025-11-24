@@ -16,13 +16,6 @@ from .views import (
 )
 
 from .views.order import OrderViewSet, AssignmentViewSet, CustomerViewSet, ServiceTypeViewSet,AssignmentViewSet
-from .views.dashboard import (
-    DashboardOverviewView,
-    PriorityOrdersView,
-    EmployeeKPIView,
-    DailySummaryView,
-    DashboardFullView
-)
 from .views.enhanced_dashboard import (
     PriorityOrdersView as PriorityOrdersEnhancedView,
     EmployeeKPIView as EmployeeKPIEnhancedView,
