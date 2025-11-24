@@ -28,7 +28,8 @@ from .views.enhanced_dashboard import (
     EmployeeKPIView as EmployeeKPIEnhancedView,
     EmployeeKPIDetailView,
     RevenueCostProfitView,
-    EnhancedDashboardFullView
+    EnhancedDashboardFullView,
+    ServiceTypeCountsView,
 )
 
 app_name = "hr"
@@ -92,5 +93,6 @@ urlpatterns = [
     path('api/v1/enhanced-dashboard/employee-kpi', EmployeeKPIEnhancedView.as_view(), name='enhanced-employee-kpi'),
     path('api/v1/enhanced-dashboard/employee-kpi/<uuid:employee_id>', EmployeeKPIDetailView.as_view(), name='enhanced-employee-kpi-detail'),
     path('api/v1/enhanced-dashboard/revenue-cost-profit', RevenueCostProfitView.as_view(), name='enhanced-revenue-cost-profit'),
+    path('api/v1/enhanced-dashboard/service-types', ServiceTypeCountsView.as_view(), name='enhanced-service-types'),
     path('api/v1/enhanced-dashboard/full', EnhancedDashboardFullView.as_view(), name='enhanced-dashboard-full'),
 ]

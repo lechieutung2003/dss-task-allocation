@@ -567,3 +567,51 @@ class EnhancedDashboardService:
             print("❌ Error in calculate_revenue_cost_profit:", exc)
             traceback.print_exc()
             return []
+    
+    @staticmethod
+    def get_service_type_counts(start_date=None, end_date=None, date_field: str = 'updated_at') -> List[Dict[str, Any]]:
+        """
+        Trả về list: [{ service_type_id, name, count }]
+        Optional filter bằng start_date/end_date (datetime or ISO string).
+        """
+        from django.db.models import Count
+        def _parse_dt(dt):
+            if dt is None:
+                return None
+            if isinstance(dt, str):
+                try:
+                    return timezone.make_aware(datetime.fromisoformat(dt))
+                except Exception:
+                    return timezone.make_aware(datetime.fromisoformat(dt + 'T00:00:00'))
+            return dt
+
+        try:
+            sd = _parse_dt(start_date) or None
+            ed = _parse_dt(end_date) or None
+            if sd and timezone.is_naive(sd):
+                sd = timezone.make_aware(sd)
+            if ed and timezone.is_naive(ed):
+                ed = timezone.make_aware(ed)
+
+            qs = Order.objects.filter(status='completed').select_related('service_type')
+            if sd:
+                qs = qs.filter(**{f"{date_field}__gte": sd})
+            if ed:
+                qs = qs.filter(**{f"{date_field}__lte": ed})
+
+            agg = qs.values('service_type', 'service_type__name').annotate(count=Count('id')).order_by('-count')
+            result = []
+            for i in agg:
+                result.append({
+                    'service_type_id': i.get('service_type'),
+                    'name': i.get('service_type__name') or 'Unknown',
+                    'count': int(i.get('count') or 0)
+                })
+            return result
+        except Exception as e:
+            print("❌ Error in get_service_type_counts:", e)
+            import traceback; traceback.print_exc()
+            return []
+
+    # alias for frontend compatibility
+    get_service_type_pie = get_service_type_counts

@@ -346,3 +346,33 @@ class EnhancedDashboardFullView(APIView):
                 'success': False,
                 'error': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ==================== SERVICE TYPE COUNTS ====================
+
+class ServiceTypeCountsView(APIView):
+    """
+    API: trả về số lượng orders theo service type (cho pie chart)
+    Query params: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), date_field (default 'updated_at')
+    """
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        operation_description="Get counts of orders grouped by service type",
+        manual_parameters=[
+            openapi.Parameter('start_date', openapi.IN_QUERY, type=openapi.TYPE_STRING, format='date'),
+            openapi.Parameter('end_date', openapi.IN_QUERY, type=openapi.TYPE_STRING, format='date'),
+            openapi.Parameter('date_field', openapi.IN_QUERY, type=openapi.TYPE_STRING, default='updated_at'),
+        ]
+    )
+    def get(self, request):
+        try:
+            start_date = _parse_date_only_start(request.GET.get('start_date'))
+            end_date = _parse_date_only_end(request.GET.get('end_date'))
+            date_field = request.GET.get('date_field', 'updated_at')
+
+            data = EnhancedDashboardService.get_service_type_counts(start_date=start_date, end_date=end_date, date_field=date_field)
+            return Response({'success': True, 'data': data})
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

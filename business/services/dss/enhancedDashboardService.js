@@ -77,6 +77,29 @@ export default {
     }
   },
 
+  // ==================== MODULE 4: SERVICE TYPE PIE ====================
+  
+  /**
+   * Get counts grouped by service type for pie chart
+   * @param {Object} params - { start_date?: 'YYYY-MM-DD', end_date?: 'YYYY-MM-DD', date_field?: 'updated_at' }
+   */
+  async getServiceTypeCounts(params = {}) {
+    try {
+      const response = await ApiService.get(`${BASE_URL}/service-types`, { params })
+      return response
+    } catch (error) {
+      console.error('❌ Error fetching service type counts:', error)
+      throw error
+    }
+  },
+
+  /**
+   * Alias kept for backward compatibility
+   */
+  async getServiceTypePie(params = {}) {
+    return this.getServiceTypeCounts(params)
+  },
+
   // ==================== COMBINED DASHBOARD ====================
   
   /**

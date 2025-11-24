@@ -27,6 +27,9 @@
 
     <!-- Module 3: Revenue Cost Profit -->
     <RevenueCostProfitChart ref="revenueChartRef" />
+
+    <!-- Module 4: Service Type Pie (new) -->
+    <ServiceTypePieChart ref="serviceTypeRef" />
   </div>
 </template>
 
@@ -36,12 +39,12 @@ import { DataBoard, Refresh, Timer, VideoPause } from '@element-plus/icons-vue'
 import PriorityOrdersTable from '~/components/enhanced-dashboard/PriorityOrdersTable.vue'
 import EmployeeKPITable from '~/components/enhanced-dashboard/EmployeeKPITable.vue'
 import RevenueCostProfitChart from '~/components/enhanced-dashboard/RevenueCostProfitChart.vue'
-
+import ServiceTypePieChart from '~/components/enhanced-dashboard/ServiceTypePieChart.vue'
 // Refs to child components
 const priorityOrdersRef = ref(null)
 const employeeKPIRef = ref(null)
 const revenueChartRef = ref(null)
-
+const serviceTypeRef = ref(null)
 // Data
 const autoRefresh = ref(true)
 const refreshing = ref(false)
@@ -70,11 +73,15 @@ const refreshAll = async () => {
       promises.push(revenueChartRef.value.fetchData())
     }
     
+    if (serviceTypeRef.value && serviceTypeRef.value.fetchData) {
+          promises.push(serviceTypeRef.value.fetchData())
+        }
+    
     await Promise.all(promises)
     
-    console.log('✅ All dashboard modules refreshed')
+    console.log(' All dashboard modules refreshed')
   } catch (error) {
-    console.error('❌ Error refreshing dashboard:', error)
+    console.error(' Error refreshing dashboard:', error)
   } finally {
     refreshing.value = false
   }
