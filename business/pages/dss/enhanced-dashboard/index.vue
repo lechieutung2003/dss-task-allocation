@@ -30,6 +30,9 @@
 
     <!-- Module 4: Service Type Pie (new) -->
     <ServiceTypePieChart ref="serviceTypeRef" />
+
+    <!-- Module 5: Service Status Pie -->
+    <ServiceStatusPieChart ref="serviceStatusRef" />
   </div>
 </template>
 
@@ -40,11 +43,13 @@ import PriorityOrdersTable from '~/components/enhanced-dashboard/PriorityOrdersT
 import EmployeeKPITable from '~/components/enhanced-dashboard/EmployeeKPITable.vue'
 import RevenueCostProfitChart from '~/components/enhanced-dashboard/RevenueCostProfitChart.vue'
 import ServiceTypePieChart from '~/components/enhanced-dashboard/ServiceTypePieChart.vue'
+import ServiceStatusPieChart from '~/components/enhanced-dashboard/ServiceStatusPieChart.vue'
 // Refs to child components
 const priorityOrdersRef = ref(null)
 const employeeKPIRef = ref(null)
 const revenueChartRef = ref(null)
 const serviceTypeRef = ref(null)
+const serviceStatusRef = ref(null)
 // Data
 const autoRefresh = ref(true)
 const refreshing = ref(false)
@@ -56,32 +61,14 @@ const toggleAutoRefresh = () => {
 
 const refreshAll = async () => {
   refreshing.value = true
-  
   try {
-    // Refresh all modules
     const promises = []
-    
-    if (priorityOrdersRef.value && priorityOrdersRef.value.fetchOrders) {
-      promises.push(priorityOrdersRef.value.fetchOrders())
-    }
-    
-    if (employeeKPIRef.value && employeeKPIRef.value.fetchEmployees) {
-      promises.push(employeeKPIRef.value.fetchEmployees())
-    }
-    
-    if (revenueChartRef.value && revenueChartRef.value.fetchData) {
-      promises.push(revenueChartRef.value.fetchData())
-    }
-    
-    if (serviceTypeRef.value && serviceTypeRef.value.fetchData) {
-          promises.push(serviceTypeRef.value.fetchData())
-        }
-    
+    if (priorityOrdersRef.value && priorityOrdersRef.value.fetchOrders) promises.push(priorityOrdersRef.value.fetchOrders())
+    if (employeeKPIRef.value && employeeKPIRef.value.fetchEmployees) promises.push(employeeKPIRef.value.fetchEmployees())
+    if (revenueChartRef.value && revenueChartRef.value.fetchData) promises.push(revenueChartRef.value.fetchData())
+    if (serviceTypeRef.value && serviceTypeRef.value.fetchData) promises.push(serviceTypeRef.value.fetchData())
+    if (serviceStatusRef.value && serviceStatusRef.value.fetchData) promises.push(serviceStatusRef.value.fetchData())
     await Promise.all(promises)
-    
-    console.log(' All dashboard modules refreshed')
-  } catch (error) {
-    console.error(' Error refreshing dashboard:', error)
   } finally {
     refreshing.value = false
   }

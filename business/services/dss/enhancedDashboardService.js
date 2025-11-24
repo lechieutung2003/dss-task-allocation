@@ -100,6 +100,24 @@ export default {
     return this.getServiceTypeCounts(params)
   },
 
+  // ==================== MODULE 5: SERVICE STATUS PIE ====================
+  /**
+   * Get counts grouped by order status (completed / rejected / other)
+   * params: { start_date?, end_date?, date_field?: 'updated_at' }
+   */
+  async getServiceStatusCounts(params = {}) {
+    try {
+      const response = await ApiService.get(`${BASE_URL}/service-status`, { params })
+      return response
+    } catch (error) {
+      console.error('❌ Error fetching service status counts:', error)
+      throw error
+    }
+  },
+  async getServiceStatusPie(params = {}) {
+    return this.getServiceStatusCounts(params)
+  },
+
   // ==================== COMBINED DASHBOARD ====================
   
   /**

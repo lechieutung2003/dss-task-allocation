@@ -2,12 +2,13 @@
   <el-card class="priority-orders-card">
     <template #header>
       <div class="card-header">
-        <h3>
-          <el-icon><Clock /></el-icon>
-          Đơn Hàng Ưu Tiên
-        </h3>
-        <el-tag :type="autoRefresh ? 'success' : 'info'" size="small">
-          {{ autoRefresh ? 'Auto-refresh: 30s' : 'Paused' }}
+        <div class="header-left">
+          <el-icon class="header-icon"><Clock /></el-icon>
+          <span class="header-title">Đơn Hàng Ưu Tiên</span>
+        </div>
+
+        <el-tag :type="autoRefresh ? 'success' : 'info'" effect="dark" size="small">
+          {{ autoRefresh ? 'Auto-refresh: 30s' : 'Tạm dừng' }}
         </el-tag>
       </div>
     </template>
@@ -16,78 +17,73 @@
       v-loading="loading"
       :data="orders"
       stripe
-      style="width: 100%"
+      class="custom-table"
       :row-class-name="getRowClass"
     >
       <el-table-column label="Mã đơn" prop="code" width="120" />
-      
-      <el-table-column label="Khách hàng" prop="customer_name" width="150" />
-      
-      <el-table-column label="Dịch vụ" prop="service_type" width="150" />
-      
-      <el-table-column label="Giờ còn lại" width="120">
+
+      <el-table-column label="Khách hàng" prop="customer_name" min-width="150" />
+
+      <el-table-column label="Dịch vụ" prop="service_type" min-width="150" />
+
+      <el-table-column label="Giờ còn lại" width="150">
         <template #default="{ row }">
-          <el-tag :type="getTimeBucketType(row.time_bucket)" size="small">
-            {{ row.hours_left }}h ({{ row.time_bucket }})
+          <el-tag class="time-badge" :type="getTimeBucketType(row.time_bucket)" effect="dark">
+            {{ row.hours_left }}h • {{ row.time_bucket }}
           </el-tag>
         </template>
       </el-table-column>
-      
-      <el-table-column label="Giá trị" width="130">
+
+      <el-table-column label="Giá trị" width="150">
         <template #default="{ row }">
-          {{ formatCurrency(row.price) }}
+          <span class="price">{{ formatCurrency(row.price) }}</span>
         </template>
       </el-table-column>
-      
-      <el-table-column label="Điểm ưu tiên" width="140">
+
+      <el-table-column label="Điểm ưu tiên" width="180">
         <template #default="{ row }">
           <div class="priority-score">
             <el-progress
               :percentage="row.priority_score * 100"
+              :stroke-width="10"
               :color="getPriorityColor(row.priority_score)"
-              :stroke-width="8"
+              class="progress-bar"
             />
             <span class="score-text">{{ row.priority_score }}</span>
           </div>
         </template>
       </el-table-column>
-      
+
       <el-table-column label="Hệ số" width="150">
         <template #default="{ row }">
           <div class="factors">
-            <span class="factor">⏰ {{ row.time_factor }}</span>
-            <span class="factor">💰 {{ row.price_factor }}</span>
+            <span class="factor-item">⏰ {{ row.time_factor }}</span>
+            <span class="factor-item">💰 {{ row.price_factor }}</span>
           </div>
         </template>
       </el-table-column>
-      
-      <el-table-column label="Trạng thái" width="120">
+
+      <el-table-column label="Trạng thái" width="130">
         <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)" size="small">
+          <el-tag :type="getStatusType(row.status)" effect="dark" size="small">
             {{ getStatusText(row.status) }}
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column label="Thao tác" width="180">
+      <el-table-column label="Thao tác" width="160">
         <template #default="{ row }">
-            <el-button
+          <el-button
             type="primary"
             size="small"
+            round
+            plain
             @click="goToDetail(row.order_id)"
-            >
+          >
             Xem chi tiết
-            </el-button>
-            <!-- <el-button
-            type="success"
-            size="small"
-            @click="goToAssign(row.order_id)"
-            style="margin-left: 8px"
-            >
-            Phân công
-            </el-button> -->
+          </el-button>
         </template>
-        </el-table-column>
+      </el-table-column>
     </el-table>
 
     <!-- Pagination -->
@@ -104,6 +100,7 @@
     </div>
   </el-card>
 </template>
+
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
@@ -250,57 +247,96 @@ onUnmounted(() => {
 
 <style scoped>
 .priority-orders-card {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
+  border-radius: 14px;
+  overflow: hidden;
 }
 
+/* --- CARD HEADER --- */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 6px 4px;
 }
 
-.card-header h3 {
+.header-left {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0;
-  font-size: 18px;
+}
+
+.header-icon {
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.header-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* --- TABLE --- */
+.custom-table {
+  border-radius: 10px;
+}
+
+.price {
+  font-weight: 600;
+  color: #333;
+}
+
+.time-badge {
   font-weight: 600;
 }
 
+/* --- PRIORITY SCORE --- */
 .priority-score {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .score-text {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
+  color: #444;
 }
 
+.progress-bar {
+  width: 110px;
+}
+
+/* --- FACTORS --- */
 .factors {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
-.factor {
-  font-size: 12px;
+.factor-item {
+  font-size: 12.5px;
   font-weight: 500;
+  background: #f4f6f9;
+  padding: 3px 6px;
+  border-radius: 6px;
 }
 
+/* --- ROW COLORS --- */
+:deep(.urgent-row) {
+  background: #fff1f0 !important;
+}
+
+:deep(.high-row) {
+  background: #fff7e6 !important;
+}
+
+/* --- PAGINATION --- */
 .pagination-container {
-  margin-top: 20px;
+  margin-top: 18px;
   display: flex;
   justify-content: center;
 }
 
-:deep(.urgent-row) {
-  background-color: #fef0f0 !important;
-}
-
-:deep(.high-row) {
-  background-color: #fdf6ec !important;
-}
 </style>

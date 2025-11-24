@@ -27,12 +27,12 @@
             style="width: 160px; margin-left: 10px"
             @change="handlePeriodChange"
           >
-            <el-option label="Theo tuần (7 cột)" value="week" />
-            <el-option label="Theo tháng (4 cột)" value="month" />
-            <el-option label="Theo năm (12 cột)" value="year" />
+            <el-option label="Theo tuần" value="week" />
+            <el-option label="Theo tháng" value="month" />
+            <el-option label="Theo năm" value="year" />
           </el-select>
           
-          <span style="margin-left: 10px; color: #606266; font-size: 14px">
+          <span style="margin-left: 10px; color: #ffffff  ; font-size: 14px">
             {{ anchorLabel }}
           </span>
         </div>
@@ -87,7 +87,7 @@
     </el-row>
 
     <!-- Data Table -->
-    <el-table
+    <!-- <el-table
       v-loading="loading"
       :data="tableData"
       stripe
@@ -130,7 +130,7 @@
           </el-tag>
         </template>
       </el-table-column>
-    </el-table>
+    </el-table> -->
   </el-card>
 </template>
 
@@ -444,60 +444,101 @@ watch(tableData, () => {
 
 <style scoped>
 .revenue-cost-profit-card {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  overflow: hidden;
 }
 
+/* =======================
+   HEADER
+======================= */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
+  padding: 6px 4px;
+  color: #ffffff;
 }
 
 .card-header h3 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 19px;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .filters {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  color: #ffffff;
 }
 
+/* =======================
+   CHART
+======================= */
 .chart-container {
-  height: 400px;
-  padding: 20px 0;
+  height: 380px;
+  padding: 18px 0;
 }
 
+/* =======================
+   SUMMARY
+======================= */
 .summary-stats {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #ebeef5;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e6e8eb;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: space-around;
 }
 
-.revenue-text {
-  color: #67c23a;
+.summary-stats div {
+  font-size: 15px;
   font-weight: 600;
+}
+
+/* Color tone ưu tiên dashboard mềm đẹp */
+.revenue-text {
+  color: #4caf50;
+  font-weight: 700;
 }
 
 .cost-text {
-  color: #e6a23c;
-  font-weight: 600;
+  color: #ff9800;
+  font-weight: 700;
 }
 
 .profit-positive {
-  color: #67c23a;
-  font-weight: 600;
+  color: #43a047;
+  font-weight: 700;
 }
 
 .profit-negative {
-  color: #f56c6c;
-  font-weight: 600;
+  color: #e53935;
+  font-weight: 700;
 }
+
+/* =======================
+   RESPONSIVE
+======================= */
+@media (max-width: 768px) {
+  .chart-container {
+    height: 320px;
+  }
+
+  .summary-stats {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+}
+
 </style>

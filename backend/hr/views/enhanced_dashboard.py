@@ -376,3 +376,23 @@ class ServiceTypeCountsView(APIView):
         except Exception as e:
             import traceback; traceback.print_exc()
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ServiceStatusCountsView(APIView):
+    """
+    API: trả về số lượng orders theo status (completed / rejected / other)
+    Query params: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), date_field (default 'updated_at')
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            start_date = _parse_date_only_start(request.GET.get('start_date'))
+            end_date = _parse_date_only_end(request.GET.get('end_date'))
+            date_field = request.GET.get('date_field', 'updated_at')
+
+            data = EnhancedDashboardService.get_service_status_counts(start_date=start_date, end_date=end_date, date_field=date_field)
+            return Response({'success': True, 'data': data})
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
