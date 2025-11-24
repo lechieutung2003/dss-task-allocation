@@ -7,8 +7,38 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.utils.dateparse import parse_datetime
 from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
+
+def _parse_date_only_start(dt_str):
+    if not dt_str:
+        return None
+    # try full datetime first
+    dt = parse_datetime(dt_str)
+    if dt:
+        return timezone.make_aware(dt) if timezone.is_naive(dt) else dt
+    # fallback treat as YYYY-MM-DD
+    try:
+        d = datetime.strptime(dt_str, "%Y-%m-%d").date()
+        dt0 = datetime.combine(d, time.min)  # 00:00:00
+        return timezone.make_aware(dt0)
+    except Exception:
+        return None
+
+def _parse_date_only_end(dt_str):
+    if not dt_str:
+        return None
+    dt = parse_datetime(dt_str)
+    if dt:
+        return timezone.make_aware(dt) if timezone.is_naive(dt) else dt
+    try:
+        d = datetime.strptime(dt_str, "%Y-%m-%d").date()
+        # end of day inclusive
+        dt1 = datetime.combine(d, time(23,59,59,999999))
+        return timezone.make_aware(dt1)
+    except Exception:
+        return None
 
 
 
@@ -201,43 +231,54 @@ class RevenueCostProfitView(APIView):
         ],
         responses={200: RevenueCostProfitSerializer(many=True)}
     )
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         try:
-            # Get filter params
-            filter_type = request.query_params.get('filter', '30days')
-            period = request.query_params.get('period', 'day')
-            
-            # Calculate date range
-            end_date = timezone.now()
-            
-            if filter_type == '7days':
-                start_date = end_date - timedelta(days=7)
-            elif filter_type == '30days':
-                start_date = end_date - timedelta(days=30)
-            elif filter_type == 'quarter':
-                start_date = end_date - timedelta(days=90)
-            elif filter_type == 'custom':
-                # Custom date range
-                start_date_str = request.query_params.get('start_date')
-                end_date_str = request.query_params.get('end_date')
-                
-                if start_date_str:
-                    start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-                    start_date = timezone.make_aware(start_date)
+            period = request.GET.get('period', 'day')
+            filter_param = request.GET.get('filter', '')  # keep for meta / fallback
+
+            # Try parse explicit ISO start_date / end_date from query params
+            def _parse_iso(dt_str):
+                if not dt_str:
+                    return None
+                dt = parse_datetime(dt_str)
+                if dt is None:
+                    try:
+                        dt = datetime.fromisoformat(dt_str)
+                    except Exception:
+                        return None
+                if timezone.is_naive(dt):
+                    dt = timezone.make_aware(dt)
+                return dt
+
+            start_date = _parse_date_only_start(request.GET.get('start_date'))
+            end_date = _parse_date_only_end(request.GET.get('end_date'))
+
+            # If not provided, fallback to legacy filter param (for backward compatibility)
+            if not start_date or not end_date:
+                now = timezone.now()
+                if filter_param == '7days':
+                    end_date = now
+                    start_date = now - timedelta(days=7)
+                elif filter_param == '30days':
+                    end_date = now
+                    start_date = now - timedelta(days=30)
+                elif filter_param == 'quarter':
+                    end_date = now
+                    start_date = now - timedelta(days=90)
                 else:
-                    start_date = end_date - timedelta(days=30)
-                
-                if end_date_str:
-                    end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-                    end_date = timezone.make_aware(end_date)
-            else:
-                start_date = end_date - timedelta(days=30)
-            
-            # Get data
+                    # default last 30 days
+                    end_date = end_date or now
+                    start_date = start_date or (end_date - timedelta(days=30))
+
+            # parse date_field from querystring (default updated_at)
+            date_field = request.GET.get('date_field', 'updated_at')
+
+            # Call service with explicit start/end and date_field
             data = EnhancedDashboardService.calculate_revenue_cost_profit(
                 start_date=start_date,
                 end_date=end_date,
-                period=period
+                period=period,
+                date_field=date_field
             )
             
             serializer = RevenueCostProfitSerializer(data, many=True)
@@ -246,15 +287,16 @@ class RevenueCostProfitView(APIView):
                 'success': True,
                 'data': serializer.data,
                 'meta': {
-                    'filter': filter_type,
+                    'filter': filter_param,
                     'period': period,
-                    'start_date': start_date.date().isoformat(),
-                    'end_date': end_date.date().isoformat(),
+                    'start_date': start_date.date().isoformat() if start_date else None,
+                    'end_date': end_date.date().isoformat() if end_date else None,
                     'total_records': len(data)
                 }
             })
-            
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return Response({
                 'success': False,
                 'error': str(e)
