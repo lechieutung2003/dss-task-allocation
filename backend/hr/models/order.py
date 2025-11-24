@@ -29,9 +29,12 @@ class Order(TimeStampedModel):
     )
     
     created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = "hr_order"
+    employees = models.ManyToManyField(
+    'businesses.Employee',
+    related_name='orders',
+    blank=True,
+    help_text="Danh sách nhân viên thực hiện đơn hàng"
+    )
 
 class Assignment(TimeStampedModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)

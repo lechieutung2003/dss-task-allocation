@@ -14,85 +14,6 @@
       <canvas ref="chartRef"></canvas>
     </div>
 
-    <!-- KPI Table -->
-    <el-table
-      v-loading="loading"
-      :data="employees"
-      stripe
-      style="width: 100%; margin-top: 20px"
-      @row-click="handleRowClick"
-      :row-style="{ cursor: 'pointer' }"
-    >
-      <el-table-column label="STT" type="index" width="60" />
-      
-      <el-table-column label="Nhân viên" width="200">
-        <template #default="{ row }">
-          <div class="employee-info">
-            <strong>{{ row.name }}</strong>
-            <span class="email">{{ row.email }}</span>
-          </div>
-        </template>
-      </el-table-column>
-      
-      <el-table-column label="Khu vực" prop="area" width="120" />
-      
-      <el-table-column label="Giờ làm việc" width="130">
-        <template #default="{ row }">
-          <el-tag type="info" size="small">
-            {{ row.total_worked_hours }}h
-          </el-tag>
-        </template>
-      </el-table-column>
-      
-      <el-table-column label="Điểm giờ làm" width="130">
-        <template #default="{ row }">
-          {{ row.work_hour_score }}
-        </template>
-      </el-table-column>
-      
-      <el-table-column label="Thưởng hoàn thành sớm" width="160">
-        <template #default="{ row }">
-          <el-tag :type="row.early_bonus > 0 ? 'success' : ''" size="small">
-            +{{ row.early_bonus }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      
-      <el-table-column label="KPI Score" width="150">
-        <template #default="{ row }">
-          <div class="kpi-score">
-            <el-progress
-              :percentage="Math.min(row.kpi_score * 50, 100)"
-              :color="getKPIColor(row.kpi_score)"
-              :stroke-width="8"
-            />
-            <strong class="score-value">{{ row.kpi_score }}</strong>
-          </div>
-        </template>
-      </el-table-column>
-      
-      <el-table-column label="Đơn hoàn thành" width="130">
-        <template #default="{ row }">
-          <el-tag type="success" size="small">
-            {{ row.completed_orders }}
-          </el-tag>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- Pagination -->
-    <div class="pagination-container">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[5, 10]"
-        :total="totalRecords"
-        layout="total, sizes, prev, pager, next"
-        @current-change="handlePageChange"
-        @size-change="handleSizeChange"
-      />
-    </div>
-
     <!-- Employee Detail Dialog -->
     <el-dialog
       v-model="dialogVisible"
@@ -238,9 +159,17 @@ const handleRowClick = async (row) => {
   detailLoading.value = true
   
   try {
+    console.log('🔍 Fetching detail for employee:', row.employee_id)
     const response = await enhancedDashboardService.getEmployeeKPIDetail(row.employee_id)
+    console.log('📦 Response:', response)
+    console.log('✅ Response.success:', response.success)
+    console.log('📊 Response.data:', response.data)
+    
     if (response.success) {
       employeeDetail.value = response.data
+      console.log('✅ Employee detail set:', employeeDetail.value)
+    } else {
+      console.error('❌ Response success is false')
     }
   } catch (error) {
     console.error('❌ Error loading employee detail:', error)
@@ -250,10 +179,10 @@ const handleRowClick = async (row) => {
 }
 
 const getKPIColor = (score) => {
-  if (score >= 1.5) return '#67c23a'
-  if (score >= 1.0) return '#409eff'
-  if (score >= 0.5) return '#e6a23c'
-  return '#f56c6c'
+  if (score < 20) return '#f56c6c'
+  if (score < 40) return '#e6a23c'
+  if (score < 60) return '#409eff'
+  return '#67c23a'
 }
 
 const formatCurrency = (value) => {
@@ -278,7 +207,7 @@ const updateChart = () => {
   }
   
   const ctx = chartRef.value.getContext('2d')
-  
+
   chartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -290,34 +219,71 @@ const updateChart = () => {
         borderRadius: 5
       }]
     },
+    // thêm plugin tùy chỉnh để vẽ đường mốc và set x axis max = 100
+    plugins: [
+      {
+        id: 'thresholdLine',
+        beforeDraw(chart) {
+          const threshold = 60
+          const xScale = chart.scales.x
+          if (!xScale) return
+          const x = xScale.getPixelForValue(threshold)
+          const ctx = chart.ctx
+          ctx.save()
+          ctx.beginPath()
+          ctx.moveTo(x, chart.chartArea.top)
+          ctx.lineTo(x, chart.chartArea.bottom)
+          ctx.lineWidth = 2
+          ctx.strokeStyle = 'rgba(0,0,0,0.6)' // màu gạch
+          ctx.setLineDash([6, 4])
+          ctx.stroke()
+          ctx.restore()
+        }
+      }
+    ],
     options: {
-      indexAxis: 'y', // Horizontal bar
+      indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         title: {
           display: true,
           text: 'KPI Score - Top 10 Nhân Viên',
-          font: {
-            size: 16,
-            weight: 'bold'
+          font: { size: 16, weight: 'bold' }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const idx = context.dataIndex
+              const emp = employees.value[idx] || {}
+              const hours = Number(emp.total_worked_hours || 0)
+              const orders = Number(emp.completed_orders || 0)
+              const pct = Math.min((hours / 48) * 100, 100)
+              const points = hours + orders
+              const kpiTarget_h = 50
+              const need = Math.max(0, kpiTarget_h - points)
+
+              return [
+                `Đã làm ${pct.toFixed(1)}% số giờ yêu cầu`,
+                `Đơn hoàn thành: ${orders}`,
+                `KPI hiện tại: ${points.toFixed(1)} điểm`,
+                need > 0 ? `Cần thêm: ${need.toFixed(1)}h để đạt ${kpiTarget_h} điểm` : 'Đã đạt KPI'
+              ]
+            }
           }
         }
       },
       scales: {
         x: {
           beginAtZero: true,
-          title: {
-            display: true,
-            text: 'KPI Score'
-          }
+          max: 100, // trục ngang kéo dài tới 100
+          title: { display: true, text: 'KPI Score' }
         }
       }
     }
   })
+
 }
 
 // Lifecycle

@@ -5,7 +5,7 @@ from businesses.serializers.employee import EmployeeShortSerializer
 from businesses.serializers.employee import EmployeeShortSerializer
 from .customer import CustomerSerializer, ServiceTypeSerializer
 from django.utils.timezone import localtime
-
+from businesses.models.employee import Employee
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
@@ -21,7 +21,7 @@ class ServiceTypeSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     customer_details = CustomerSerializer(source='customer', read_only=True)
     service_details = ServiceTypeSerializer(source='service_type', read_only=True)
-    
+    employee = serializers.PrimaryKeyRelatedField(queryset=Employee.objects.all(), required=False, allow_null=True)
     class Meta:
         model = Order
         fields = '__all__'

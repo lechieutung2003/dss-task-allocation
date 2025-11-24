@@ -78,14 +78,14 @@
             >
             Xem chi tiết
             </el-button>
-            <el-button
+            <!-- <el-button
             type="success"
             size="small"
             @click="goToAssign(row.order_id)"
             style="margin-left: 8px"
             >
             Phân công
-            </el-button>
+            </el-button> -->
         </template>
         </el-table-column>
     </el-table>
@@ -133,9 +133,9 @@ const goToDetail = (orderId) => {
   router.push(`/dss/orders/${orderId}`)
 }
 
-const goToAssign = (orderId) => {
-  router.push(`/dss/orders/${orderId}?tab=assignment`)
-}
+// const goToAssign = (orderId) => {
+//   router.push(`/dss/orders/${orderId}?tab=assignment`)
+// }
 // Methods
 const fetchOrders = async () => {
   loading.value = true

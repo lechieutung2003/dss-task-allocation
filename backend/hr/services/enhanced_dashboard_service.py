@@ -65,7 +65,7 @@ class EnhancedDashboardService:
             time_factor = 0
 
         # Price Factor
-        ref_price = 2000000
+        ref_price = 2000
         price = float(order.cost_confirm or 0)
         price_factor = 0.3 * min(price / ref_price, 1)
 
@@ -75,7 +75,7 @@ class EnhancedDashboardService:
         return {
             'time_factor': round(time_factor, 3),
             'price_factor': round(price_factor, 3),
-            'priority_score': priority_score,
+            'priority_score': priority_score,                      
             'hours_left': hours_left_str,  # Trả về dạng "xh ym"
             'time_bucket': EnhancedDashboardService._get_time_bucket(hours_left)
         }
@@ -143,138 +143,110 @@ class EnhancedDashboardService:
         return result[:10]
     
     # ==================== MODULE 2: EMPLOYEE KPI ====================
-    @staticmethod
-    def get_real_employees():
-        """
-        Lấy danh sách nhân viên thực sự:
-        - user.is_staff = True
-        - user.is_superuser = False
-        - employee.status = 1 (active)
-        """
-        return Employee.objects.filter(
-            status=1,
-            user__is_staff=True,
-            user__is_superuser=False
-        )
+
+    # @staticmethod
+    # def calculate_employee_kpi_enhanced() -> List[Dict[str, Any]]:
+    #     """
+    #     Tính KPI nhân viên dựa trên dữ liệu tổng hợp ở bảng Employee.
+    #     """
+    #     try:
+    #         employees = Employee.objects.filter(user__is_staff=True, user__is_superuser=False)
+    #     except Exception as e:
+    #         print(f"❌ Error filtering employees: {e}")
+    #         return []
+
+    #     result = []
+    #     for emp in employees:
+    #         total_worked_hours = float(emp.total_hours_worked or 0)
+    #         order_count = int(emp.completed_orders_count or 0)
+    #         early_bonus = 0  # Nếu muốn tính, cần lấy từ Order hoặc lưu riêng
+
+    #         daily_standard = 8.0
+    #         work_hour_score = min(total_worked_hours / daily_standard, 1) if daily_standard > 0 else 0
+    #         kpi_score = round(work_hour_score + early_bonus, 3)
+
+    #         try:
+    #             result.append({
+    #                 'employee_id': emp.id,
+    #                 'name': f"{emp.first_name} {emp.last_name}".strip() or 'Unknown',
+    #                 'email': emp.work_mail or emp.personal_mail or 'N/A',
+    #                 'total_worked_hours': round(total_worked_hours, 2),
+    #                 'work_hour_score': round(work_hour_score, 3),
+    #                 'early_bonus': round(early_bonus, 3),
+    #                 'kpi_score': kpi_score,
+    #                 'completed_orders': order_count,
+    #                 'area': getattr(emp, 'area', 'N/A') or 'N/A',
+    #             })
+    #         except Exception as e:
+    #             print(f"❌ Error appending employee {emp.id} to result: {e}")
+    #             continue
+
+    #     result.sort(key=lambda x: x['kpi_score'], reverse=True)
+    #     return result
+    
     
     @staticmethod
     def calculate_employee_kpi_enhanced() -> List[Dict[str, Any]]:
         """
-        Tính KPI nhân viên dựa trên:
-        - Daily standard = 8 giờ
-        - WorkHourScore = min(total_worked_hours / 8, 1)
-        - Early Completion Bonus = (expected_end - actual_end) / expected_duration
-        - KPI = WorkHourScore + EarlyBonus
-        
-        Chỉ tính cho nhân viên: is_staff=True, is_superuser=False
-        Dữ liệu từ orders có status='completed'
+        Tính KPI nhân viên: KPI = tổng số giờ làm + số đơn hoàn thành.
         """
         try:
-            # Filter active employees (status=1 means Active - Working Hours)
-            employees = Employee.objects.filter(status=1)
+            employees = Employee.objects.filter(user__is_staff=True, user__is_superuser=False)
         except Exception as e:
             print(f"❌ Error filtering employees: {e}")
             return []
-        
+
         result = []
         for emp in employees:
             try:
-                # Lấy các assignments đã hoàn thành
-                completed_assignments = Assignment.objects.filter(
-                    employee=emp,
-                    order__status='completed',
-                    work_hours__isnull=False,
-                    work_hours__gt=0
-                ).select_related('order')
-            except Exception as e:
-                print(f"❌ Error fetching assignments for employee {emp.id}: {e}")
-                continue
-            
-            total_worked_hours = 0
-            early_bonus = 0
-            order_count = 0
-            
-            for assignment in completed_assignments:
-                order = assignment.order
-                worked_hours = float(assignment.work_hours or 0)
-                total_worked_hours += worked_hours
-                
-                # Tính Early Completion Bonus
-                # actual_end = order.updated_at (thời gian cập nhật completed)
-                # expected_end = order.preferred_end_time
-                if order.updated_at and order.preferred_end_time:
-                    actual_end = order.updated_at
-                    expected_end = order.preferred_end_time
-                    
-                    # Đảm bảo timezone-aware
-                    if timezone.is_naive(actual_end):
-                        actual_end = timezone.make_aware(actual_end)
-                    if timezone.is_naive(expected_end):
-                        expected_end = timezone.make_aware(expected_end)
-                    
-                    if actual_end < expected_end:
-                        expected_duration = (expected_end - order.preferred_start_time).total_seconds() / 3600
-                        time_saved = (expected_end - actual_end).total_seconds() / 3600
-                        
-                        if expected_duration > 0:
-                            early_bonus += time_saved / expected_duration
-                
-                order_count += 1
-            
-            # WorkHourScore
-            daily_standard = 8.0
-            work_hour_score = min(total_worked_hours / daily_standard, 1) if daily_standard > 0 else 0
-            
-            # KPI Total
-            kpi_score = round(work_hour_score + early_bonus, 3)
-            
-            try:
+                total_worked_hours = float(emp.total_hours_worked or 0)
+                order_count = int(emp.completed_orders_count or 0)
+                kpi_score = total_worked_hours + order_count
+
                 result.append({
-                    'employee_id': emp.id,
-                    'name': f"{emp.first_name} {emp.last_name}".strip() or 'Unknown',
-                    'email': emp.work_mail or emp.personal_mail or 'N/A',
+                    'employee_id': str(emp.id),  # ép kiểu về string để an toàn
+                    'name': f"{getattr(emp, 'first_name', '')} {getattr(emp, 'last_name', '')}".strip() or 'Unknown',
+                    'email': getattr(emp, 'work_mail', '') or getattr(emp, 'personal_mail', '') or 'N/A',
                     'total_worked_hours': round(total_worked_hours, 2),
-                    'work_hour_score': round(work_hour_score, 3),
-                    'early_bonus': round(early_bonus, 3),
-                    'kpi_score': kpi_score,
+                    'work_hour_score': round(total_worked_hours, 2),  # Same as total_worked_hours
+                    'early_bonus': 0.0,  # No bonus in simplified version
                     'completed_orders': order_count,
-                    'area': getattr(emp, 'area', 'N/A') or 'N/A',
+                    'area': 'N/A',  # Add area field if available
+                    'kpi_score': round(kpi_score, 2),
                 })
             except Exception as e:
-                print(f"❌ Error appending employee {emp.id} to result: {e}")
+                print(f"❌ Error appending employee {getattr(emp, 'id', None)} to result: {e}")
+                import traceback
+                traceback.print_exc()
                 continue
-        
-        # Sort by KPI descending, lấy top 10
+
         result.sort(key=lambda x: x['kpi_score'], reverse=True)
-        
-        return result[:10]
+        return result
     
     @staticmethod
     def get_employee_kpi_detail(employee_id: int) -> Dict[str, Any]:
         """
         Chi tiết KPI của 1 nhân viên (cho popup)
+        Lấy từ bảng Employee (total_hours_worked, completed_orders_count) 
+        và từ bảng trung gian Order.employees để hiển thị chi tiết các đơn
         """
         try:
             emp = Employee.objects.get(id=employee_id)
         except Employee.DoesNotExist:
             return None
         
-        # Lấy tất cả orders đã hoàn thành
-        completed_assignments = Assignment.objects.filter(
-            employee=emp,
-            order__status='completed'
-        ).select_related('order').order_by('-order__updated_at')
+        # Lấy tổng số giờ và số đơn từ bảng Employee
+        total_worked_hours = float(emp.total_hours_worked or 0)
+        completed_orders_count = int(emp.completed_orders_count or 0)
+        
+        # Lấy danh sách các đơn đã hoàn thành từ bảng trung gian Order.employees
+        completed_orders = emp.orders.filter(status='completed').order_by('-updated_at')
         
         orders_detail = []
-        total_worked_hours = 0
         early_bonus_total = 0
         
-        for assignment in completed_assignments:
-            order = assignment.order
-            worked_hours = float(assignment.work_hours or 0)
-            total_worked_hours += worked_hours
-            
-            # Early bonus per order
+        for order in completed_orders:
+            # Tính early bonus per order
             early_bonus_order = 0
             if order.updated_at and order.preferred_end_time:
                 actual_end = order.updated_at
@@ -286,39 +258,52 @@ class EnhancedDashboardService:
                     expected_end = timezone.make_aware(expected_end)
                 
                 if actual_end < expected_end:
-                    expected_duration = (expected_end - order.preferred_start_time).total_seconds() / 3600
-                    time_saved = (expected_end - actual_end).total_seconds() / 3600
-                    
-                    if expected_duration > 0:
-                        early_bonus_order = time_saved / expected_duration
-                        early_bonus_total += early_bonus_order
+                    if order.preferred_start_time:
+                        expected_duration = (expected_end - order.preferred_start_time).total_seconds() / 3600
+                        time_saved = (expected_end - actual_end).total_seconds() / 3600
+                        
+                        if expected_duration > 0:
+                            early_bonus_order = time_saved / expected_duration
+                            early_bonus_total += early_bonus_order
+            
+            # Tính worked_hours: min của estimated_hours và requested_hours
+            estimated_h = float(order.estimated_hours or 0)
+            requested_h = float(order.requested_hours or 0)
+            
+            if estimated_h > 0 and requested_h > 0:
+                worked_hours = min(estimated_h, requested_h)
+            elif estimated_h > 0:
+                worked_hours = estimated_h
+            elif requested_h > 0:
+                worked_hours = requested_h
+            else:
+                worked_hours = 0
             
             orders_detail.append({
                 'order_id': str(order.id),
                 'code': f'ORD-{str(order.id)[:8]}',
-                'service_type': order.service_type.name,
+                'service_type': order.service_type.name if order.service_type else 'N/A',
                 'start_time': order.preferred_start_time,
                 'end_time': order.preferred_end_time,
                 'actual_end': order.updated_at,
-                'worked_hours': worked_hours,
+                'worked_hours': round(worked_hours, 2),
                 'early_bonus': round(early_bonus_order, 3),
-                'cost': float(assignment.cost or 0),
+                'cost': float(order.cost_confirm or 0),
             })
         
-        daily_standard = 8.0
-        work_hour_score = min(total_worked_hours / daily_standard, 1)
-        kpi_score = work_hour_score + early_bonus_total
+        # Tính KPI score: total_worked_hours + completed_orders_count
+        kpi_score = total_worked_hours + completed_orders_count
         
         return {
-            'employee_id': emp.id,
-            'name': f"{emp.first_name} {emp.last_name}".strip(),
-            'email': emp.email,
+            'employee_id': str(emp.id),
+            'name': f"{emp.first_name} {emp.last_name}".strip() or 'Unknown',
+            'email': emp.work_mail or emp.personal_mail or 'N/A',
             'area': getattr(emp, 'area', 'N/A') or 'N/A',
             'total_worked_hours': round(total_worked_hours, 2),
-            'work_hour_score': round(work_hour_score, 3),
+            'work_hour_score': round(total_worked_hours, 2),
             'early_bonus_total': round(early_bonus_total, 3),
-            'kpi_score': round(kpi_score, 3),
-            'completed_orders_count': len(orders_detail),
+            'kpi_score': round(kpi_score, 2),
+            'completed_orders_count': completed_orders_count,
             'orders_detail': orders_detail
         }
     
