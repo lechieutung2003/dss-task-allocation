@@ -82,13 +82,6 @@ urlpatterns = [
     path('api/v1/customer/orders/<uuid:order_id>/feedback', UpdateOrderFeedbackAPIView.as_view(), name='update-order-feedback'),
     path('api/v1/customer/create-order', SimpleCreateOrderAPIView.as_view(), name='simple-create-order'),
     
-    # Dashboard API endpoints
-    path('api/v1/dashboard/overview', DashboardOverviewView.as_view(), name='dashboard-overview'),
-    path('api/v1/dashboard/priority-orders', PriorityOrdersView.as_view(), name='dashboard-priority-orders'),
-    path('api/v1/dashboard/employee-kpi', EmployeeKPIView.as_view(), name='dashboard-employee-kpi'),
-    path('api/v1/dashboard/daily-summary', DailySummaryView.as_view(), name='dashboard-daily-summary'),
-    path('api/v1/dashboard/full', DashboardFullView.as_view(), name='dashboard-full'),
-    
     # Enhanced Dashboard API endpoints (3 modules)
     path('api/v1/enhanced-dashboard/priority-orders', PriorityOrdersEnhancedView.as_view(), name='enhanced-priority-orders'),
     path('api/v1/enhanced-dashboard/employee-kpi', EmployeeKPIEnhancedView.as_view(), name='enhanced-employee-kpi'),
