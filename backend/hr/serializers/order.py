@@ -4,7 +4,8 @@ from ..models.customer import Customer, ServiceType
 from businesses.serializers.employee import EmployeeShortSerializer
 from businesses.serializers.employee import EmployeeShortSerializer
 from .customer import CustomerSerializer, ServiceTypeSerializer
-
+from django.utils.timezone import localtime
+from businesses.models.employee import Employee
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
@@ -15,10 +16,12 @@ class ServiceTypeSerializer(serializers.ModelSerializer):
         model = ServiceType
         fields = '__all__'
 
+
+
 class OrderSerializer(serializers.ModelSerializer):
     customer_details = CustomerSerializer(source='customer', read_only=True)
     service_details = ServiceTypeSerializer(source='service_type', read_only=True)
-    
+    employee = serializers.PrimaryKeyRelatedField(queryset=Employee.objects.all(), required=False, allow_null=True)
     class Meta:
         model = Order
         fields = '__all__'
@@ -27,17 +30,18 @@ class OrderSerializer(serializers.ModelSerializer):
         try:
             representation = super().to_representation(instance)
             representation['customer_name'] = f"{instance.customer.name}" if instance.customer else ""
+            # Chuyển đổi thời gian sang giờ địa phương
+            representation['created_at_local'] = localtime(instance.created_at).strftime('%Y-%m-%d %H:%M:%S')
+            representation['updated_at_local'] = localtime(instance.updated_at).strftime('%Y-%m-%d %H:%M:%S')
             return representation
         except ValueError as e:
             if "badly formed hexadecimal UUID string" in str(e):
                 print(f"Lỗi UUID với order ID: {instance.id}")
-                # Trả về một representation tạm thời
                 return {
                     'id': str(instance.id),
                     'error': 'Dữ liệu không hợp lệ'
                 }
             raise e
-
 class OrderEmployeeSerializer(serializers.ModelSerializer):
     """Serializer cho employee chỉ có thể edit status"""
     

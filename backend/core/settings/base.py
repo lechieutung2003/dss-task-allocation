@@ -134,7 +134,8 @@ ALLOWED_HOSTS = env.list(
         DEFAULT_HOST.split(':')[0],
         BUSINESS_HOST.split(':')[0],
         DOCS_HOST.split(':')[0],
-        'host.docker.internal'
+        'host.docker.internal',
+        '10.0.2.2'
     ]
 )
 

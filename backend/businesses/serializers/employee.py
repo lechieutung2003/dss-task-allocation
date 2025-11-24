@@ -3,6 +3,7 @@ from rest_framework.fields import UUIDField
 from rest_framework.exceptions import ValidationError
 from datetime import datetime, time
 from django.utils import timezone
+from django.utils.timezone import localtime
 import pytz
 from base.serializers import WritableNestedSerializer
 from ..models import Employee
@@ -121,10 +122,10 @@ class EmployeeSerializer(WritableNestedSerializer):
             
             # Get current time in Vietnam timezone
             try:
-                vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
-                current_time = timezone.now().astimezone(vietnam_tz).time()
+                vietnam_tz = pytz.localtime('Asia/Ho_Chi_Minh')
+                current_time = localtime.now().aslocaltime(vietnam_tz).time()
             except Exception:
-                current_time = timezone.now().time()
+                current_time = localtime.now().time()
             
             start_time = obj.working_start_time
             end_time = obj.working_end_time

@@ -23,11 +23,30 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 
+# class SimpleCreateOrderAPIView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def post(self, request):
+#         serializer = OrderSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class SimpleCreateOrderAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        serializer = OrderSerializer(data=request.data)
+        # Nếu frontend truyền employee_id, bạn có thể lấy và truyền vào serializer
+        data = request.data.copy()
+        employee_ids = data.get('employees')
+        if employee_ids:
+            from businesses.models.employee import Employee
+            try:
+                employees = Employee.objects.filter(id__in=employee_ids)
+                data['employees'] = [employee.id for employee in employees]
+            except Employee.DoesNotExist:
+                return Response({"detail": "Nhân viên không tồn tại"}, status=400)
+        serializer = OrderSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

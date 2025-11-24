@@ -16,7 +16,7 @@
                 class="btn-cancel-order"
                 v-if="order && order.status === 'pending'"
               >
-                <span class="icon">🚫</span>
+                <span class="icon"></span>
                 {{ t('cancel_order_button') }}
               </button>
             </div>

@@ -114,32 +114,74 @@ class OrderViewSet(BaseViewSet):
         
         return super().get_permissions()
 
+    # @action(methods=[Http.HTTP_GET, Http.HTTP_POST], detail=True, url_path="assignments")
+    # def assignments(self, request, pk=None):
+    #     order = self.get_object()
+        
+    #     if request.method == 'GET':
+    #         assignments = Assignment.objects.filter(order=order)
+    #         serializer = AssignmentSerializer(assignments, many=True)
+    #         return Response(serializer.data)
+            
+    #     elif request.method == 'POST':
+    #         created_assignments = []
+    #         print("Received data:", request.data)  # Thêm log để debug
+            
+    #         for assignment_data in request.data:
+    #             assignment_data['order'] = order.id
+    #             serializer = AssignmentSerializer(data=assignment_data)
+    #             print("Validating data:", assignment_data)  # Thêm log để debug
+                
+    #             if serializer.is_valid():
+    #                 assignment = serializer.save()
+    #                 employee = assignment.employee
+    #                 order.employees.add(employee)
+    #                 order.save()
+    #                 employee.status = EmployeeWorkingStatus.INACTIVE
+    #                 employee.save()
+    #                 created_assignments.append(assignment)
+    #             else:
+    #                 print("Validation errors:", serializer.errors)  # Thêm log để debug
+    #                 return Response(
+    #                     {
+    #                         "detail": "Dữ liệu không hợp lệ",
+    #                         "errors": serializer.errors
+    #                     }, 
+    #                     status=status.HTTP_400_BAD_REQUEST
+    #                 )
+            
+    #         result_serializer = AssignmentSerializer(created_assignments, many=True)
+    #         return Response(result_serializer.data, status=status.HTTP_201_CREATED)
+    
     @action(methods=[Http.HTTP_GET, Http.HTTP_POST], detail=True, url_path="assignments")
     def assignments(self, request, pk=None):
         order = self.get_object()
-        
         if request.method == 'GET':
             assignments = Assignment.objects.filter(order=order)
             serializer = AssignmentSerializer(assignments, many=True)
             return Response(serializer.data)
-            
         elif request.method == 'POST':
             created_assignments = []
-            print("Received data:", request.data)  # Thêm log để debug
-            
+            print("Received data:", request.data)
             for assignment_data in request.data:
                 assignment_data['order'] = order.id
+
+                # Lấy min giữa requested_hours và estimated_hours
+                min_hours = min(float(order.requested_hours), float(order.estimated_hours))
+                assignment_data['work_hours'] = min_hours
+
                 serializer = AssignmentSerializer(data=assignment_data)
-                print("Validating data:", assignment_data)  # Thêm log để debug
-                
+                print("Validating data:", assignment_data)
                 if serializer.is_valid():
                     assignment = serializer.save()
                     employee = assignment.employee
+                    order.employees.add(employee)
+                    order.save()
                     employee.status = EmployeeWorkingStatus.INACTIVE
                     employee.save()
                     created_assignments.append(assignment)
                 else:
-                    print("Validation errors:", serializer.errors)  # Thêm log để debug
+                    print("Validation errors:", serializer.errors)
                     return Response(
                         {
                             "detail": "Dữ liệu không hợp lệ",
@@ -147,7 +189,6 @@ class OrderViewSet(BaseViewSet):
                         }, 
                         status=status.HTTP_400_BAD_REQUEST
                     )
-            
             result_serializer = AssignmentSerializer(created_assignments, many=True)
             return Response(result_serializer.data, status=status.HTTP_201_CREATED)
         
@@ -220,19 +261,19 @@ class OrderViewSet(BaseViewSet):
     def complete_order(self, request, pk=None):
         order = self.get_object()
         print(f"Completing order {order.id}")
-        requested_hours = Decimal(str(order.requested_hours))  # Sửa ở đây
-        print(f"Requested hours: {requested_hours}")
+        min_hours = min(float(order.requested_hours), float(order.estimated_hours))
+        min_hours = Decimal(str(min_hours))
+        print(f"Min hours: {min_hours}")
         assignments = Assignment.objects.filter(order=order)
         print(f"Found {assignments.count()} assignments")
         for assignment in assignments:
             employee = assignment.employee
-            employee.total_hours_worked = (employee.total_hours_worked or Decimal('0')) + requested_hours
+            employee.total_hours_worked = (employee.total_hours_worked or Decimal('0')) + min_hours
             employee.completed_orders_count = (employee.completed_orders_count or 0) + 1
             employee.status = EmployeeWorkingStatus.ACTIVE
             employee.save()
         assignments.delete()
         return Response({"detail": "Đã hoàn thành đơn hàng và cập nhật nhân viên."}, status=status.HTTP_200_OK)
-    
 
 class AssignmentViewSet(BaseViewSet):
     queryset = Assignment.objects.all()

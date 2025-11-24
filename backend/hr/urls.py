@@ -16,6 +16,15 @@ from .views import (
 )
 
 from .views.order import OrderViewSet, AssignmentViewSet, CustomerViewSet, ServiceTypeViewSet,AssignmentViewSet
+from .views.enhanced_dashboard import (
+    PriorityOrdersView as PriorityOrdersEnhancedView,
+    EmployeeKPIView as EmployeeKPIEnhancedView,
+    EmployeeKPIDetailView,
+    RevenueCostProfitView,
+    EnhancedDashboardFullView,
+    ServiceTypeCountsView,
+    ServiceStatusCountsView,
+)
 
 app_name = "hr"
 router = base_routers.MutipleUpdateRouter(trailing_slash=False)
@@ -65,4 +74,13 @@ urlpatterns = [
     path('api/v1/customer/orders/<uuid:order_id>', UpdateOrderAPIView.as_view(), name='customer-order-detail'),
     path('api/v1/customer/orders/<uuid:order_id>/feedback', UpdateOrderFeedbackAPIView.as_view(), name='update-order-feedback'),
     path('api/v1/customer/create-order', SimpleCreateOrderAPIView.as_view(), name='simple-create-order'),
+    
+    # Enhanced Dashboard API endpoints (3 modules)
+    path('api/v1/enhanced-dashboard/priority-orders', PriorityOrdersEnhancedView.as_view(), name='enhanced-priority-orders'),
+    path('api/v1/enhanced-dashboard/employee-kpi', EmployeeKPIEnhancedView.as_view(), name='enhanced-employee-kpi'),
+    path('api/v1/enhanced-dashboard/employee-kpi/<uuid:employee_id>', EmployeeKPIDetailView.as_view(), name='enhanced-employee-kpi-detail'),
+    path('api/v1/enhanced-dashboard/revenue-cost-profit', RevenueCostProfitView.as_view(), name='enhanced-revenue-cost-profit'),
+    path('api/v1/enhanced-dashboard/service-types', ServiceTypeCountsView.as_view(), name='enhanced-service-types'),
+    path('api/v1/enhanced-dashboard/service-status', ServiceStatusCountsView.as_view(), name='enhanced-service-status'),
+    path('api/v1/enhanced-dashboard/full', EnhancedDashboardFullView.as_view(), name='enhanced-dashboard-full'),
 ]
