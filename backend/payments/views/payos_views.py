@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from ..services.payos_service import PayOSService
+from ..services.payos_services import PayOSService
 import time
 import logging
 
