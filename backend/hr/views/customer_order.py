@@ -86,7 +86,7 @@ class SimpleCreateOrderAPIView(APIView):
         # 3. Kiểm tra xem app payments có tồn tại không
         try:
             from payments.models import Payment
-            from payments.services.payos_service import PayOSService
+            from payments.services.payos_services import PayOSService
             from django.conf import settings
             payment_app_available = True
         except ImportError:
