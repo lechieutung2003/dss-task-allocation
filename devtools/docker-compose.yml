@@ -20,6 +20,14 @@ services:
   #   volumes:
   #     - ./docker/redis:/data
 
+  redis:
+    image: redis:latest
+    networks: ["intern-network"]
+    ports:
+      - ${REDIS_PORT}:6379
+    restart: always
+    volumes:
+      - ./docker/redis:/data
   # mongo:
   #   image: mongo:8.0.9
   #   networks: ['intern-network']
