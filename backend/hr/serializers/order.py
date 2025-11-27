@@ -22,6 +22,13 @@ class OrderSerializer(serializers.ModelSerializer):
     customer_details = CustomerSerializer(source='customer', read_only=True)
     service_details = ServiceTypeSerializer(source='service_type', read_only=True)
     employee = serializers.PrimaryKeyRelatedField(queryset=Employee.objects.all(), required=False, allow_null=True)
+    payment_method = serializers.ChoiceField(
+        choices=['CASH', 'BANK_TRANSFER'],
+        default='CASH',
+        write_only=True,
+        required=False,
+        help_text="Phương thức thanh toán: CASH (tiền mặt) hoặc BANK_TRANSFER (chuyển khoản qua PayOS)"
+    )
     class Meta:
         model = Order
         fields = '__all__'
