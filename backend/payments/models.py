@@ -136,6 +136,61 @@ class Payment(TimeStampedModel):
     def __str__(self):
         return f"Payment {self.order_code or self.id} - {self.get_status_display()}"
 
+    def save(self, *args, **kwargs):
+        """Override save để publish events"""
+        # Import ở đây để tránh circular import
+        from .events import payment_publisher
+
+        is_new = self.pk is None
+        old_status = None
+
+        # Nếu đang update, lấy status cũ
+        if not is_new:
+            try:
+                old_payment = Payment.objects.get(pk=self.pk)
+                old_status = old_payment.status
+            except Payment.DoesNotExist:
+                pass
+
+        # Save vào database
+        super().save(*args, **kwargs)
+
+        # Publish events sau khi save
+        try:
+            # Event: Payment mới được tạo
+            if is_new and self.status == 'PENDING':
+                payment_publisher.payment_created(
+                    order_id=str(self.order.id),
+                    payment_id=str(self.id),
+                    amount=float(self.amount),
+                    order_code=self.order_code or 0,
+                    payment_url=self.payment_url,
+                    qr_code=self.qr_code
+                )
+                logger.info(f"📢 Published PAYMENT_PENDING event for payment {self.id}")
+
+            # Event: Status thay đổi
+            if old_status and old_status != self.status:
+                if self.status == 'PAID':
+                    payment_publisher.payment_success(
+                        order_id=str(self.order.id),
+                        payment_id=str(self.id),
+                        amount=float(self.amount),
+                        transaction_id=self.transaction_id or ''
+                    )
+                    logger.info(f"📢 Published PAYMENT_SUCCESS event for payment {self.id}")
+
+                elif self.status == 'CANCELLED':
+                    payment_publisher.payment_cancelled(
+                        order_id=str(self.order.id),
+                        payment_id=str(self.id)
+                    )
+                    logger.info(f"📢 Published PAYMENT_CANCELLED event for payment {self.id}")
+
+        except Exception as e:
+            # Log lỗi nhưng không fail transaction
+            logger.error(f"❌ Error publishing payment event: {str(e)}")
+
     def mark_as_paid(self, transaction_id=None, webhook_data=None):
         """Đánh dấu thanh toán thành công"""
         self.status = 'PAID'
