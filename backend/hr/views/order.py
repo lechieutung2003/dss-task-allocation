@@ -40,7 +40,8 @@ class OrderViewSet(BaseViewSet):
         "note": "icontains",
     }
     required_alternate_scopes = {
-        "create": [["roles:edit"]],
+        # "create": [["roles:edit"]],
+        
         "retrieve": [["roles:edit"], ["roles:view"]],
         "update": [["roles:edit"]],
         "destroy": [["roles:edit"]],
@@ -48,7 +49,8 @@ class OrderViewSet(BaseViewSet):
         "get_assignments": [["roles:edit"], ["roles:view"]],
         "updateStatus": [["roles:edit"]],
         "update_admin_log": [["roles:edit"]],
-        "complete": [["roles:edit"]]
+        "complete": [["roles:edit"]],
+        "invoice": [["users:view-mine"], ["users:edit-mine"]],
     }
 
     def get_serializer_class(self):
@@ -97,6 +99,10 @@ class OrderViewSet(BaseViewSet):
 
     def get_permissions(self):
         user = self.request.user
+        # Allow anyone (including anonymous) to create orders
+        if self.action == 'create':
+            return [permissions.AllowAny()]
+
         if user.is_staff:
             return [permissions.IsAdminUser()]
         
@@ -150,13 +156,13 @@ class OrderViewSet(BaseViewSet):
         # 3. Kiểm tra xem app payments có tồn tại không
         try:
             from payments.models import Payment
-            from payments.services.payos_service import PayOSService
+            from payments.services.payos_services import PayOSService
             from django.conf import settings
             payment_app_available = True
-        except ImportError:
+        except Exception as e:
             payment_app_available = False
             logger.warning("Payment app not available.")
-
+            logger.exception("Failed importing payments app/services: %s", e)
         # 3. Tạo Payment record
         if payment_app_available:
             try:
