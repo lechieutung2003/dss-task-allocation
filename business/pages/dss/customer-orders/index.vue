@@ -443,6 +443,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 import CustomerOrderService from "@/services/dss/users/customer";
 import "@/assets/css/customer.css";
 
@@ -822,7 +823,37 @@ const clearSearch = () => {
   searchQuery.value = "";
 };
 
-onMounted(fetchOrders);
+// We'll still fetch on mount but we want to handle a payment-success query
+// (set by the payment flow) and then switch to the 'pending' tab.
+const route = useRoute();
+const router = useRouter();
+
+const handlePaymentRedirect = () => {
+  const q = route.query || {};
+  const isPaid =
+    q.payment_status === "success" ||
+    q.payment === "success" ||
+    q.paid === "1" ||
+    q.status === "paid";
+
+  if (isPaid) {
+    activeTab.value = "pending";
+    showToastMessage("Thanh toán thành công", "success");
+
+    const newQuery = { ...q };
+    delete newQuery.payment_status;
+    delete newQuery.payment;
+    delete newQuery.paid;
+    delete newQuery.status;
+
+    router.replace({ path: route.path, query: newQuery }).catch(() => {});
+  }
+};
+
+onMounted(async () => {
+  await fetchOrders();
+  handlePaymentRedirect();
+});
 </script>
 
 <style scoped>
