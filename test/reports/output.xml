@@ -1,0 +1,1552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.3.2 (Python 3.12.11 on darwin)" generated="2025-11-29T16:10:13.918606" rpa="false" schemaversion="5">
+<suite id="s1" name="Tests" source="/Users/vothithao/work/erp/dss-task-allocation/test/tests">
+<suite id="s1-s1" name="Login" source="/Users/vothithao/work/erp/dss-task-allocation/test/tests/login.robot">
+<test id="s1-s1-t1" name="[Module 2-1]Login with a email empty" line="8">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:14.028798" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:14.028684" elapsed="1.159849"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:14.028410" elapsed="1.160338"/>
+</kw>
+<kw name="Enter Login Email Empty" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:15.189328" elapsed="0.836031"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:16.025922" level="INFO">Typing text '' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_4}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:16.025562" elapsed="0.068843"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:16.094926" level="INFO">Typing text '123456' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${VALID_PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:16.094543" elapsed="0.115693"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:16.210900" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:16.210493" elapsed="0.044192"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:10:17.257681" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:10:16.254969" elapsed="1.002826"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:15.189035" elapsed="2.068868"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:17.261131" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:17.258098" elapsed="0.003110"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:10:17.261765" elapsed="0.048536"/>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:17.318476" level="INFO">${txt} = This is required field.</msg>
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:17.310393" elapsed="0.008106"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-11-29T16:10:17.318578" elapsed="0.000098"/>
+</kw>
+<arg>This is required field.</arg>
+<status status="PASS" start="2025-11-29T16:10:17.261486" elapsed="0.057219"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2025-11-29T16:10:17.318771" elapsed="0.200139"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="PASS" start="2025-11-29T16:10:14.028104" elapsed="3.491120"/>
+</test>
+<test id="s1-s1-t2" name="[Module 2-2]Login with a email wrong @" line="18">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:17.519909" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:17.519799" elapsed="1.080493"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:17.519657" elapsed="1.080771"/>
+</kw>
+<kw name="Enter Login Email Format Wrong @" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:18.600872" elapsed="0.426992"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:19.028466" level="INFO">Typing text 'thaogmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_1}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:19.028230" elapsed="0.093596"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:19.122241" level="INFO">Typing text '123456' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${VALID_PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:19.121932" elapsed="0.044354"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:19.166876" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:19.166670" elapsed="0.043319"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:10:20.212573" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:10:19.210324" elapsed="1.002397"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:18.600690" elapsed="1.612142"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:20.217145" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:20.213085" elapsed="0.004153"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:10:20.218289" elapsed="0.064559"/>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:20.292428" level="INFO">${txt} = Invalid email format.</msg>
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:20.283054" elapsed="0.009402"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-11-29T16:10:20.292560" elapsed="0.000186"/>
+</kw>
+<arg>Invalid email format.</arg>
+<status status="PASS" start="2025-11-29T16:10:20.217512" elapsed="0.075329"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2025-11-29T16:10:20.292917" elapsed="0.215063"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="PASS" start="2025-11-29T16:10:17.519417" elapsed="2.988712"/>
+</test>
+<test id="s1-s1-t3" name="[Module 2-3]Login with a email wrong space" line="27">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:20.508712" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:20.508612" elapsed="0.556147"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:20.508477" elapsed="0.556553"/>
+</kw>
+<kw name="Enter Login Email Format Wrong Space" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:21.069120" elapsed="0.496391"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:21.565915" level="INFO">Typing text 'thao@ gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_2}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:21.565727" elapsed="0.102294"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:21.668463" level="INFO">Typing text '123456' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${VALID_PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:21.668227" elapsed="0.037175"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:21.705836" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:21.705661" elapsed="0.042224"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:10:22.748891" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:10:21.748031" elapsed="1.000967"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:21.068416" elapsed="1.680675"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:22.752873" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:22.749293" elapsed="0.003675"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:10:22.753460" elapsed="0.050201"/>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:22.812420" level="INFO">${txt} = Invalid email format.</msg>
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:22.803822" elapsed="0.008621"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-11-29T16:10:22.812524" elapsed="0.000095"/>
+</kw>
+<arg>Invalid email format.</arg>
+<status status="PASS" start="2025-11-29T16:10:22.753219" elapsed="0.059426"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2025-11-29T16:10:22.812715" elapsed="0.211588"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="PASS" start="2025-11-29T16:10:20.508254" elapsed="2.516202"/>
+</test>
+<test id="s1-s1-t4" name="[Module 2-4]Login with a email wrong g.c" line="36">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:23.025199" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:23.025050" elapsed="0.924094"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:23.024844" elapsed="0.924423"/>
+</kw>
+<kw name="Enter Login Email Format Wrong g.c" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:23.949649" elapsed="0.271506"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:24.221425" level="INFO">Typing text 'thao@g.c' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_3}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:24.221275" elapsed="0.108535"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:24.331442" level="INFO">Typing text '123456' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${VALID_PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:24.330255" elapsed="0.038078"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:24.368797" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:24.368543" elapsed="0.041745"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:10:25.411558" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:10:24.410534" elapsed="1.001094"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:23.949487" elapsed="1.462197"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:25.413783" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:25.411864" elapsed="0.001953"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:30.500521" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-22.png"&gt;&lt;img src="selenium-screenshot-22.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:10:30.500631" level="FAIL">Text 'Invalid email format.' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:10:25.414084" elapsed="5.088204">Text 'Invalid email format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:30.502382" elapsed="0.000015"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:30.502587" elapsed="0.000010"/>
+</kw>
+<arg>Invalid email format.</arg>
+<status status="FAIL" start="2025-11-29T16:10:25.413956" elapsed="5.088700">Text 'Invalid email format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:30.502745" elapsed="0.000018"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:10:23.024613" elapsed="7.478242">Text 'Invalid email format.' did not appear in 5 seconds.</status>
+</test>
+<test id="s1-s1-t5" name="[Module 2-5]Login with a email too long" line="46">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:30.503472" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:30.503264" elapsed="0.881492"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:30.503160" elapsed="0.881726"/>
+</kw>
+<kw name="Enter Login Email Format Wrong Too Long" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:31.385316" elapsed="0.427691"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:31.813563" level="INFO">Typing text 'thao1234567891234567891234567891234567891@gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_5}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:31.813242" elapsed="0.106526"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:31.920536" level="INFO">Typing text '123456' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${VALID_PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:31.919979" elapsed="0.051669"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:31.972201" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:31.972002" elapsed="0.048638"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:10:33.022669" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:10:32.021117" elapsed="1.001726"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:31.385135" elapsed="1.637866"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:33.026466" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:33.023304" elapsed="0.003235"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:38.118277" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-23.png"&gt;&lt;img src="selenium-screenshot-23.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:10:38.118376" level="FAIL">Text 'Email too long' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:10:33.027016" elapsed="5.091598">Text 'Email too long' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:38.118700" elapsed="0.000014"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:38.118753" elapsed="0.000009"/>
+</kw>
+<arg>Email too long</arg>
+<status status="FAIL" start="2025-11-29T16:10:33.026780" elapsed="5.092032">Text 'Email too long' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:38.118872" elapsed="0.000010"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:10:30.502984" elapsed="7.615969">Text 'Email too long' did not appear in 5 seconds.</status>
+</test>
+<test id="s1-s1-t6" name="[Module 2-6]Login with a email not exist" line="55">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:38.119523" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:38.119442" elapsed="0.958805"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:38.119346" elapsed="0.959070"/>
+</kw>
+<kw name="Enter Login Email Not Exist" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:39.078888" elapsed="0.314411"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:39.393545" level="INFO">Typing text 'thu@gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_6}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:39.393410" elapsed="0.098394"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:39.492242" level="INFO">Typing text '123456' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${VALID_PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:39.491988" elapsed="0.039862"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:39.532229" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:39.532024" elapsed="0.043271"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:10:40.575989" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:10:39.575399" elapsed="1.000714"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:39.078685" elapsed="1.497538"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:40.580301" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:40.576439" elapsed="0.003963"/>
+</kw>
+<kw name="Check Error Message Should Appear" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:10:40.580936" elapsed="0.064015"/>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:40.652990" level="INFO">${txt} = The user does not exist.</msg>
+<var>${txt}</var>
+<arg>xpath=//p[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:40.645041" elapsed="0.007970"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-11-29T16:10:40.653088" elapsed="0.000098"/>
+</kw>
+<arg>The user does not exist.</arg>
+<status status="PASS" start="2025-11-29T16:10:40.580682" elapsed="0.072535"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2025-11-29T16:10:40.653279" elapsed="0.195790"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="PASS" start="2025-11-29T16:10:38.119053" elapsed="2.730136"/>
+</test>
+<test id="s1-s1-t7" name="[Module 2-7]Login with a password empty" line="65">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:40.849701" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:40.849604" elapsed="0.838017"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:40.849489" elapsed="0.838272"/>
+</kw>
+<kw name="Enter Login Password Empty" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:41.688215" elapsed="0.277665"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:41.966132" level="INFO">Typing text 'thao@gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${VALID_EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:41.965991" elapsed="0.104538"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:42.070917" level="INFO">Typing text '' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${INVALID_PASSWORD_5}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:42.070631" elapsed="0.040000"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:42.111567" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:42.111061" elapsed="0.043826"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:10:43.155633" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:10:42.155032" elapsed="1.000671"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:41.688029" elapsed="1.467727"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:43.158048" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:43.155947" elapsed="0.002141"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:10:43.158447" elapsed="0.055480"/>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:43.221958" level="INFO">${txt} = This is required field.</msg>
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:43.214022" elapsed="0.007958"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-11-29T16:10:43.222055" elapsed="0.000098"/>
+</kw>
+<arg>This is required field.</arg>
+<status status="PASS" start="2025-11-29T16:10:43.158221" elapsed="0.063964"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2025-11-29T16:10:43.222247" elapsed="0.196419"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="PASS" start="2025-11-29T16:10:40.849305" elapsed="2.569495"/>
+</test>
+<test id="s1-s1-t8" name="[Module 2-8]Login with a password too short" line="74">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:43.419655" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:43.419541" elapsed="0.958931"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:43.419387" elapsed="0.959273"/>
+</kw>
+<kw name="Enter Login Password Format Wrong Too Short" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:44.379116" elapsed="0.422815"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:44.802436" level="INFO">Typing text 'thao@gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${VALID_EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:44.802047" elapsed="0.109214"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:44.911623" level="INFO">Typing text '12345' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${INVALID_PASSWORD_4}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:44.911421" elapsed="0.038245"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:44.950531" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:44.949958" elapsed="0.056097"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:10:46.007370" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:10:45.006257" elapsed="1.001216"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:44.378916" elapsed="1.629059"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:46.011374" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:46.008162" elapsed="0.003303"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:51.112250" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-24.png"&gt;&lt;img src="selenium-screenshot-24.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:10:51.112333" level="FAIL">Text 'Password must be more than 6 characters' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:10:46.012010" elapsed="5.100537">Text 'Password must be more than 6 characters' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:51.112640" elapsed="0.000015"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:51.112696" elapsed="0.000008"/>
+</kw>
+<arg>Password must be more than 6 characters</arg>
+<status status="FAIL" start="2025-11-29T16:10:46.011742" elapsed="5.101011">Text 'Password must be more than 6 characters' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:51.112813" elapsed="0.000009"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:10:43.419185" elapsed="7.693706">Text 'Password must be more than 6 characters' did not appear in 5 seconds.</status>
+</test>
+<test id="s1-s1-t9" name="[Module 2-9]Login with a password too long" line="83">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:51.113322" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:51.113238" elapsed="0.796039"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:51.113142" elapsed="0.796460"/>
+</kw>
+<kw name="Enter Login Password Format Wrong Too Long" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:51.910569" elapsed="0.423396"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:52.334527" level="INFO">Typing text 'thao@gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${VALID_EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:52.334206" elapsed="0.097794"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:52.432258" level="INFO">Typing text '123456789012345678901' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${INVALID_PASSWORD_2}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:52.432100" elapsed="0.043778"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:52.476239" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:52.476093" elapsed="0.056099"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:10:53.534384" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:10:52.532448" elapsed="1.002043"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:51.910272" elapsed="1.624309"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:53.537516" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:53.534754" elapsed="0.002826"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:58.605487" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-25.png"&gt;&lt;img src="selenium-screenshot-25.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:10:58.605604" level="FAIL">Text 'Password too long' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:10:53.537994" elapsed="5.067898">Text 'Password too long' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:58.605985" elapsed="0.000019"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:58.606044" elapsed="0.000009"/>
+</kw>
+<arg>Password too long</arg>
+<status status="FAIL" start="2025-11-29T16:10:53.537785" elapsed="5.068316">Text 'Password too long' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:10:58.606167" elapsed="0.000008"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:10:51.112988" elapsed="7.493256">Text 'Password too long' did not appear in 5 seconds.</status>
+</test>
+<test id="s1-s1-t10" name="[Module 2-10]Login with a password too space" line="92">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:58.606681" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:10:58.606596" elapsed="0.931091"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:58.606501" elapsed="0.931871"/>
+</kw>
+<kw name="Enter Login Password Format Wrong Space" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:10:59.538874" elapsed="0.423970"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:10:59.963260" level="INFO">Typing text 'thao@gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${VALID_EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:10:59.963070" elapsed="0.094854"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:00.061716" level="INFO">Typing text '123 123' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${INVALID_PASSWORD_3}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:00.061470" elapsed="0.043691"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:00.105538" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:00.105263" elapsed="0.051976"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:11:01.158681" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:11:00.157512" elapsed="1.001275"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:10:59.538659" elapsed="1.620218"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:01.162782" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:01.159052" elapsed="0.003800"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:06.436392" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-26.png"&gt;&lt;img src="selenium-screenshot-26.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:11:06.436472" level="FAIL">Text 'Invalid Password format.' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:11:01.163282" elapsed="5.273413">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:06.436778" elapsed="0.000014"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:06.436833" elapsed="0.000009"/>
+</kw>
+<arg>Invalid Password format.</arg>
+<status status="FAIL" start="2025-11-29T16:11:01.163061" elapsed="5.273831">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:06.436954" elapsed="0.000009"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:10:58.606346" elapsed="7.830727">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</test>
+<test id="s1-s1-t11" name="[Module 2-11]Login with a password wrong @" line="101">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:06.445852" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:06.445739" elapsed="0.855524"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:06.437356" elapsed="0.864099"/>
+</kw>
+<kw name="Enter Login Password Format Wrong @" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:07.301889" elapsed="0.435439"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:07.737982" level="INFO">Typing text 'thao@gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${VALID_EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:07.737635" elapsed="0.109570"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:07.847522" level="INFO">Typing text '123@@@123' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${INVALID_PASSWORD_6}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:07.847315" elapsed="0.040547"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:07.888096" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:07.887979" elapsed="0.042153"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:11:08.931565" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:11:07.930292" elapsed="1.001374"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:07.301717" elapsed="1.630043"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:08.936193" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:08.931937" elapsed="0.004321"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:14.070105" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-27.png"&gt;&lt;img src="selenium-screenshot-27.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:11:14.070193" level="FAIL">Text 'Invalid Password format.' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:11:08.936777" elapsed="5.133634">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:14.070497" elapsed="0.000014"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:14.070550" elapsed="0.000009"/>
+</kw>
+<arg>Invalid Password format.</arg>
+<status status="FAIL" start="2025-11-29T16:11:08.936462" elapsed="5.134148">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:14.070671" elapsed="0.000010"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:11:06.437191" elapsed="7.633563">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</test>
+<test id="s1-s1-t12" name="[Module 2-12]Log in with a valid email and password" line="110">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:14.071840" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:14.071733" elapsed="1.067093"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:14.071606" elapsed="1.067357"/>
+</kw>
+<kw name="Enter Login Info Correct" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:15.139349" elapsed="0.426145"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:15.566137" level="INFO">Typing text 'thao@gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${VALID_EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:15.565781" elapsed="0.097739"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:15.664314" level="INFO">Typing text '123456' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${VALID_PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:15.663705" elapsed="0.044788"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:15.709151" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:15.708808" elapsed="0.055195"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:11:16.765142" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:11:15.764252" elapsed="1.001067"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:15.139174" elapsed="1.626225"/>
+</kw>
+<kw name="Check Logo Is Displayed" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=h1.logo-text</arg>
+<arg>timeout=10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.766031" elapsed="0.006561"/>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:16.782078" level="INFO">${text} = Clean Go</msg>
+<var>${text}</var>
+<arg>css=h1.logo-text</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.772766" elapsed="0.009341"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${text}</arg>
+<arg>Clean Go</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.782222" elapsed="0.000120"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:16.765724" elapsed="0.016651"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:16.784397" level="INFO">Current location is 'http://127.0.0.1:3008/dss/home'.</msg>
+<arg>http://127.0.0.1:3008/dss/home</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.782597" elapsed="0.001850"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>xpath=//h1[@class="hero-title"]</arg>
+<arg>timeout=10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.784544" elapsed="0.007325"/>
+</kw>
+<kw name="Check Text At XPath" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<arg>10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.792174" elapsed="0.004443"/>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:16.802879" level="INFO">${text} = Discover and Experience</msg>
+<var>${text}</var>
+<arg>${xpath}</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.796698" elapsed="0.006203"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${text}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.803000" elapsed="0.000120"/>
+</kw>
+<arg>//h1[@class="hero-title"]</arg>
+<arg>Discover and Experience</arg>
+<status status="PASS" start="2025-11-29T16:11:16.792036" elapsed="0.011120"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>xpath=//h2[@class="hero-subtitle"]</arg>
+<arg>timeout=10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.803244" elapsed="0.007108"/>
+</kw>
+<kw name="Check Text At XPath" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<arg>10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.810908" elapsed="0.005033"/>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:16.822779" level="INFO">${text} = Professional Cleaning Services</msg>
+<var>${text}</var>
+<arg>${xpath}</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.816149" elapsed="0.006655"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${text}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.822899" elapsed="0.000127"/>
+</kw>
+<arg>//h2[@class="hero-subtitle"]</arg>
+<arg>Professional Cleaning Services</arg>
+<status status="PASS" start="2025-11-29T16:11:16.810641" elapsed="0.012428"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>xpath=//span[contains(text(),'About Us')]</arg>
+<arg>10s</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.823167" elapsed="0.012392"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>xpath=//span[contains(text(),'Services')]</arg>
+<arg>10s</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.835812" elapsed="0.004437"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>xpath=//span[contains(text(),'Contact')]</arg>
+<arg>10s</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.840473" elapsed="0.005419"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>xpath=//span[contains(text(),'Orders')]</arg>
+<arg>10s</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.846106" elapsed="0.005498"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>xpath=//span[contains(text(),'Create Order')]</arg>
+<arg>10s</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.851873" elapsed="0.004610"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2025-11-29T16:11:16.856696" elapsed="0.206534"/>
+</kw>
+<tag>Login</tag>
+<tag>valid</tag>
+<status status="PASS" start="2025-11-29T16:11:14.070854" elapsed="2.992492"/>
+</test>
+<test id="s1-s1-t13" name="[Module 2-13]Login with email and password empty" line="128">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:17.063882" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:17.063786" elapsed="0.773838"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:17.063672" elapsed="0.774085"/>
+</kw>
+<kw name="Enter Login Email and Password Empty" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:17.838217" elapsed="0.277451"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:18.116131" level="INFO">Typing text '' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_4}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:18.115903" elapsed="0.038568"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:18.155157" level="INFO">Typing text '' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${INVALID_PASSWORD_5}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:18.154721" elapsed="0.034451"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:18.189568" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:18.189441" elapsed="0.047941"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:11:19.239540" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:11:18.237763" elapsed="1.001852"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:17.837974" elapsed="1.401699"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:19.241684" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:19.239854" elapsed="0.001871"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2025-11-29T16:11:19.241990" elapsed="0.042654"/>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:19.292684" level="INFO">${txt} = This is required field.</msg>
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:19.284725" elapsed="0.007982"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-11-29T16:11:19.292789" elapsed="0.000101"/>
+</kw>
+<arg>This is required field.</arg>
+<status status="PASS" start="2025-11-29T16:11:19.241850" elapsed="0.051073"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2025-11-29T16:11:19.293005" elapsed="0.197118"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="PASS" start="2025-11-29T16:11:17.063460" elapsed="2.426809"/>
+</test>
+<test id="s1-s1-t14" name="[Module 2-14]Login with email empty @ and password empty" line="137">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:19.490787" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:19.490691" elapsed="0.932590"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:19.490578" elapsed="0.932834"/>
+</kw>
+<kw name="Enter Login Email and Password Empty" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:20.423914" elapsed="0.422467"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:20.847196" level="INFO">Typing text '' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_4}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:20.846617" elapsed="0.036292"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:20.883411" level="INFO">Typing text '' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${INVALID_PASSWORD_5}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:20.883066" elapsed="0.032730"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:20.916297" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:20.916100" elapsed="0.043134"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:11:21.961229" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:11:20.959342" elapsed="1.002107"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:20.423731" elapsed="1.537881"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:21.965811" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:21.961960" elapsed="0.003948"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:27.065613" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-28.png"&gt;&lt;img src="selenium-screenshot-28.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:11:27.065698" level="FAIL">Text 'Invalid Password format.' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:11:21.966436" elapsed="5.099486">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:27.066007" elapsed="0.000014"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:27.066057" elapsed="0.000008"/>
+</kw>
+<arg>Invalid Password format.</arg>
+<status status="FAIL" start="2025-11-29T16:11:21.966161" elapsed="5.099949">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<arg>This is required field.</arg>
+<status status="NOT RUN" start="2025-11-29T16:11:27.066551" elapsed="0.000019"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:27.066629" elapsed="0.000011"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:11:19.490391" elapsed="7.576325">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</test>
+<test id="s1-s1-t15" name="[Module 2-15]Login with email wrong g.c and password too short" line="147">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:27.067264" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:27.067180" elapsed="0.909995"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:27.066958" elapsed="0.911656"/>
+</kw>
+<kw name="Enter Login Email Wrong g.c and Password Too Short" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:27.980192" elapsed="0.424673"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:28.405275" level="INFO">Typing text 'thao@g.c' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_3}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:28.405127" elapsed="0.094122"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:28.499575" level="INFO">Typing text '12345' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${INVALID_PASSWORD_4}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:28.499437" elapsed="0.046224"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:28.546230" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:28.545903" elapsed="0.038604"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:11:29.585183" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:11:28.584679" elapsed="1.000614"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:27.979523" elapsed="1.605875"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:29.588236" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:29.585657" elapsed="0.002635"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:34.664638" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-29.png"&gt;&lt;img src="selenium-screenshot-29.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:11:34.664752" level="FAIL">Text 'Invalid Password format.' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:11:29.588599" elapsed="5.076457">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:34.665155" elapsed="0.000017"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:34.665226" elapsed="0.000024"/>
+</kw>
+<arg>Invalid Password format.</arg>
+<status status="FAIL" start="2025-11-29T16:11:29.588466" elapsed="5.076857">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<arg>Password must be more than 6 characters</arg>
+<status status="NOT RUN" start="2025-11-29T16:11:34.665430" elapsed="0.000015"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:34.665492" elapsed="0.000009"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:11:27.066810" elapsed="7.598773">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</test>
+<test id="s1-s1-t16" name="[Module 2-16]Login with email too long and password correct" line="157">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:34.666191" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:34.666004" elapsed="1.658660"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:34.665897" elapsed="1.658913"/>
+</kw>
+<kw name="Enter Login Email Too Long and Password Correct" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:36.325518" elapsed="0.425932"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:36.752141" level="INFO">Typing text 'thao1234567891234567891234567891234567891@gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_5}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:36.751688" elapsed="0.092309"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:36.844219" level="INFO">Typing text '123456' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${VALID_PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:36.844094" elapsed="0.028514"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:36.872857" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:36.872738" elapsed="0.044411"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:11:37.918633" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:11:36.917308" elapsed="1.001390"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:36.325264" elapsed="1.593484"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:37.922430" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:37.918864" elapsed="0.003618"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:43.000533" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-30.png"&gt;&lt;img src="selenium-screenshot-30.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:11:43.000698" level="FAIL">Text 'Email too long' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:11:37.922937" elapsed="5.078002">Text 'Email too long' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:43.001093" elapsed="0.000022"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:43.001166" elapsed="0.000010"/>
+</kw>
+<arg>Email too long</arg>
+<status status="FAIL" start="2025-11-29T16:11:37.922650" elapsed="5.078579">Text 'Email too long' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:43.001306" elapsed="0.000009"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:11:34.665703" elapsed="8.335683">Text 'Email too long' did not appear in 5 seconds.</status>
+</test>
+<test id="s1-s1-t17" name="[Module 2-17]Login with special email and password" line="166">
+<kw name="Open Browser To Login Page" owner="keywords">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:43.001880" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:3008/'.</msg>
+<arg>${URL_LOGIN}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:43.001780" elapsed="1.628862"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:43.001676" elapsed="1.629134"/>
+</kw>
+<kw name="Enter Login Special Email and Password" owner="keywords">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-11-29T16:11:44.631361" elapsed="0.435883"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:45.067562" level="INFO">Typing text 'thao@ gmail.com' into text field 'css=input.input[placeholder="Email"]'.</msg>
+<arg>css=input.input[placeholder="Email"]</arg>
+<arg>${INVALID_EMAIL_2}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:45.067388" elapsed="0.073250"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:45.140857" level="INFO">Typing text '123@@@123' into text field 'css=input.input[placeholder="Password"]'.</msg>
+<arg>css=input.input[placeholder="Password"]</arg>
+<arg>${INVALID_PASSWORD_6}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:45.140735" elapsed="0.038196"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:45.179158" level="INFO">Clicking button 'css=button.button-submit'.</msg>
+<arg>css=button.button-submit</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-11-29T16:11:45.179048" elapsed="0.035065"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-11-29T16:11:46.216649" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-11-29T16:11:45.214330" elapsed="1.002444"/>
+</kw>
+<status status="PASS" start="2025-11-29T16:11:44.631095" elapsed="1.585791"/>
+</kw>
+<kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:46.220312" level="INFO">Current location is 'http://127.0.0.1:3008/'.</msg>
+<arg>http://127.0.0.1:3008/</arg>
+<doc>Verifies that the current URL is exactly ``url``.</doc>
+<status status="PASS" start="2025-11-29T16:11:46.217115" elapsed="0.003345"/>
+</kw>
+<kw name="Check Error Message Should Appear Span" owner="keywords">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2025-11-29T16:11:51.362533" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-31.png"&gt;&lt;img src="selenium-screenshot-31.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2025-11-29T16:11:51.362736" level="FAIL">Text 'Invalid Password format.' did not appear in 5 seconds.</msg>
+<arg>${expected_text}</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2025-11-29T16:11:46.221137" elapsed="5.141915">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Get Text" owner="SeleniumLibrary">
+<var>${txt}</var>
+<arg>xpath=//span[contains(text(),"${expected_text}")]</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:51.363240" elapsed="0.000023"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${txt}</arg>
+<arg>${expected_text}</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:51.363320" elapsed="0.000009"/>
+</kw>
+<arg>Invalid Password format.</arg>
+<status status="FAIL" start="2025-11-29T16:11:46.220761" elapsed="5.142625">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2025-11-29T16:11:51.363463" elapsed="0.000009"/>
+</kw>
+<tag>invalid</tag>
+<tag>Login</tag>
+<status status="FAIL" start="2025-11-29T16:11:43.001491" elapsed="8.362066">Text 'Invalid Password format.' did not appear in 5 seconds.</status>
+</test>
+<status status="FAIL" start="2025-11-29T16:10:13.933014" elapsed="97.430870"/>
+</suite>
+<status status="FAIL" start="2025-11-29T16:10:13.919073" elapsed="97.445081"/>
+</suite>
+<statistics>
+<total>
+<stat pass="7" fail="10" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="6" fail="10" skip="0">invalid</stat>
+<stat pass="7" fail="10" skip="0">Login</stat>
+<stat pass="1" fail="0" skip="0">valid</stat>
+</tag>
+<suite>
+<stat name="Tests" id="s1" pass="7" fail="10" skip="0">Tests</stat>
+<stat name="Login" id="s1-s1" pass="7" fail="10" skip="0">Tests.Login</stat>
+</suite>
+</statistics>
+<errors>
+<msg time="2025-11-29T16:10:14.027124" level="ERROR">Error in file '/Users/vothithao/work/erp/dss-task-allocation/test/resources/keywords.robot' on line 3: Processing variable file './variables.robot' failed: Importing variable file './variables.robot' failed: ModuleNotFoundError: No module named './variables'
+Traceback (most recent call last):
+  None
+PYTHONPATH:
+  /Users/vothithao/work/erp/dss-task-allocation/.venv/bin
+  /opt/homebrew/Cellar/python@3.12/3.12.11/Frameworks/Python.framework/Versions/3.12/lib/python312.zip
+  /opt/homebrew/Cellar/python@3.12/3.12.11/Frameworks/Python.framework/Versions/3.12/lib/python3.12
+  /opt/homebrew/Cellar/python@3.12/3.12.11/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload
+  /Users/vothithao/work/erp/dss-task-allocation/.venv/lib/python3.12/site-packages</msg>
+</errors>
+</robot>
