@@ -17,13 +17,6 @@ Enter Login Info Correct
     Click Button    css=button.button-submit
     Sleep    1s
 
-
-Enter SignUp Info
-    Input Text      name=name                             ${VALID_dk_U}
-    Input Text      css=input[data-qa="signup-email"]     ${VALID_dk_G}
-    Click Button    css=button[data-qa="signup-button"]
-
-
 Enter Login Info Wrong
     Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
     Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_1}
@@ -31,11 +24,126 @@ Enter Login Info Wrong
     Click Button    css=button.button-submit
     Sleep    1s
 
-Enter Login Email Wrong
+Enter Login Email Empty
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_4}
+    Input Text    css=input.input[placeholder="Password"]    ${VALID_PASSWORD}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Email Format Wrong @
     Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
     Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_1}
     Input Text    css=input.input[placeholder="Password"]    ${VALID_PASSWORD}
     Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Email Format Wrong Space
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_2}
+    Input Text    css=input.input[placeholder="Password"]    ${VALID_PASSWORD}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Email Format Wrong g.c
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_3}
+    Input Text    css=input.input[placeholder="Password"]    ${VALID_PASSWORD}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Email Not Exist
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_6}
+    Input Text    css=input.input[placeholder="Password"]    ${VALID_PASSWORD}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Email Format Wrong Too Long
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_5}
+    Input Text    css=input.input[placeholder="Password"]    ${VALID_PASSWORD}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Password Empty
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${VALID_EMAIL}
+    Input Text    css=input.input[placeholder="Password"]    ${INVALID_PASSWORD_5}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Password Format Wrong Too Short
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${VALID_EMAIL}
+    Input Text    css=input.input[placeholder="Password"]    ${INVALID_PASSWORD_4}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Password Format Wrong Too Long
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${VALID_EMAIL}
+    Input Text    css=input.input[placeholder="Password"]    ${INVALID_PASSWORD_2}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Password Format Wrong Space
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${VALID_EMAIL}
+    Input Text    css=input.input[placeholder="Password"]    ${INVALID_PASSWORD_3}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Password Format Wrong @
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${VALID_EMAIL}
+    Input Text    css=input.input[placeholder="Password"]    ${INVALID_PASSWORD_6}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Email and Password Empty
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_4}
+    Input Text    css=input.input[placeholder="Password"]    ${INVALID_PASSWORD_5}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Email Empty @ and Password Empty
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_1}
+    Input Text    css=input.input[placeholder="Password"]    ${INVALID_PASSWORD_5}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Email Wrong g.c and Password Too Short
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_3}
+    Input Text    css=input.input[placeholder="Password"]    ${INVALID_PASSWORD_4}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Email Too Long and Password Correct
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_5}
+    Input Text    css=input.input[placeholder="Password"]    ${VALID_PASSWORD}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+Enter Login Special Email and Password 
+    Wait Until Element Is Visible    css=input.input[placeholder="Email"]    timeout=5s
+    Input Text    css=input.input[placeholder="Email"]    ${INVALID_EMAIL_2}
+    Input Text    css=input.input[placeholder="Password"]    ${INVALID_PASSWORD_6}
+    Click Button    css=button.button-submit
+    Sleep    1s
+
+
+
+
+
+Enter SignUp Info
+    Input Text      name=name                             ${VALID_dk_U}
+    Input Text      css=input[data-qa="signup-email"]     ${VALID_dk_G}
+    Click Button    css=button[data-qa="signup-button"]
 
 Check Text At XPath
     [Arguments]    ${xpath}    ${expected_text}
@@ -45,8 +153,14 @@ Check Text At XPath
 
 Check Error Message Should Appear
     [Arguments]    ${expected_text}
-    Wait Until Page Contains    ${expected_text}    timeout=10s
+    Wait Until Page Contains    ${expected_text}    timeout=5s
     ${txt}=    Get Text    xpath=//p[contains(text(),"${expected_text}")]
+    Should Be Equal As Strings    ${txt}    ${expected_text}
+
+Check Error Message Should Appear Span
+    [Arguments]    ${expected_text}
+    Wait Until Page Contains    ${expected_text}    timeout=5s
+    ${txt}=    Get Text    xpath=//span[contains(text(),"${expected_text}")]
     Should Be Equal As Strings    ${txt}    ${expected_text}
     
 Check Logo Is Displayed
