@@ -1053,6 +1053,7 @@ const en = {
   edit_order_calculation_notice: 'Price and time will be automatically recalculated when you change information.',
   
   // Form Fields
+  create_order_bank_description: 'Payment via bank transfer with QR code',
   create_order_service: 'Service',
   create_order_service_placeholder: 'Select service',
   create_order_area: 'Area (m²)',

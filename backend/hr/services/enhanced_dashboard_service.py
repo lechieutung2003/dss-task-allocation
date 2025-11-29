@@ -1,5 +1,5 @@
 """
-Enhanced Dashboard Service - Complete system with 3 modules
+Enhanced Dashboard Service - Complete system with 5 modules
 """
 from django.db.models import Q, Count, Avg, Sum, F, DecimalField, ExpressionWrapper, FloatField
 from django.db.models.functions import TruncDate, TruncWeek, TruncMonth
@@ -26,7 +26,7 @@ class EnhancedDashboardService:
             cost_confirm__isnull=False,
             cost_confirm__gt=0,
             preferred_start_time__lt=F('preferred_end_time'),  # Validate time logic
-            status__in=['pending', 'in_progress']  # Chỉ lấy đơn chưa hoàn thành
+            status__in=['pending','PENDING','PENDING-PAYMENT', 'in_progress', 'IN-PROGRESS']  # Chỉ lấy đơn chưa hoàn thành
         )
     
     @staticmethod
@@ -198,7 +198,7 @@ class EnhancedDashboardService:
         completed_orders_count = int(emp.completed_orders_count or 0)
         
         # Lấy danh sách các đơn đã hoàn thành từ bảng trung gian Order.employees
-        completed_orders = emp.orders.filter(status='completed').order_by('-updated_at')
+        completed_orders = emp.orders.filter(status__in=['completed','COMPLETED']).order_by('-updated_at')
         
         orders_detail = []
         early_bonus_total = 0
@@ -375,7 +375,7 @@ class EnhancedDashboardService:
             cost_confirm__isnull=False,
             cost_confirm__gt=0,
             preferred_start_time__lt=F('preferred_end_time'),
-            status='completed'
+            status__in=['COMPLETED', 'completed']
         )
     
     @staticmethod
@@ -654,7 +654,7 @@ class EnhancedDashboardService:
             for i in agg:
                 st = i.get('status') or 'other'
                 name = st
-                if st not in ('completed', 'rejected'):
+                if st not in ('COMPLETED', 'REJECTED', 'completed', 'rejected'):
                     name = 'other'
                 result.append({
                     'status': st,

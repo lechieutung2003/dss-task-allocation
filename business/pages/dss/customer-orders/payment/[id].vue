@@ -31,14 +31,14 @@
 
               <div v-if="orderData.payment" class="ticket-body">
                 <div class="info-section">
-                  <div class="info-icon">📅</div>
+                  
                   <div class="info-text">
                     <span class="info-label">{{ formatDateTime(orderData.preferred_start_time) }}</span>
                   </div>
                 </div>
 
                 <div class="info-section">
-                  <div class="info-icon">📍</div>
+                  
                   <div class="info-text">
                     <span class="info-label">{{ orderData.service_details?.name || '' }}</span>
                   </div>
