@@ -676,7 +676,7 @@ onMounted(() => {
               <div class="form-group">
                 <label>{{ t('create_order_service') }}</label>
                 <div class="input-wrapper">
-                  <select v-model="order.service_type" class="form-input" required>
+                  <select v-model="order.service_type" class="form-input" required data-qa="service-select">
                     <option value="" disabled>{{ t('create_order_service_placeholder') }}</option>
                     <option v-for="service in serviceTypes" :key="service.id" :value="service.id">
                       {{ service.name }}
@@ -687,7 +687,7 @@ onMounted(() => {
               <div class="form-group">
                 <label>{{ t('create_order_area') }}</label>
                 <div class="input-wrapper" :class="{ 'error': areaError }">
-                  <input v-model="order.area_m2" type="number" class="form-input" min="0" step="any" :placeholder="t('create_order_area_placeholder')" required />
+                  <input v-model="order.area_m2" type="number" class="form-input" min="0" step="any" :placeholder="t('create_order_area_placeholder')" required data-qa="area-input" />
                 </div>
                 <div v-if="areaError" class="error-message">
                   {{ areaError }}
@@ -696,7 +696,7 @@ onMounted(() => {
               <div class="form-group">
                 <label>{{ t('create_order_note') }}</label>
                 <div class="input-wrapper" :class="{ 'error': noteError }">
-                  <textarea v-model="order.note" class="form-input" :placeholder="t('create_order_note_placeholder')" rows="3"></textarea>
+                  <textarea v-model="order.note" class="form-input" :placeholder="t('create_order_note_placeholder')" rows="3" data-qa="note-input"></textarea>
                 </div>
                 <div v-if="noteError" class="error-message">
                   {{ noteError }}
@@ -717,13 +717,14 @@ onMounted(() => {
                     class="form-input price-display" 
                     disabled 
                     :placeholder="t('create_order_price_placeholder')" 
+                    data-qa="price-display"
                   />
                 </div>
               </div>
               <div class="form-group">
                 <label>{{ t('create_order_start_time') }}</label>
                 <div class="input-wrapper" :class="{ 'error': !isStartTimeValid }">
-                  <input v-model="order.preferred_start_time" type="datetime-local" class="form-input" required />
+                  <input v-model="order.preferred_start_time" type="datetime-local" class="form-input" required data-qa="start-input" />
                 </div>
                 <div v-if="!isStartTimeValid && startTimeValidationMessage" class="error-message">
                   {{ startTimeValidationMessage }}
@@ -735,7 +736,7 @@ onMounted(() => {
               <div class="form-group">
                 <label>{{ t('create_order_end_time') }}</label>
                 <div class="input-wrapper" :class="{ 'error': endTimeError }">
-                  <input v-model="order.preferred_end_time" type="datetime-local" class="form-input" required />
+                  <input v-model="order.preferred_end_time" type="datetime-local" class="form-input" required data-qa="end-input" />
                 </div>
                 <div v-if="endTimeError" class="error-message">
                   {{ endTimeError }}
@@ -803,7 +804,7 @@ onMounted(() => {
             </ul>
           </div>
           
-          <button type="button" class="featured-cta" :disabled="!isTimeValid || !isStartTimeValid || formErrors.length > 0" @click="openPaymentModal">
+          <button type="button" class="featured-cta" :disabled="!isTimeValid || !isStartTimeValid || formErrors.length > 0" @click="openPaymentModal" data-qa="create-order-cta">
             {{ !isTimeValid || !isStartTimeValid ? t('create_order_time_invalid') : formErrors.length > 0 ? 'Vui lòng kiểm tra thông tin' : t('create_order_create_button') }}
           </button>
         </form>
@@ -846,7 +847,7 @@ onMounted(() => {
             
             <div class="payment-option">
               <label class="radio-container">
-                <input type="radio" v-model="paymentMethod" value="BANK_TRANSFER">
+                <input type="radio" v-model="paymentMethod" value="BANK_TRANSFER" data-qa="radio-bank">
                 <span class="checkmark"></span>
                 <div class="payment-info">
                   <div class="payment-title">
@@ -860,7 +861,7 @@ onMounted(() => {
             
             <div class="payment-option">
               <label class="radio-container">
-                <input type="radio" v-model="paymentMethod" value="CASH" checked>
+                <input type="radio" v-model="paymentMethod" value="CASH" checked data-qa="radio-cash">
                 <span class="checkmark"></span>
                 <div class="payment-info">
                   <div class="payment-title">
@@ -875,8 +876,8 @@ onMounted(() => {
         </div>
 
         <div class="modal-footer">
-          <button class="btn-close" @click="closePaymentModal">{{ t('create_order_cancel') }}</button>
-          <button class="btn-download" @click="submitOrder" :disabled="isSubmitting">
+          <button class="btn-close" @click="closePaymentModal" data-qa="cancel-payment">{{ t('create_order_cancel') }}</button>
+          <button class="btn-download" @click="submitOrder" :disabled="isSubmitting" data-qa="confirm-payment">
             {{ isSubmitting ? t('create_order_processing') : t('create_order_confirm') }}
           </button>
         </div>
@@ -884,7 +885,7 @@ onMounted(() => {
     </div>
     
     <!-- Modal Hóa đơn -->
-    <div v-if="showInvoiceModal && invoiceData" class="modal-overlay" @click="closeInvoiceModal">
+    <div v-if="showInvoiceModal && invoiceData" class="modal-overlay" @click="closeInvoiceModal" data-qa="invoice-modal">
       <div class="modal-content invoice-modal" @click.stop>
         <div class="modal-header">
           <h2>{{ t('create_order_invoice_title') }}</h2>
