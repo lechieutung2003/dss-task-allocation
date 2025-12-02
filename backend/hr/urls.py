@@ -67,6 +67,7 @@ urlpatterns = [
     re_path(r'^api/v1/', include(office_router.urls)),
     re_path(r'^api/v1/', include(office_router_non_group.urls)),  
     path('api/v1/employee-orders', EmployeeOrdersAPIView.as_view(), name='employee-orders'),
+    
     # API customer
     path('api/v1/register-customer', RegisterCustomerAPIView.as_view(), name='register-customer'),
     path('api/v1/customer/info', CustomerInfoAPIView.as_view(), name='customer-info'),

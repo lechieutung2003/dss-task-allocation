@@ -1183,6 +1183,13 @@ const vi = {
   search_type_price: 'Giá tiền',
   search_results_found: 'Tìm thấy {count} kết quả',
   search_no_results: 'Không tìm thấy kết quả nào',
+  enter_password: 'Nhập mật khẩu',
+  password_min_6_chars: 'Tối thiểu 6 ký tự',
+  default_password_notice: 'Mật khẩu mặc định "123456" sẽ được gán cho tài khoản nhân viên này.',
+  employee_created_success: 'Tạo nhân viên thành công!',
+  employee_created_failed: 'Tạo nhân viên thất bại',
+  error_saving_employee: 'Có lỗi xảy ra khi lưu nhân viên',
+  please_fill_required_fields: 'Vui lòng điền đầy đủ các trường bắt buộc',
   
   // Payment Page
   payment_loading: 'Đang tải thông tin thanh toán...',

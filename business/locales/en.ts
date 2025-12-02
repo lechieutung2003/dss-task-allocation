@@ -1169,6 +1169,13 @@ const en = {
   search_type_price: 'Price',
   search_results_found: 'Found {count} results',
   search_no_results: 'No results found',
+  enter_password: 'Enter password',
+  password_min_6_chars: 'Minimum 6 characters',
+  default_password_notice: 'Default password "123456" will be assigned to this employee account.',
+  employee_created_success: 'Employee created successfully!',
+  employee_created_failed: 'Failed to create employee',
+  error_saving_employee: 'An error occurred while saving employee',
+  please_fill_required_fields: 'Please fill in all required fields',
   
 
   // Payment Page

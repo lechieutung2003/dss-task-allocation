@@ -42,12 +42,11 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {{ $t('phone') }} <span class="text-red-500">*</span>
+            {{ $t('phone') }}
           </label>
           <input
             v-model="localEmployee.phone"
             type="tel"
-            required
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             :placeholder="$t('enter_phone')"
           >
@@ -172,8 +171,18 @@
             {{ skill.name }}
           </div>
         </div>
+      </div>
+    </div>
 
-        
+    <!-- Password Info Notice -->
+    <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-sm text-blue-800">
+          {{ $t('default_password_notice') }}
+        </p>
       </div>
     </div>
 
@@ -222,7 +231,18 @@ const emit = defineEmits<{
 }>()
 
 const localEmployee = ref({
-  ...props.employee,
+  first_name: props.employee?.first_name || '',
+  last_name: props.employee?.last_name || '',
+  work_mail: '', // ← Không có giá trị mặc định
+  phone: props.employee?.phone || '',
+  personal_mail: props.employee?.personal_mail || '',
+  gender: props.employee?.gender || '',
+  date_of_birth: props.employee?.date_of_birth || '',
+  join_date: props.employee?.join_date || '',
+  area: props.employee?.area || '',
+  salary: props.employee?.salary || '',
+  working_start_time: props.employee?.working_start_time || '',
+  working_end_time: props.employee?.working_end_time || '',
   skills: props.employee?.skills ? [...props.employee.skills] : []
 })
 
@@ -237,11 +257,23 @@ watch(() => props.employee, (newEmployee) => {
 console.log('[EmployeeForm] props.skillsList:', props.skillsList)
 
 const handleSubmit = () => {
-  const payload = {
-    ...localEmployee.value,
-    skills: Array.isArray(localEmployee.value.skills) ? localEmployee.value.skills : []
+  const first = (localEmployee.value.first_name || '').trim()
+  const last = (localEmployee.value.last_name || '').trim()
+  const mail = (localEmployee.value.work_mail || '').trim()
+
+  // build payload chỉ với field cần thiết
+  const payload: any = {
+    first_name: first,
+    last_name: last,
+    work_mail: mail,
+    password: '123456',
   }
-    console.log('Payload gửi lên backend:', payload) 
+  
+  if (Array.isArray(localEmployee.value.skills) && localEmployee.value.skills.length > 0) {
+    payload.skills = [...localEmployee.value.skills]
+  }
+
+  console.log('Payload gửi lên backend:', payload)
   emit('submit', payload)
 }
 

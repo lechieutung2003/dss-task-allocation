@@ -283,6 +283,17 @@ const paginatedEmployees = computed(() => {
 // Computed property để phân trang cho recommendations
 const paginatedRecommendations = computed(() => {
   if (!Array.isArray(props.recommendations)) return [];
+
+  // Lọc chỉ giữ recommendation có employee active.status === 1 (hỗ trợ nhiều cấu trúc)
+  const availableRecs = props.recommendations.filter(rec => {
+    const emp = rec?.employee || rec;
+    if (!emp) return false;
+
+    const statusVal = emp?.active?.status ?? emp?.status;
+    // Chấp nhận số 1, chuỗi '1' hoặc true
+    if (statusVal === 1 || statusVal === '1' || statusVal === true) return true;
+    return false;
+  });
   
   const start = (dssLocalPagination.currentPage - 1) * dssLocalPagination.pageSize;
   const end = start + dssLocalPagination.pageSize;
