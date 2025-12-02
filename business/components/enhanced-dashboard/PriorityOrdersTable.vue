@@ -4,11 +4,11 @@
       <div class="card-header">
         <div class="header-left">
           <el-icon class="header-icon"><Clock /></el-icon>
-          <span class="header-title">Đơn Hàng Ưu Tiên</span>
+          <span class="header-title">{{ $t('priority_orders_title') }}</span>
         </div>
 
         <el-tag :type="autoRefresh ? 'success' : 'info'" effect="dark" size="small">
-          {{ autoRefresh ? 'Auto-refresh: 30s' : 'Tạm dừng' }}
+          {{ autoRefresh ? $t('auto_refresh_active') : $t('auto_refresh_paused') }}
         </el-tag>
       </div>
     </template>
@@ -20,27 +20,27 @@
       class="custom-table"
       :row-class-name="getRowClass"
     >
-      <el-table-column label="Mã đơn" prop="code" width="120" />
+      <el-table-column :label="$t('orders_table_code')" prop="code" width="120" />
 
-      <el-table-column label="Khách hàng" prop="customer_name" min-width="150" />
+      <el-table-column :label="$t('orders_table_customer')" prop="customer_name" min-width="150" />
 
-      <el-table-column label="Dịch vụ" prop="service_type" min-width="150" />
+      <el-table-column :label="$t('orders_table_service')" prop="service_type" min-width="150" />
 
-      <el-table-column label="Giờ còn lại" width="150">
+      <el-table-column :label="$t('hours_remaining')" width="150">
         <template #default="{ row }">
           <el-tag class="time-badge" :type="getTimeBucketType(row.time_bucket)" effect="dark">
-            {{ row.hours_left }}h • {{ row.time_bucket }}
+            {{ row.hours_left }} • {{ row.time_bucket }}
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column label="Giá trị" width="150">
+      <el-table-column :label="$t('orders_table_price')" width="150">
         <template #default="{ row }">
           <span class="price">{{ formatCurrency(row.price) }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="Điểm ưu tiên" width="180">
+      <el-table-column :label="$t('priority_score')" width="180">
         <template #default="{ row }">
           <div class="priority-score">
             <el-progress
@@ -54,7 +54,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Hệ số" width="150">
+      <el-table-column :label="$t('coefficient')" width="150">
         <template #default="{ row }">
           <div class="factors">
             <span class="factor-item">⏰ {{ row.time_factor }}</span>
@@ -63,15 +63,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Trạng thái" width="130">
+      <el-table-column :label="$t('orders_table_status')" width="130">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status)" effect="dark" size="small">
-            {{ getStatusText(row.status) }}
+            {{ $t(getStatusKey(row.status)) }}
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column label="Thao tác" width="160">
+      <el-table-column :label="$t('priority_orders_actions')" width="160">
         <template #default="{ row }">
           <el-button
             type="primary"
@@ -80,7 +80,7 @@
             plain
             @click="goToDetail(row.order_id)"
           >
-            Xem chi tiết
+            {{ $t('priority_orders_view_detail') }}
           </el-button>
         </template>
       </el-table-column>
@@ -202,13 +202,13 @@ const getStatusType = (status) => {
   return types[status] || ''
 }
 
-const getStatusText = (status) => {
-  const texts = {
-    pending: 'Chờ xử lý',
-    in_progress: 'Đang làm',
-    completed: 'Hoàn thành'
+const getStatusKey = (status) => {
+  const keys = {
+    pending: 'status_pending',
+    in_progress: 'status_in_progress',
+    completed: 'status_completed'
   }
-  return texts[status] || status
+  return keys[status] || 'status_pending'
 }
 
 const formatCurrency = (value) => {

@@ -1232,6 +1232,149 @@ const vi = {
   // Order Edit - Additional keys
   create_order_payment_method: 'Phương thức thanh toán',
   
+  // Dashboard Components
+  dashboard_title: 'Bảng điều khiển',
+  dashboard_overview: 'Tổng quan',
+  dashboard_statistics: 'Thống kê',
+  
+  // Card Component
+  card_header_actions: 'Hành động',
+  card_footer: 'Chân trang',
+  
+  // Chart Card Component
+  chart_loading: 'Đang tải biểu đồ...',
+  chart_no_data: 'Chưa có dữ liệu',
+  chart_tasks_completed: 'Hoàn thành',
+  chart_tasks_failed: 'Thất bại',
+  chart_tasks_in_progress: 'Đang xử lý',
+  chart_avg_rating: 'Đánh giá trung bình',
+  chart_avg_completion_time: 'Thời gian hoàn thành trung bình',
+  chart_success_rate: 'Tỷ lệ thành công',
+  chart_performance: 'Hiệu suất',
+  
+  // Employee KPI Table
+  kpi_employee_name: 'Nhân viên',
+  kpi_completed_orders: 'Đơn hoàn thành',
+  kpi_completion_rate: 'Tỷ lệ hoàn thành',
+  kpi_avg_duration: 'Thời gian trung bình',
+  kpi_total_hours: 'Tổng giờ',
+  kpi_score: 'Điểm KPI',
+  kpi_rank: 'Xếp hạng',
+  kpi_refresh: 'Làm mới',
+  kpi_no_data: 'Chưa có dữ liệu KPI nhân viên',
+  
+  // Employee Stats
+  employee_stats_online: 'Đang hoạt động',
+  employee_stats_busy: 'Đang bận',
+  employee_stats_away: 'Tạm vắng',
+  employee_stats_offline: 'Ngoại tuyến',
+  employee_stats_efficiency: 'Hiệu suất',
+  employee_stats_current_task: 'Nhiệm vụ hiện tại',
+  employee_stats_location: 'Vị trí',
+  
+  // Filterable Chart
+  filter_period_day: 'Ngày',
+  filter_period_week: 'Tuần',
+  filter_period_month: 'Tháng',
+  filter_period_year: 'Năm',
+  filter_previous: 'Trước',
+  filter_next: 'Tiếp',
+  filter_current_period: 'Kỳ hiện tại',
+  filter_revenue: 'Doanh thu',
+  filter_cost: 'Chi phí',
+  filter_profit: 'Lợi nhuận',
+  filter_total_revenue: 'Tổng doanh thu',
+  filter_total_cost: 'Tổng chi phí',
+  filter_total_profit: 'Tổng lợi nhuận',
+  
+  // Info Card
+  info_card_positive: 'Tích cực',
+  info_card_negative: 'Tiêu cực',
+  info_card_neutral: 'Trung lập',
+  
+  // Priority Orders Table
+  priority_orders_title: 'Đơn hàng ưu tiên',
+  priority_orders_priority: 'Ưu tiên',
+  priority_orders_task: 'Nhiệm vụ',
+  priority_orders_customer: 'Khách hàng',
+  priority_orders_deadline: 'Hạn chót',
+  priority_orders_details: 'Chi tiết',
+  priority_orders_status: 'Trạng thái',
+  priority_orders_progress: 'Tiến độ',
+  priority_orders_actions: 'Hành động',
+  priority_orders_view_detail: 'Xem chi tiết',
+  priority_orders_no_data: 'Không có đơn hàng ưu tiên',
+  priority_high: 'Cao',
+  priority_medium: 'Trung bình',
+  priority_low: 'Thấp',
+  
+  // Timeline
+  timeline_activity: 'Hoạt động',
+  timeline_user: 'Người dùng',
+  timeline_location: 'Vị trí',
+  timeline_time: 'Thời gian',
+  
+  // Weather Widget
+  weather_title: 'Thời tiết hôm nay',
+  weather_location: 'Vị trí',
+  weather_temperature: 'Nhiệt độ',
+  weather_condition: 'Điều kiện',
+  weather_feels_like: 'Cảm giác như',
+  weather_visibility: 'Tầm nhìn',
+  weather_humidity: 'Độ ẩm',
+  weather_wind_speed: 'Tốc độ gió',
+  weather_impact: 'Ảnh hưởng công việc',
+  weather_sunny: 'Nắng',
+  weather_cloudy: 'Nhiều mây',
+  weather_rainy: 'Mưa',
+  weather_stormy: 'Bão',
+  
+  // Common units
+  unit_hours: 'giờ',
+  unit_km: 'km',
+  
+  // Enhanced Dashboard
+  auto_refresh_active: 'Auto-refresh: 30s',
+  auto_refresh_paused: 'Tạm dừng',
+  hours_remaining: 'Giờ còn lại',
+  priority_score: 'Điểm ưu tiên',
+  coefficient: 'Hệ số',
+  orders_table_code: 'Mã đơn',
+  orders_table_customer: 'Khách hàng',
+  orders_table_service: 'Dịch vụ',
+  orders_table_price: 'Giá trị',
+  orders_table_status: 'Trạng thái',
+  status_pending: 'Chờ xử lý',
+  status_in_progress: 'Đang làm',
+  status_completed: 'Hoàn thành',
+  top_10: 'Top 10',
+  kpi_excellent: 'Xuất sắc (≥60)',
+  kpi_good: 'Tốt (40-59)',
+  kpi_medium: 'Trung bình (20-39)',
+  kpi_needs_improvement: 'Cần cải thiện (<20)',
+  no_email: 'Chưa có email',
+  total_hours_worked: 'Tổng giờ làm',
+  work_hour_score: 'Điểm giờ làm',
+  orders_count: 'Số đơn',
+  
+  // Revenue Cost Profit Chart
+  revenue_cost_profit_title: 'Doanh Thu - Chi Phí - Lợi Nhuận',
+  revenue_cost_profit_chart: 'Biểu Đồ Doanh Thu - Chi Phí - Lợi Nhuận',
+  today: 'Hôm nay',
+  by_week: 'Theo tuần',
+  by_month: 'Theo tháng',
+  by_year: 'Theo năm',
+  
+  // Service Charts
+  success_fail_ratio: 'Tỷ lệ đơn thành công / thất bại',
+  success_fail_comparison: 'So sánh số đơn thành công và số đơn thất bại',
+  service_by_booking_ratio: 'Dịch vụ theo tỷ lệ đặt',
+  popular_service_comparison: 'So sánh dịch vụ phổ biến nhất',
+  count_label: 'Số lượt',
+  no_status_data: 'Không có dữ liệu completed hoặc rejected',
+  no_service_data: 'Không có dữ liệu dịch vụ',
+  other: 'Khác',
+  
 };
 
 export default vi;
