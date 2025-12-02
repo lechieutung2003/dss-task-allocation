@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-6">
     <!-- Loading State -->
-    <div v-if="loading || props.loading" class="flex justify-center items-center py-8">
+    <div v-if="loading" class="flex justify-center items-center py-8">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
     </div>
 
     <!-- Employee Profile -->
-    <div v-else-if="props.employee" class="space-y-6">
+    <div v-else-if="employee" class="space-y-6">
       <!-- Header Card -->
       <ProfileHeader
-        :employee="props.employee"
+        :employee="employee"
         :is-edit-mode="isEditMode"
         :is-admin-view="isAdminView"
         :saving="saving"
@@ -63,7 +63,7 @@
           <!-- Performance -->
           <PerformanceTab
             v-if="activeTab === 'performance'"
-            :employee="props.employee"
+            :employee="employee"
             :calculate-average-hours-per-order="calculateAverageHoursPerOrder"
           />
         </div>
@@ -84,6 +84,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router' 
 import { useI18n } from 'vue-i18n'
 import SkillService from '@/services/dss/users/skill'
 import ProfileHeader from './profile/ProfileHeader.vue'
@@ -124,6 +125,8 @@ const skillsList = ref([])
 const skillsLoading = ref(false)
 const showSkillDropdown = ref(false)
 const loading = ref(false)
+const employee = ref(null)
+const route = useRoute()
 
 const currentTime = ref(new Date())
 let timeInterval: NodeJS.Timeout | null = null
@@ -162,6 +165,22 @@ const loadSkills = async () => {
   }
 }
 
+const loadEmployee = async (employeeId: string) => {
+  loading.value = true
+  try {
+    const response = await EmployeeService.getEmployee(employeeId)
+    employee.value = response
+    console.log('Thông tin chi tiết employee:', response)
+  } catch (error) {
+    employee.value = null
+    console.error('Lỗi lấy thông tin employee:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+
+
 const toggleSkillDropdown = () => {
   showSkillDropdown.value = !showSkillDropdown.value
 }
@@ -180,9 +199,10 @@ const selectSkill = async (skillName: string) => {
   // Update realtime to EmployeeSkill table
   try {
     await EmployeeService.updateEmployee(props.employee.id, { skills: editableEmployee.value.skills })
+    // Optional: Show success message or handle response
   } catch (error) {
     console.error('Error updating skills:', error)
-    // Revert local change if API fails
+    // Optional: Revert local change if API fails
     if (index > -1) {
       editableEmployee.value.skills.push(skillName)
     } else {
@@ -351,9 +371,8 @@ const getInitials = (firstName: string, lastName: string) => {
 }
 
 const calculateAverageHoursPerOrder = () => {
-  const emp = props.employee || editableEmployee.value
-  if (!emp || emp.completed_orders_count === 0) return 0
-  return (emp.total_hours_worked / emp.completed_orders_count).toFixed(1)
+  if (!props.employee || props.employee.completed_orders_count === 0) return 0
+  return (props.employee.total_hours_worked / props.employee.completed_orders_count).toFixed(1)
 }
 
 onMounted(() => {
@@ -362,6 +381,11 @@ onMounted(() => {
     if (!Array.isArray(editableEmployee.value.skills)) {
       editableEmployee.value.skills = []
     }
+  }
+
+  const employeeId = route.params.id // hoặc lấy từ nguồn khác
+  if (employeeId) {
+    loadEmployee(employeeId)
   }
   startTimeUpdate()
 })

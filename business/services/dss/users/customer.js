@@ -1,39 +1,52 @@
 import ApiService from "@/services/api";
 
 const baseUrl = "http://127.0.0.1:8008/api/v1/customer";
+const registerUrl = "http://127.0.0.1:8008/api/v1";
+
 const customerApi = {
-	// Lấy thông tin chi tiết customer
-	async getUser() {
-		return ApiService.get(baseUrl + "/info");
-	},
+  // Đăng ký customer mới
+  async registerCustomer(customerData) {
+    return ApiService.post(registerUrl + "/register-customer", customerData);
+  },
 
-	// Lấy danh sách đơn hàng của customer
-	async getOrders(params) {
-		return ApiService.get(baseUrl + "/orders", { params });
-	},
+  // Lấy thông tin chi tiết customer
+  async getUser() {
+    return ApiService.get(baseUrl + "/info");
+  },
 
-	// Lấy chi tiết một đơn hàng
-	async getOrder(id) {
-		return ApiService.get(`${baseUrl}/orders/${id}`);
-	},
+  // Lấy danh sách đơn hàng của customer
+  async getOrders(params) {
+    return ApiService.get(baseUrl + "/orders", { params });
+  },
 
-	// Tạo đơn hàng mới cho customer
-	async createOrder(orderData) {
-		return ApiService.post(`${baseUrl}/create-order`, orderData);
-	},
+  // Lấy chi tiết một đơn hàng
+  async getOrder(id) {
+    return ApiService.get(`${baseUrl}/orders/${id}`);
+  },
 
-	// Cập nhật đơn hàng (chỉ cho trạng thái pending)
-	async updateOrder(orderId, orderData) {
-		return ApiService.put(`${baseUrl}/orders/${orderId}`, orderData);
-	},
+  // Tạo đơn hàng mới cho customer
+  async createOrder(orderData) {
+    return ApiService.post(`http://127.0.0.1:8008/api/v1/orders`, orderData);
+  },
 
-	// Cập nhật feedback cho đơn hàng đã hoàn thành
-	async updateOrderFeedback(orderId, feedback) {
-		return ApiService.put(`${baseUrl}/orders/${orderId}/feedback`, {
-			customer_feedback: feedback
-		});
-	},
+  // Kiểm tra trạng thái thanh toán
+  async checkPaymentStatus(orderCode) {
+    return ApiService.get(
+      `http://127.0.0.1:8008/api/payments/status/${orderCode}/`
+    );
+  },
 
+  // Cập nhật đơn hàng (chỉ cho trạng thái pending)
+  async updateOrder(orderId, orderData) {
+    return ApiService.put(`${baseUrl}/orders/${orderId}`, orderData);
+  },
+
+  // Cập nhật feedback cho đơn hàng đã hoàn thành
+  async updateOrderFeedback(orderId, feedback) {
+    return ApiService.put(`${baseUrl}/orders/${orderId}/feedback`, {
+      customer_feedback: feedback,
+    });
+  },
 };
 
 export default customerApi;

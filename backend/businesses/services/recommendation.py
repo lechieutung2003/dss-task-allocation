@@ -9,16 +9,17 @@ from decimal import Decimal
 class RecommendationService:
     @staticmethod
     def calculate_match_score(employee, order):
-        # print("================================")
-        # print(f"Calculating match score for employee: {employee.first_name}")
+        print("================================")
+        print(f"Calculating match score for employee: {employee.first_name}")
+        print(f"Order details: {order}")
         
         score = 0
 
-        # # 1. Kiểm tra thời gian làm việc (30%)
-        # if RecommendationService.check_time_availability(employee, order):
-        #     score += 30
+        # 1. Kiểm tra thời gian làm việc (30%)
+        if RecommendationService.check_time_availability(employee, order):
+            score += 30
         
-        # print(f"After time check: {score}")
+        print(f"After time check: {score}")
 
         # 2. Kiểm tra khu vực (15%)
         order_area = None
@@ -30,9 +31,9 @@ class RecommendationService:
         if order_area and employee.area == order_area:
             score += 15
         
-        # print(f"After area check: {score}")
+        print(f"After area check: {score}")
 
-        # 3. Kiểm tra kỹ năng phù hợp (30%)
+        # 3. Kiểm tra kỹ năng phù hợp (15%)
         required_skills = []
         if hasattr(order, 'service_type_id') and order.service_type_id:
             try:
@@ -47,8 +48,8 @@ class RecommendationService:
         if employee_skill_records:
             employee_skills = [es.skill.name for es in employee_skill_records]
             
-        # print("required_skills:", required_skills)
-        # print("employee_skills:", employee_skills)
+        print("required_skills:", required_skills)
+        print("employee_skills:", employee_skills)
         
         if required_skills and employee_skills:
             # Tìm kiếm từ khóa thay vì so khớp chính xác
@@ -69,14 +70,14 @@ class RecommendationService:
                     break
             
             if skill_match:
-                score += 30
+                score += 15
                 print(f"Skill match found: {req_skill} matches with {emp_skill}")
             else:
                 print(f"No skill match found between {required_skills} and {employee_skills}")
         
-        # print(f"After skill check: {score}")
+        print(f"After skill check: {score}")
         
-        # 4. Kiểm tra mức lương (40%) - Nhân viên có mức lương thấp hơn được ưu tiên
+        # 4. Kiểm tra mức lương (30%) - Nhân viên có mức lương thấp hơn được ưu tiên
         try:
             # Lấy mức lương của nhân viên
             employee_salary = getattr(employee, 'salary', 0) or 0
@@ -88,26 +89,26 @@ class RecommendationService:
             
             salary_range = max_salary - min_salary
             
-            # print("employee_salary:", employee_salary)
-            # print("max_salary:", max_salary)
-            # print("min_salary:", min_salary)
+            print("employee_salary:", employee_salary)
+            print("max_salary:", max_salary)
+            print("min_salary:", min_salary)
             
             # Tính điểm ngược: càng thấp lương thì điểm càng cao
             if salary_range > 0:  # Tránh chia cho 0
-                # Công thức: 40 * (1 - (lương nhân viên - lương thấp nhất) / (lương cao nhất - lương thấp nhất))
+                # Công thức: 30 * (1 - (lương nhân viên - lương thấp nhất) / (lương cao nhất - lương thấp nhất))
                 normalized_salary = (employee_salary - min_salary) / salary_range
-                salary_score = round(40 * (1 - normalized_salary), 2)
+                salary_score = round(30 * (1 - normalized_salary), 2)
                 score += salary_score
-                # print("salary_score:", salary_score)
+                print("salary_score:", salary_score)
             else:
                 # Nếu tất cả nhân viên có cùng mức lương
-                score += 0  
+                score += 0  # 50% của 30 điểm
                 print("salary_score (default):", 15)
         except Exception as e:
             print("Error calculating salary score:", e)
-            score += 0  
+            score += 0  # 50% của 30 điểm
 
-        # 5. Kiểm tra khối lượng công việc (15%)
+        # 5. Kiểm tra khối lượng công việc (10%)
         try:
             employee_completed_orders = int(getattr(employee, 'completed_orders_count', 0) or 0)
     
@@ -117,7 +118,7 @@ class RecommendationService:
             
             if max_value > 0:
                 normalized_score = 1 - (employee_completed_orders / max_value)
-                experience_score = round(15 * normalized_score, 2)
+                experience_score = round(10 * normalized_score, 2)
                 # Chuyển đổi thành Decimal trước khi cộng
                 score += Decimal(str(experience_score))
             else:
@@ -126,7 +127,7 @@ class RecommendationService:
             print("Error calculating workload score:", e)
             score += 0
 
-        # print("Final score:", score)
+        print("Final score:", score)
             
         return score
 
@@ -135,7 +136,6 @@ class RecommendationService:
         reasons = []
         
         if RecommendationService.check_time_availability(employee, order):
-            print("Time availability matched")
             reasons.append("Có thể làm việc trong thời gian yêu cầu")
         
         # Lấy khu vực từ customer
@@ -215,14 +215,27 @@ class RecommendationService:
         return reasons
 
     @staticmethod
-    def check_time_availability(employee, order) -> bool:
+    def check_time_availability(employee, order):
         try:
-            if employee.status == 1:
-                # print("1")
-                return True
-            else:
-                # print("2")  
+
+            if not employee.working_start_time or not employee.working_end_time:
                 return False
+
+            order_start = order.preferred_start_time
+            order_end = order.preferred_end_time
+            
+            emp_start = employee.working_start_time
+            emp_end = employee.working_end_time
+            
+            order_start_time = order_start.time()
+            order_end_time = order_end.time()
+            
+            if emp_start <= emp_end:
+                print("1")
+                return emp_start <= order_start_time and order_end_time <= emp_end
+            else:
+                print("2")
+                return order_start_time >= emp_start or order_end_time <= emp_end
 
         except Exception as error:
             print("Error details:", error) 

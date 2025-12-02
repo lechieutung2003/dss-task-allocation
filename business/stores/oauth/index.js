@@ -57,6 +57,15 @@ export const useOauthStore = defineStore('oauth', {
             }
             return scopes;
         },
+        // hasAllScopes: (state) => (scopes) => {
+        //     const { scope } = state.tokenInfo;
+        //     if (!scope || scope.length === 0) {
+        //         return false;
+        //     }
+        //     return !scopes.some((n) => {
+        //         return scope.indexOf(n) === -1;
+        //     });
+        // },
         hasAllScopes: (state) => (scopes) => {
             const { scope } = state.tokenInfo;
             if (!scope || scope.length === 0) {
@@ -65,6 +74,15 @@ export const useOauthStore = defineStore('oauth', {
             const scopeArr = scope.split(' ');
             return scopes.every((n) => scopeArr.includes(n));
         },
+        // hasOneOfScopes: (state) => (scopes) => {
+        //     const { scope } = state.tokenInfo;
+        //     if (!scope || scope.length === 0) {
+        //         return false;
+        //     }
+        //     return scopes.some((n) => {
+        //         return scope.indexOf(n) !== -1;
+        //     });
+        // },
         hasOneOfScopes: (state) => (scopes) => {
             const { scope } = state.tokenInfo;
             if (!scope || scope.length === 0) {

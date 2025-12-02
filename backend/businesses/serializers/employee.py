@@ -3,6 +3,7 @@ from rest_framework.fields import UUIDField
 from rest_framework.exceptions import ValidationError
 from datetime import datetime, time
 from django.utils import timezone
+from django.utils.timezone import localtime
 import pytz
 from base.serializers import WritableNestedSerializer
 from ..models import Employee
@@ -30,13 +31,6 @@ class EmployeeSerializer(WritableNestedSerializer):
         required=False,
         help_text="List of skill names to assign to the employee"
     )
-    
-    password = serializers.CharField(
-        write_only=True, 
-        required=False,
-        min_length=6,
-        help_text="Password for creating user account (min 6 characters)"
-    )
 
     def get_skills(self, obj):
         return [es.skill.name for es in EmployeeSkill.objects.filter(employee=obj)]
@@ -50,14 +44,35 @@ class EmployeeSerializer(WritableNestedSerializer):
     class Meta:
         model = Employee
         fields = [
-            'id', 'user', 'user_id', 'first_name', 'last_name', 'work_mail', 'personal_mail',
-            'phone', 'gender', 'date_of_birth', 'join_date', 'avatar', 'office_id',
-            'area', 'working_start_time', 'working_end_time', 'completed_orders_count',
-            'salary', 'total_hours_worked', 'roles', 'role_ids', 'additional_information',
-            'computed_status', 'status_text', 'skills', 'password',
-            'created_at', 'updated_at', 'status'
+            'id',
+            'user',
+            'user_id',
+            'office_id',
+            'first_name',
+            'last_name',
+            'work_mail',
+            'personal_mail',
+            'date_of_birth',
+            'join_date',
+            'phone',
+            'gender',
+            'avatar',
+            'roles',
+            'role_ids',
+            'additional_information',
+            'status',  # This will be auto-updated
+            'updated_at',
+            # Working fields
+            'area',
+            'working_start_time',
+            'working_end_time',
+            'completed_orders_count',
+            'salary',
+            'total_hours_worked',
+            'computed_status',
+            'status_text',
+            'skills',
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'computed_status', 'status_text', 'status']
         extra_kwargs = {
             'user': {'required': False},
             'first_name': {'required': False},
@@ -107,10 +122,10 @@ class EmployeeSerializer(WritableNestedSerializer):
             
             # Get current time in Vietnam timezone
             try:
-                vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
-                current_time = timezone.now().astimezone(vietnam_tz).time()
+                vietnam_tz = pytz.localtime('Asia/Ho_Chi_Minh')
+                current_time = localtime.now().aslocaltime(vietnam_tz).time()
             except Exception:
-                current_time = timezone.now().time()
+                current_time = localtime.now().time()
             
             start_time = obj.working_start_time
             end_time = obj.working_end_time
@@ -159,28 +174,17 @@ class EmployeeSerializer(WritableNestedSerializer):
         return updated_instance
     
     def create(self, validated_data):
+        """Override create to auto-calculate status"""
         skills = validated_data.pop('skills', [])
-        password = validated_data.pop('password', None)  # ← Lấy password
-        
         instance = super().create(validated_data)
         
-        # Gán skills
+        # Gán kỹ năng mới
         self._assign_skills(instance, skills)
         
-        # ✅ Tạo User nếu có password
-        if password and instance.work_mail:
-            try:
-                user = User.objects.create_user(
-                    email=instance.work_mail,
-                    password=password,
-                    first_name=instance.first_name,
-                    last_name=instance.last_name,
-                    active=True
-                )
-                instance.user = user
-                instance.save()
-            except Exception as e:
-                print(f"Error creating user: {e}")
+        # Auto-calculate và set initial status
+        status_info = self._calculate_current_status(instance)
+        instance.status = status_info['status_value']
+        instance.save(update_fields=['status'])
         
         return instance
     

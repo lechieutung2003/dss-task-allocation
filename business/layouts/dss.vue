@@ -86,7 +86,7 @@ const isAdmin = computed(
   () => oauthStore.user?.isAdmin || oauthStore.tokenInfo?.isSuperuser
 );
 const isStaff = computed(
-  () => oauthStore.user?.isStaff || oauthStore.tokenInfo?.isStaff || oauthStore.tokenInfo?.scope == "employees:view"
+  () => oauthStore.user?.isStaff || oauthStore.tokenInfo?.isStaff
 );
 const isGuest = computed(
   () => oauthStore.user?.isGuest || oauthStore.tokenInfo?.isGuest

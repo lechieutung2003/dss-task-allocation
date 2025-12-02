@@ -3,7 +3,7 @@ from rest_framework_nested import routers as drf_nested_routers
 from .views.employee_order import EmployeeOrdersAPIView
 from base import routers as base_routers  
 from hr.views.customer import RegisterCustomerAPIView, CustomerInfoAPIView  
-from hr.views.customer_order import SimpleCreateOrderAPIView
+from hr.views.customer_order import SimpleCreateOrderAPIView,FavoriteViewSet
 from hr.views.customer_order import CustomerOrdersAPIView, UpdateOrderFeedbackAPIView, UpdateOrderAPIView
 from .views import (
     GroupViewSet,
@@ -16,6 +16,15 @@ from .views import (
 )
 
 from .views.order import OrderViewSet, AssignmentViewSet, CustomerViewSet, ServiceTypeViewSet,AssignmentViewSet
+from .views.enhanced_dashboard import (
+    PriorityOrdersView as PriorityOrdersEnhancedView,
+    EmployeeKPIView as EmployeeKPIEnhancedView,
+    EmployeeKPIDetailView,
+    RevenueCostProfitView,
+    EnhancedDashboardFullView,
+    ServiceTypeCountsView,
+    ServiceStatusCountsView,
+)
 
 app_name = "hr"
 router = base_routers.MutipleUpdateRouter(trailing_slash=False)
@@ -57,7 +66,7 @@ urlpatterns = [
     re_path(r'^api/v1/', include(group_router.urls)),
     re_path(r'^api/v1/', include(office_router.urls)),
     re_path(r'^api/v1/', include(office_router_non_group.urls)),  
-    path('api/v1/employee-orders', EmployeeOrdersAPIView.as_view(), name='employee-orders'), 
+    path('api/v1/employee-orders', EmployeeOrdersAPIView.as_view(), name='employee-orders'),
     # API customer
     path('api/v1/register-customer', RegisterCustomerAPIView.as_view(), name='register-customer'),
     path('api/v1/customer/info', CustomerInfoAPIView.as_view(), name='customer-info'),
@@ -65,4 +74,15 @@ urlpatterns = [
     path('api/v1/customer/orders/<uuid:order_id>', UpdateOrderAPIView.as_view(), name='customer-order-detail'),
     path('api/v1/customer/orders/<uuid:order_id>/feedback', UpdateOrderFeedbackAPIView.as_view(), name='update-order-feedback'),
     path('api/v1/customer/create-order', SimpleCreateOrderAPIView.as_view(), name='simple-create-order'),
+    path('api/v1/customer/favorites', FavoriteViewSet.as_view({'get': 'list', 'post': 'create'}), name='customer-favorites'),
+    path('api/v1/customer/favorites/<uuid:pk>', FavoriteViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='customer-favorite-detail'),
+    
+    # Enhanced Dashboard API endpoints (3 modules)
+    path('api/v1/enhanced-dashboard/priority-orders', PriorityOrdersEnhancedView.as_view(), name='enhanced-priority-orders'),
+    path('api/v1/enhanced-dashboard/employee-kpi', EmployeeKPIEnhancedView.as_view(), name='enhanced-employee-kpi'),
+    path('api/v1/enhanced-dashboard/employee-kpi/<uuid:employee_id>', EmployeeKPIDetailView.as_view(), name='enhanced-employee-kpi-detail'),
+    path('api/v1/enhanced-dashboard/revenue-cost-profit', RevenueCostProfitView.as_view(), name='enhanced-revenue-cost-profit'),
+    path('api/v1/enhanced-dashboard/service-types', ServiceTypeCountsView.as_view(), name='enhanced-service-types'),
+    path('api/v1/enhanced-dashboard/service-status', ServiceStatusCountsView.as_view(), name='enhanced-service-status'),
+    path('api/v1/enhanced-dashboard/full', EnhancedDashboardFullView.as_view(), name='enhanced-dashboard-full'),
 ]
