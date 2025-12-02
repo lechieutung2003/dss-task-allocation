@@ -378,16 +378,21 @@ class OrderViewSet(BaseViewSet):
         old_status = order.status
         
         if 'status' not in request.data:
+            logger.error(f"Missing status field in request data: {request.data}")
             return Response({"detail": "Missing status field"}, status=status.HTTP_400_BAD_REQUEST)
         
-        new_status = request.data['status']
-        valid_statuses = ['pending', 'confirmed', 'in_progress', 'completed', 'rejected']
+        new_status = request.data['status'].upper()  # Chuẩn hóa thành chữ HOA
+        valid_statuses = ['PENDING', 'PENDING_PAYMENT', 'PAID', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'REJECTED']
+        
+        logger.info(f"Update status request: order={pk}, old={old_status}, new={new_status}, raw={request.data['status']}")
         
         if new_status not in valid_statuses:
-            return Response({"detail": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+            logger.error(f"Invalid status: {new_status} not in {valid_statuses}")
+            return Response({"detail": f"Invalid status: {new_status}. Valid statuses: {', '.join(valid_statuses)}"}, status=status.HTTP_400_BAD_REQUEST)
             
         order.status = new_status
         order.save()
+        logger.info(f"Order {pk} status updated from {old_status} to {new_status}")
         
         serializer = self.get_serializer(order)
         return Response(serializer.data)

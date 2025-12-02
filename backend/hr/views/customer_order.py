@@ -292,7 +292,7 @@ class UpdateOrderFeedbackAPIView(APIView):
             return Response({"detail": "Không tìm thấy đơn hàng"}, status=404)
 
         # Chỉ cho phép cập nhật feedback cho đơn hàng đã hoàn thành
-        if order.status != 'completed':
+        if order.status != 'COMPLETED':
             return Response({
                 "detail": "Chỉ có thể gửi phản hồi cho đơn hàng đã hoàn thành"
             }, status=400)
@@ -355,10 +355,10 @@ class UpdateOrderAPIView(APIView):
         except Order.DoesNotExist:
             return Response({"detail": "Không tìm thấy đơn hàng"}, status=404)
         
-        # Chỉ cho phép cập nhật đơn hàng ở trạng thái pending
-        if order.status != 'pending':
+        # Chỉ cho phép cập nhật đơn hàng ở trạng thái pending hoặc pending_payment
+        if order.status not in ['PENDING', 'PENDING_PAYMENT']:
             return Response({
-                "detail": "Chỉ có thể chỉnh sửa đơn hàng ở trạng thái chờ xác nhận"
+                "detail": "Chỉ có thể chỉnh sửa đơn hàng ở trạng thái chờ xác nhận hoặc chờ thanh toán"
             }, status=400)
 
         # Validate và cập nhật dữ liệu

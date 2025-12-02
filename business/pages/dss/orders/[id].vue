@@ -23,7 +23,7 @@
       </el-tab-pane>
 
       <el-tab-pane 
-        v-if="order && order.status !== 'completed' && order.status !== 'rejected'" 
+        v-if="order && order.status !== 'COMPLETED' && order.status !== 'REJECTED'" 
         label="Phân công nhân viên" 
         name="assignment">
         <EmployeeAssignment 
@@ -72,9 +72,9 @@ const fetchOrderDetails = async () => {
 
 // Handle cancel order
 const handleCancelOrder = () => {
-  OrderService.updateOrderStatus(order.value.id, 'cancelled')
+  OrderService.updateOrderStatus(order.value.id, 'CANCELLED')
     .then(() => {
-      order.value.status = 'cancelled';
+      order.value.status = 'CANCELLED';
       ElMessage.success('Hủy đơn hàng thành công');
     })
     .catch((error) => {
@@ -171,11 +171,14 @@ const handlePrintOrder = () => {
 // Get status label
 const getStatusLabel = (status) => {
   const statusMap = {
-    'pending': 'Chờ xử lý',
-    'confirmed': 'Đã xác nhận',
-    'in_progress': 'Đang xử lý',
-    'completed': 'Hoàn thành',
-    'cancelled': 'Đã hủy'
+    'PENDING': 'Chờ xử lý',
+    'PENDING_PAYMENT': 'Chờ thanh toán',
+    'PAID': 'Đã thanh toán',
+    'CONFIRMED': 'Đã xác nhận',
+    'IN_PROGRESS': 'Đang xử lý',
+    'COMPLETED': 'Hoàn thành',
+    'CANCELLED': 'Đã hủy',
+    'REJECTED': 'Từ chối'
   };
   return statusMap[status] || status;
 };

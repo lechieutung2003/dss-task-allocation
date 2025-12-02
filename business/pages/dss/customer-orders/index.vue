@@ -87,10 +87,10 @@
                   <th>{{ t("orders_table_created_at") || "Thời gian tạo" }}</th>
                   <th>{{ t("orders_table_actions") }}</th>
                   <th
-                    v-if="activeTab === 'completed' || activeTab === 'rejected'"
+                    v-if="activeTab === 'COMPLETED' || activeTab === 'REJECTED'"
                   >
                     {{
-                      activeTab === "completed"
+                      activeTab === "COMPLETED"
                         ? t("orders_table_feedback")
                         : t("orders_table_reject_reason")
                     }}
@@ -123,7 +123,7 @@
                       <div class="action-buttons">
                         <!-- Edit button for pending orders -->
                         <RouterLink
-                          v-if="order.status === 'pending'"
+                          v-if="order.status === 'PENDING' || order.status === 'PENDING_PAYMENT'"
                           :to="`/dss/customer-orders/edit/${order.id}`"
                           class="action-btn edit-order"
                           :title="t('orders_action_edit')"
@@ -133,7 +133,7 @@
 
                         <!-- Invoice button for non-rejected orders -->
                         <button
-                          v-if="order.status !== 'rejected'"
+                          v-if="order.status !== 'REJECTED'"
                           @click="viewInvoice(order)"
                           class="action-btn view-invoice"
                           :title="t('orders_action_invoice')"
@@ -151,24 +151,24 @@
                     <!-- Cột feedback/admin log cho completed và rejected -->
                     <td
                       v-if="
-                        activeTab === 'completed' || activeTab === 'rejected'
+                        activeTab === 'COMPLETED' || activeTab === 'REJECTED'
                       "
                     >
                       <button
                         @click="toggleOrderExpanded(order.id)"
                         class="action-btn"
                         :class="
-                          activeTab === 'completed'
+                          activeTab === 'COMPLETED'
                             ? 'show-feedback'
                             : 'show-reject'
                         "
                       >
                         {{
                           expandedOrders.has(order.id)
-                            ? activeTab === "completed"
+                            ? activeTab === "COMPLETED"
                               ? t("orders_action_hide_feedback")
                               : t("orders_action_hide_reason")
-                            : activeTab === "completed"
+                            : activeTab === "COMPLETED"
                             ? t("orders_action_show_feedback")
                             : t("orders_action_show_reason")
                         }}
@@ -179,14 +179,14 @@
                   <!-- Expanded row cho feedback/admin log -->
                   <tr
                     v-if="
-                      (activeTab === 'completed' || activeTab === 'rejected') &&
+                      (activeTab === 'COMPLETED' || activeTab === 'REJECTED') &&
                       expandedOrders.has(order.id)
                     "
                     class="expanded-row"
                   >
                     <td
                       :colspan="
-                        activeTab === 'completed' || activeTab === 'rejected'
+                        activeTab === 'COMPLETED' || activeTab === 'REJECTED'
                           ? 10
                           : 9
                       "
@@ -194,7 +194,7 @@
                     >
                       <!-- Customer Feedback cho completed -->
                       <div
-                        v-if="activeTab === 'completed'"
+                        v-if="activeTab === 'COMPLETED'"
                         class="feedback-content"
                       >
                         <h4 class="expanded-title">
@@ -237,7 +237,7 @@
 
                       <!-- Admin Log cho rejected -->
                       <div
-                        v-else-if="activeTab === 'rejected'"
+                        v-else-if="activeTab === 'REJECTED'"
                         class="admin-log-content"
                       >
                         <h4 class="expanded-title">
@@ -457,7 +457,7 @@ const { t } = useI18n();
 const orders = ref([]);
 const loading = ref(false);
 const error = ref("");
-const activeTab = ref("pending");
+const activeTab = ref("PENDING");
 
 // Modal hóa đơn
 const showInvoiceModal = ref(false);
@@ -483,9 +483,17 @@ const searchQuery = ref("");
 
 // Computed property for filtered and searched orders
 const filteredAndSearchedOrders = computed(() => {
-  let filtered = orders.value.filter(
-    (order) => order.status === activeTab.value
-  );
+  let filtered;
+  // Gộp PENDING và PENDING_PAYMENT vào tab 'PENDING'
+  if (activeTab.value === 'PENDING') {
+    filtered = orders.value.filter(
+      (order) => order.status === 'PENDING' || order.status === 'PENDING_PAYMENT'
+    );
+  } else {
+    filtered = orders.value.filter(
+      (order) => order.status === activeTab.value
+    );
+  }
 
   if (!searchQuery.value.trim()) {
     return filtered;
@@ -528,31 +536,39 @@ watch(searchQuery, () => {
 
 // Tabs configuration
 const tabs = computed(() => [
-  { status: "pending", name: t("orders_tab_pending") },
-  { status: "confirmed", name: t("orders_tab_confirmed") },
-  { status: "in_progress", name: t("orders_tab_in_progress") },
-  { status: "completed", name: t("orders_tab_completed") },
-  { status: "rejected", name: t("orders_tab_rejected") },
+  { status: "PENDING", name: t("orders_tab_pending") },
+  { status: "CONFIRMED", name: t("orders_tab_confirmed") },
+  { status: "IN_PROGRESS", name: t("orders_tab_in_progress") },
+  { status: "COMPLETED", name: t("orders_tab_completed") },
+  { status: "REJECTED", name: t("orders_tab_rejected") },
 ]);
 
 // Computed property to filter orders by active tab
 const filteredOrders = computed(() => {
+  if (activeTab.value === 'PENDING') {
+    return orders.value.filter((order) => order.status === 'PENDING' || order.status === 'PENDING_PAYMENT');
+  }
   return orders.value.filter((order) => order.status === activeTab.value);
 });
 
 // Get order count by status
 const getOrderCountByStatus = (status) => {
+  if (status === 'PENDING') {
+    return orders.value.filter((order) => order.status === 'PENDING' || order.status === 'PENDING_PAYMENT').length;
+  }
   return orders.value.filter((order) => order.status === status).length;
 };
 
 // Get status display text
 const getStatusText = (status) => {
   const statusMap = {
-    pending: t("orders_status_pending"),
-    confirmed: t("orders_status_confirmed"),
-    rejected: t("orders_status_rejected"),
-    in_progress: t("orders_status_in_progress"),
-    completed: t("orders_status_completed"),
+    PENDING: t("orders_status_pending"),
+    PENDING_PAYMENT: "Chờ thanh toán",
+    PAID: "Đã thanh toán",
+    CONFIRMED: t("orders_status_confirmed"),
+    REJECTED: t("orders_status_rejected"),
+    IN_PROGRESS: t("orders_status_in_progress"),
+    COMPLETED: t("orders_status_completed"),
   };
   return statusMap[status] || status;
 };
@@ -560,11 +576,13 @@ const getStatusText = (status) => {
 // Get status CSS class
 const getStatusClass = (status) => {
   const classMap = {
-    pending: "status-pending",
-    confirmed: "status-confirmed",
-    rejected: "status-rejected",
-    in_progress: "status-in-progress",
-    completed: "status-completed",
+    PENDING: "status-pending",
+    PENDING_PAYMENT: "status-pending",
+    PAID: "status-confirmed",
+    CONFIRMED: "status-confirmed",
+    REJECTED: "status-rejected",
+    IN_PROGRESS: "status-in-progress",
+    COMPLETED: "status-completed",
   };
   return classMap[status] || "";
 };
@@ -572,11 +590,11 @@ const getStatusClass = (status) => {
 // Get empty message based on active tab
 const getEmptyMessage = () => {
   const messageMap = {
-    pending: t("orders_empty_pending"),
-    confirmed: t("orders_empty_confirmed"),
-    rejected: t("orders_empty_rejected"),
-    in_progress: t("orders_empty_in_progress"),
-    completed: t("orders_empty_completed"),
+    PENDING: t("orders_empty_pending"),
+    CONFIRMED: t("orders_empty_confirmed"),
+    REJECTED: t("orders_empty_rejected"),
+    IN_PROGRESS: t("orders_empty_in_progress"),
+    COMPLETED: t("orders_empty_completed"),
   };
   return messageMap[activeTab.value] || t("orders_empty_pending");
 };
@@ -837,7 +855,7 @@ const handlePaymentRedirect = () => {
     q.status === "paid";
 
   if (isPaid) {
-    activeTab.value = "pending";
+    activeTab.value = "PENDING";
     showToastMessage("Thanh toán thành công", "success");
 
     const newQuery = { ...q };
