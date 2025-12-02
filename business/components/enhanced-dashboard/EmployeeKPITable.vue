@@ -4,8 +4,8 @@
       <div class="card-header">
         <div class="header-title">
           <el-icon class="title-icon"><TrophyBase /></el-icon>
-          <h3>KPI Nhân Viên</h3>
-          <el-tag type="primary" size="small" effect="plain">Top 10</el-tag>
+          <h3>{{ $t('dashboard_title') }}</h3>
+          <el-tag type="primary" size="small" effect="plain">{{ $t('top_10') }}</el-tag>
         </div>
       </div>
     </template>
@@ -20,19 +20,19 @@
       <div class="legend-info">
         <div class="legend-item">
           <span class="legend-dot excellent"></span>
-          <span class="legend-text">Xuất sắc (≥60)</span>
+          <span class="legend-text">{{ $t('kpi_excellent') }}</span>
         </div>
         <div class="legend-item">
           <span class="legend-dot good"></span>
-          <span class="legend-text">Tốt (40-59)</span>
+          <span class="legend-text">{{ $t('kpi_good') }}</span>
         </div>
         <div class="legend-item">
           <span class="legend-dot medium"></span>
-          <span class="legend-text">Trung bình (20-39)</span>
+          <span class="legend-text">{{ $t('kpi_medium') }}</span>
         </div>
         <div class="legend-item">
           <span class="legend-dot low"></span>
-          <span class="legend-text">Cần cải thiện (<20)</span>
+          <span class="legend-text">{{ $t('kpi_needs_improvement') }}</span>
         </div>
       </div>
     </div>
@@ -54,7 +54,7 @@
             </el-avatar>
             <div>
               <h3>{{ selectedEmployee?.name }}</h3>
-              <p class="employee-email">{{ selectedEmployee?.email || 'Chưa có email' }}</p>
+              <p class="employee-email">{{ selectedEmployee?.email || $t('no_email') }}</p>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@
               </div>
               <div class="stat-content">
                 <div class="stat-value">{{ employeeDetail.total_worked_hours }}h</div>
-                <div class="stat-label">Tổng giờ làm</div>
+                <div class="stat-label">{{ $t('total_hours_worked') }}</div>
               </div>
             </div>
           </el-col>
@@ -81,7 +81,7 @@
               </div>
               <div class="stat-content">
                 <div class="stat-value">{{ employeeDetail.work_hour_score }}</div>
-                <div class="stat-label">Điểm giờ làm</div>
+                <div class="stat-label">{{ $t('work_hour_score') }}</div>
               </div>
             </div>
           </el-col>
@@ -92,7 +92,7 @@
               </div>
               <div class="stat-content">
                 <div class="stat-value">{{ employeeDetail.completed_orders_count }}</div>
-                <div class="stat-label">Số đơn</div>
+                <div class="stat-label">{{ $t('orders_count') }}</div>
               </div>
             </div>
           </el-col>

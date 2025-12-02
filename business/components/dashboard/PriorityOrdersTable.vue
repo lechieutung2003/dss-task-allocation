@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-6">
       <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
         <el-icon size="24" class="text-red-600"><Warning /></el-icon>
-        Orders Ưu Tiên (Sorted by Priority Score)
+        {{ $t('priority_orders_title') }}
       </h3>
       
       <el-button 
@@ -12,7 +12,7 @@
         :loading="loading"
         size="small"
       >
-        Làm mới
+        {{ $t('kpi_refresh') }}
       </el-button>
     </div>
 
@@ -29,7 +29,7 @@
       :row-class-name="getRowClassName"
       stripe
     >
-      <el-table-column label="Priority" width="100" fixed>
+      <el-table-column :label="$t('priority_orders_priority')" width="100" fixed>
         <template #default="{ row }">
           <div class="text-center">
             <div class="text-2xl font-bold" :class="getPriorityScoreColor(row.priority_score)">
@@ -46,7 +46,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="title" label="Nhiệm Vụ" min-width="200">
+      <el-table-column prop="title" :label="$t('priority_orders_task')" min-width="200">
         <template #default="{ row }">
           <div>
             <div class="font-semibold text-gray-900">{{ row.title }}</div>
@@ -55,7 +55,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Khách Hàng" width="150">
+      <el-table-column :label="$t('priority_orders_customer')" width="150">
         <template #default="{ row }">
           <div class="text-sm">
             <div class="font-medium">{{ row.customer_name }}</div>
@@ -67,7 +67,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Deadline" width="160">
+      <el-table-column :label="$t('priority_orders_deadline')" width="160">
         <template #default="{ row }">
           <div class="text-sm">
             <el-icon class="text-red-500"><Calendar /></el-icon>
@@ -76,7 +76,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Chi Tiết" width="180">
+      <el-table-column :label="$t('priority_orders_details')" width="180">
         <template #default="{ row }">
           <div class="text-xs space-y-1">
             <div>
@@ -95,7 +95,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Trạng Thái" width="120">
+      <el-table-column :label="$t('priority_orders_status')" width="120">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status)">
             {{ formatStatus(row.status) }}
@@ -103,7 +103,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Tiến Độ" width="150">
+      <el-table-column :label="$t('priority_orders_progress')" width="150">
         <template #default="{ row }">
           <div>
             <div class="flex items-center justify-between mb-1 text-xs text-gray-600">
@@ -119,14 +119,14 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Actions" width="100" fixed="right">
+      <el-table-column :label="$t('priority_orders_actions')" width="100" fixed="right">
         <template #default="{ row }">
           <el-button 
             type="primary" 
             size="small"
             @click="$emit('view-detail', row.id)"
           >
-            Chi Tiết
+            {{ $t('priority_orders_view_detail') }}
           </el-button>
         </template>
       </el-table-column>
@@ -136,7 +136,7 @@
     <div v-if="!loading && (!ordersData || ordersData.length === 0)" 
          class="text-center py-12 text-gray-500">
       <el-icon size="48" class="mb-3"><DocumentChecked /></el-icon>
-      <p>Không có orders ưu tiên</p>
+      <p>{{ $t('priority_orders_no_data') }}</p>
     </div>
   </div>
 </template>

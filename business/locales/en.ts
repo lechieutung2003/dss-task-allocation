@@ -1078,6 +1078,28 @@ const en = {
   create_order_time_invalid: 'Invalid time',
   create_order_create_button: 'Create Order',
   
+  // Validation Messages
+  create_order_start_time_hint: 'Start time must be at least 1 hour from now',
+  create_order_end_time_hint: 'End time must be after start time',
+  create_order_note_hint: 'Note must not exceed 50 words',
+  create_order_start_time_error: 'Start time must be at least 1 hour from now (after {time})',
+  create_order_area_negative_error: 'Area cannot be negative',
+  create_order_area_zero_error: 'Area must be greater than 0',
+  create_order_end_time_error: 'End time must be after start time',
+  create_order_note_max_words_error: 'Note can only have up to 50 words (current: {count} words)',
+  create_order_service_required: 'Please select a service type',
+  create_order_area_required: 'Please enter a valid area',
+  create_order_start_time_required: 'Please select start time',
+  create_order_end_time_required: 'Please select end time',
+  create_order_check_info: 'Please check information',
+  create_order_check_again: 'Please check again:',
+  create_order_time_error: 'Time error: {message}',
+  
+  // Price Calculation
+  create_order_base_price: 'Base price: {pricePerM2} x {area} m² = {basePrice} VND',
+  create_order_price_factor: 'applying factor {factor} because requested hours < estimated hours',
+  create_order_price_breakdown: 'Original price: {basePrice} VND + VAT 10% ({vat} VND) = {total} VND',
+  
   // Payment Modal
   create_order_payment_title: 'Choose Payment Method',
   create_order_order_info: 'Order Information',
@@ -1135,7 +1157,9 @@ const en = {
   create_order_value_none: 'None',
   create_order_value_na: 'N/A',
   create_order_thank_you: 'Thank you for using our service!',
-  
+  orders_status_pending_payment: 'Pending Payment',
+  orders_status_paid: 'Paid',
+
   // Cancel Order
   cancel_order_button: 'Cancel Order',
   cancel_order_title: 'Cancel Order Request',
@@ -1225,6 +1249,150 @@ const en = {
 
   // Order Edit - Additional keys
   create_order_payment_method: 'Payment method',
+  
+  // Dashboard Components
+  dashboard_title: 'Dashboard',
+  dashboard_overview: 'Overview',
+  dashboard_statistics: 'Statistics',
+  
+  // Card Component
+  card_header_actions: 'Actions',
+  card_footer: 'Footer',
+  
+  // Chart Card Component
+  chart_loading: 'Loading chart...',
+  chart_no_data: 'No data available',
+  chart_tasks_completed: 'Completed',
+  chart_tasks_failed: 'Failed',
+  chart_tasks_in_progress: 'In Progress',
+  chart_avg_rating: 'Average Rating',
+  chart_avg_completion_time: 'Average Completion Time',
+  chart_success_rate: 'Success Rate',
+  chart_performance: 'Performance',
+  
+  // Employee KPI Table
+  kpi_employee_name: 'Employee',
+  kpi_completed_orders: 'Completed Orders',
+  kpi_completion_rate: 'Completion Rate',
+  kpi_avg_duration: 'Avg Duration',
+  kpi_total_hours: 'Total Hours',
+  kpi_score: 'KPI Score',
+  kpi_rank: 'Rank',
+  kpi_refresh: 'Refresh',
+  kpi_no_data: 'No employee KPI data',
+  
+  // Employee Stats
+  employee_stats_online: 'Online',
+  employee_stats_busy: 'Busy',
+  employee_stats_away: 'Away',
+  employee_stats_offline: 'Offline',
+  employee_stats_efficiency: 'Efficiency',
+  employee_stats_current_task: 'Current Task',
+  employee_stats_location: 'Location',
+  
+  // Filterable Chart
+  filter_period_day: 'Day',
+  filter_period_week: 'Week',
+  filter_period_month: 'Month',
+  filter_period_year: 'Year',
+  filter_previous: 'Previous',
+  filter_next: 'Next',
+  filter_current_period: 'Current Period',
+  filter_revenue: 'Revenue',
+  filter_cost: 'Cost',
+  filter_profit: 'Profit',
+  filter_total_revenue: 'Total Revenue',
+  filter_total_cost: 'Total Cost',
+  filter_total_profit: 'Total Profit',
+  
+  // Info Card
+  info_card_positive: 'Positive',
+  info_card_negative: 'Negative',
+  info_card_neutral: 'Neutral',
+  
+  // Priority Orders Table
+  priority_orders_title: 'Priority Orders',
+  priority_orders_priority: 'Priority',
+  priority_orders_task: 'Task',
+  priority_orders_customer: 'Customer',
+  priority_orders_deadline: 'Deadline',
+  priority_orders_details: 'Details',
+  priority_orders_status: 'Status',
+  priority_orders_progress: 'Progress',
+  priority_orders_actions: 'Actions',
+  priority_orders_view_detail: 'View Detail',
+  priority_orders_no_data: 'No priority orders',
+  priority_high: 'High',
+  priority_medium: 'Medium',
+  priority_low: 'Low',
+  
+  // Timeline
+  timeline_activity: 'Activity',
+  timeline_user: 'User',
+  timeline_location: 'Location',
+  timeline_time: 'Time',
+  
+  // Weather Widget
+  weather_title: 'Today\'s Weather',
+  weather_location: 'Location',
+  weather_temperature: 'Temperature',
+  weather_condition: 'Condition',
+  weather_feels_like: 'Feels like',
+  weather_visibility: 'Visibility',
+  weather_humidity: 'Humidity',
+  weather_wind_speed: 'Wind Speed',
+  weather_impact: 'Work Impact',
+  weather_sunny: 'Sunny',
+  weather_cloudy: 'Cloudy',
+  weather_rainy: 'Rainy',
+  weather_stormy: 'Stormy',
+  
+  // Common units
+  unit_hours: 'hours',
+  unit_km: 'km',
+  
+  // Enhanced Dashboard
+  auto_refresh_active: 'Auto-refresh: 30s',
+  auto_refresh_paused: 'Paused',
+  hours_remaining: 'Hours Remaining',
+  priority_score: 'Priority Score',
+  coefficient: 'Coefficient',
+  orders_table_code: 'Order Code',
+  orders_table_customer: 'Customer',
+  orders_table_service: 'Service',
+  orders_table_price: 'Price',
+  orders_table_status: 'Status',
+  status_pending: 'Pending',
+  status_in_progress: 'In Progress',
+  status_completed: 'Completed',
+  top_10: 'Top 10',
+  kpi_excellent: 'Excellent (≥60)',
+  kpi_good: 'Good (40-59)',
+  kpi_medium: 'Medium (20-39)',
+  kpi_needs_improvement: 'Needs Improvement (<20)',
+  no_email: 'No email',
+  total_hours_worked: 'Total Hours Worked',
+  work_hour_score: 'Work Hour Score',
+  orders_count: 'Orders Count',
+  
+  // Revenue Cost Profit Chart
+  revenue_cost_profit_title: 'Revenue - Cost - Profit',
+  revenue_cost_profit_chart: 'Revenue - Cost - Profit Chart',
+  today: 'Today',
+  by_week: 'By Week',
+  by_month: 'By Month',
+  by_year: 'By Year',
+  
+  // Service Charts
+  success_fail_ratio: 'Success / Fail Order Ratio',
+  success_fail_comparison: 'Compare successful and failed orders',
+  service_by_booking_ratio: 'Service by Booking Ratio',
+  popular_service_comparison: 'Compare most popular services',
+  count_label: 'Count',
+  no_status_data: 'No completed or rejected data',
+  no_service_data: 'No service data',
+  other: 'Other',
+  
 }
 
 export default en;

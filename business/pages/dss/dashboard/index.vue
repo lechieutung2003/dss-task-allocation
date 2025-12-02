@@ -47,7 +47,7 @@ const refreshAll = async () => {
     <div class="dashboard-header">
       <div class="header-left">
         <el-icon class="header-icon"><DataBoard /></el-icon>
-        <h1 class="header-title">Dashboard Nâng Cao</h1>
+        <h1 class="header-title">{{ $t('dashboard_title') }}</h1>
       </div>
       <div class="header-actions">
         <el-button
@@ -65,7 +65,7 @@ const refreshAll = async () => {
           :loading="refreshing"
           size="default"
         >
-          Làm mới
+          {{ $t('kpi_refresh') }}
         </el-button>
       </div>
     </div>

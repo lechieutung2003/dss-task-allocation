@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-6">
       <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
         <el-icon size="24" class="text-blue-600"><User /></el-icon>
-        KPI Nhân Viên
+        {{ $t('dashboard_title') }}
       </h3>
       
       <el-button 
@@ -12,7 +12,7 @@
         :loading="loading"
         size="small"
       >
-        Làm mới
+        {{ $t('kpi_refresh') }}
       </el-button>
     </div>
 
@@ -111,7 +111,7 @@
     <div v-if="!loading && (!employeeData || employeeData.length === 0)" 
          class="text-center py-12 text-gray-500">
       <el-icon size="48" class="mb-3"><UserFilled /></el-icon>
-      <p>Chưa có dữ liệu KPI nhân viên</p>
+      <p>{{ $t('kpi_no_data') }}</p>
     </div>
   </div>
 </template>

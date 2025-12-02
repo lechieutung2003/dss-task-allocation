@@ -4,7 +4,7 @@
       <div class="card-header">
         <h3>
           <el-icon><TrendCharts /></el-icon>
-          Doanh Thu - Chi Phí - Lợi Nhuận
+          {{ $t('revenue_cost_profit_title') }}
         </h3>
         
         <!-- Period Selector and Navigation -->
@@ -12,11 +12,11 @@
           <el-button-group size="small">
             <el-button @click="gotoPrev">
               <el-icon><ArrowLeft /></el-icon>
-              Trước
+              {{ $t('filter_previous') }}
             </el-button>
-            <el-button @click="gotoToday">Hôm nay</el-button>
+            <el-button @click="gotoToday">{{ $t('today') }}</el-button>
             <el-button @click="gotoNext">
-              Sau
+              {{ $t('filter_next') }}
               <el-icon><ArrowRight /></el-icon>
             </el-button>
           </el-button-group>
@@ -27,9 +27,9 @@
             style="width: 160px; margin-left: 10px"
             @change="handlePeriodChange"
           >
-            <el-option label="Theo tuần" value="week" />
-            <el-option label="Theo tháng" value="month" />
-            <el-option label="Theo năm" value="year" />
+            <el-option :label="$t('by_week')" value="week" />
+            <el-option :label="$t('by_month')" value="month" />
+            <el-option :label="$t('by_year')" value="year" />
           </el-select>
           
           <span style="margin-left: 10px; color: #ffffff  ; font-size: 14px">
@@ -48,7 +48,7 @@
     <el-row :gutter="20" class="summary-stats">
       <el-col :span="8">
         <el-statistic
-          title="Tổng Doanh Thu"
+          :title="$t('filter_total_revenue')"
           :value="totalRevenue"
           :precision="0"
           suffix="đ"
@@ -60,7 +60,7 @@
       </el-col>
       <el-col :span="8">
         <el-statistic
-          title="Tổng Chi Phí"
+          :title="$t('filter_total_cost')"
           :value="totalCost"
           :precision="0"
           suffix="đ"
@@ -72,7 +72,7 @@
       </el-col>
       <el-col :span="8">
         <el-statistic
-          title="Tổng Lợi Nhuận"
+          :title="$t('filter_total_profit')"
           :value="totalProfit"
           :precision="0"
           suffix="đ"
@@ -139,8 +139,10 @@ import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { TrendCharts, Money, Coin, ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import { Chart, registerables } from 'chart.js'
 import enhancedDashboardService from '~/services/dss/enhancedDashboardService'
+import { useI18n } from 'vue-i18n'
 
 Chart.register(...registerables)
+const { t } = useI18n()
 
 // Data
 const loading = ref(false)
@@ -363,7 +365,7 @@ const updateChart = () => {
       labels: tableData.value.map(item => formatDate(item.date)),
       datasets: [
         {
-          label: 'Doanh Thu',
+          label: t('filter_revenue'),
           data: tableData.value.map(item => item.revenue),
           borderColor: '#67c23a',
           backgroundColor: 'rgba(103, 194, 58, 0.1)',
@@ -372,7 +374,7 @@ const updateChart = () => {
           tension: 0.4
         },
         {
-          label: 'Chi Phí',
+          label: t('filter_cost'),
           data: tableData.value.map(item => item.cost),
           borderColor: '#e6a23c',
           backgroundColor: 'rgba(230, 162, 60, 0.1)',
@@ -381,7 +383,7 @@ const updateChart = () => {
           tension: 0.4
         },
         {
-          label: 'Lợi Nhuận',
+          label: t('filter_profit'),
           data: tableData.value.map(item => item.profit),
           borderColor: '#409eff',
           backgroundColor: 'rgba(64, 158, 255, 0.1)',
@@ -402,7 +404,7 @@ const updateChart = () => {
         legend: { display: true, position: 'top' },
         title: {
           display: true,
-          text: 'Biểu Đồ Doanh Thu - Chi Phí - Lợi Nhuận',
+          text: t('revenue_cost_profit_chart'),
           font: { size: 16, weight: 'bold' }
         },
         tooltip: {
