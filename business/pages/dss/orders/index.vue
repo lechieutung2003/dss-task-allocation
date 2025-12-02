@@ -84,7 +84,7 @@
               type="warning"
               size="small"
               @click="navigateToOrderAssignment(row.id)"
-              v-if="row.status !== 'completed' && row.status !== 'rejected'"
+              v-if="row.status !== 'COMPLETED' && row.status !== 'REJECTED'"
             >
               Phân công
             </el-button>
@@ -92,7 +92,7 @@
               type="danger"
               size="small"
               @click="handleCancelOrder(row)"
-              v-if="row.status !== 'completed' && row.status !== 'rejected'"
+              v-if="row.status !== 'COMPLETED' && row.status !== 'REJECTED'"
             >
               Hủy
             </el-button>
@@ -317,7 +317,7 @@ const handleCancelOrder = (order) => {
       OrderService.rejectOrder(order.id, reason)
         .then(() => {
           // Cập nhật trạng thái đơn hàng thành "rejected"
-          return OrderService.updateOrderStatus(order.id, "rejected");
+          return OrderService.updateOrderStatus(order.id, "REJECTED");
         })
         .then(() => {
           // Cập nhật trạng thái trong danh sách
@@ -325,7 +325,7 @@ const handleCancelOrder = (order) => {
             (item) => item.id === order.id
           );
           if (index !== -1) {
-            orderList.value[index].status = "rejected";
+            orderList.value[index].status = "REJECTED";
           }
           ElMessage.success("Hủy đơn hàng thành công");
         })

@@ -26,7 +26,7 @@ class EnhancedDashboardService:
             cost_confirm__isnull=False,
             cost_confirm__gt=0,
             preferred_start_time__lt=F('preferred_end_time'),  # Validate time logic
-            status__in=['pending','PENDING','PENDING-PAYMENT', 'in_progress', 'IN-PROGRESS']  # Chỉ lấy đơn chưa hoàn thành
+            status__in=['PENDING', 'PENDING_PAYMENT']  # Chỉ lấy đơn chưa hoàn thành
         )
     
     @staticmethod

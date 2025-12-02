@@ -192,16 +192,16 @@ definePageMeta({
 
 // Available statuses for employee
 const availableStatuses = [
-  { value: "in_progress", label: "Đang thực hiện" },
-  { value: "completed", label: "Hoàn thành" },
-  { value: "on_hold", label: "Tạm dừng" },
+  { value: "IN_PROGRESS", label: "Đang thực hiện" },
+  { value: "COMPLETED", label: "Hoàn thành" },
+  { value: "ON_HOLD", label: "Tạm dừng" },
 ];
 
 // Check if employee can edit status
 const canEditStatus = computed(() => {
   if (!order.value) return false;
   // Employee có thể edit những đơn hàng pending, confirmed, in_progress, on_hold (chưa completed hoặc cancelled)
-  return ["pending", "confirmed", "in_progress", "on_hold"].includes(
+  return ["PENDING", "CONFIRMED", "IN_PROGRESS", "ON_HOLD"].includes(
     order.value.status
   );
 });
@@ -234,7 +234,7 @@ const handleUpdateStatus = async () => {
     console.log("Order status updated to:", order.value.status);
 
     // Nếu trạng thái mới là completed, gọi API xử lý assignment và employee
-    if (newStatus.value === "completed") {
+    if (newStatus.value === "COMPLETED") {
       console.log("Completing order...");
       await OrderService.completeOrder(order.value.id, order.value.requested_hours);
     }
@@ -350,12 +350,15 @@ const handlePrintOrder = () => {
 // Get status label
 const getStatusLabel = (status) => {
   const statusMap = {
-    pending: "Chờ xử lý",
-    confirmed: "Đã xác nhận",
-    in_progress: "Đang thực hiện",
-    completed: "Hoàn thành",
-    cancelled: "Đã hủy",
-    on_hold: "Tạm dừng",
+    PENDING: "Chờ xử lý",
+    PENDING_PAYMENT: "Chờ thanh toán",
+    PAID: "Đã thanh toán",
+    CONFIRMED: "Đã xác nhận",
+    IN_PROGRESS: "Đang thực hiện",
+    COMPLETED: "Hoàn thành",
+    CANCELLED: "Đã hủy",
+    REJECTED: "Từ chối",
+    ON_HOLD: "Tạm dừng",
   };
   return statusMap[status] || status;
 };
@@ -363,12 +366,15 @@ const getStatusLabel = (status) => {
 // Get status type for tag color
 const getStatusType = (status) => {
   const typeMap = {
-    pending: "warning",
-    confirmed: "info",
-    in_progress: "primary",
-    completed: "success",
-    cancelled: "danger",
-    on_hold: "warning",
+    PENDING: "warning",
+    PENDING_PAYMENT: "warning",
+    PAID: "success",
+    CONFIRMED: "info",
+    IN_PROGRESS: "primary",
+    COMPLETED: "success",
+    CANCELLED: "danger",
+    REJECTED: "danger",
+    ON_HOLD: "warning",
   };
   return typeMap[status] || "info";
 };

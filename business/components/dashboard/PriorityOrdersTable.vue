@@ -178,6 +178,7 @@ const getPriorityTagType = (level) => {
 const getStatusType = (status) => {
   const mapping = {
     'pending': 'info',
+    'pending_payment': 'warning',
     'confirmed': 'primary',
     'in_progress': 'warning',
     'completed': 'success',
@@ -188,7 +189,8 @@ const getStatusType = (status) => {
 
 const formatStatus = (status) => {
   const mapping = {
-    'pending': 'Chờ xử lý',
+    'pending': 'Chờ xử lý (Tiền mặt)',
+    'pending_payment': 'Chờ thanh toán (Chuyển khoản)',
     'confirmed': 'Đã xác nhận',
     'in_progress': 'Đang thực hiện',
     'completed': 'Hoàn thành',

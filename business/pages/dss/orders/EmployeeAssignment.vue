@@ -1,6 +1,6 @@
 <template>
   <el-card v-loading="loading">
-    <div v-if="order && order.status !== 'cancelled'">
+    <div v-if="order && order.status !== 'CANCELLED'">
       
       <!-- Thông tin đơn hàng cơ bản -->
       <div class="order-summary bg-blue-50 p-3 rounded mb-4 border-l-4 border-blue-400">
@@ -88,7 +88,7 @@
         @save-assignments="saveAssignments"
       />
     </div>
-    <div v-else-if="order && order.status === 'cancelled'" class="text-center p-10">
+    <div v-else-if="order && order.status === 'CANCELLED'" class="text-center p-10">
       <el-alert
         title="Đơn hàng đã bị hủy"
         type="error"
@@ -522,7 +522,7 @@ const saveAssignments = async () => {
       await AssignmentService.createAssignments(orderId, newAssignments);
     }
 
-    await OrderService.updateOrderStatus(orderId, 'confirmed');
+    await OrderService.updateOrderStatus(orderId, 'CONFIRMED');
     ElMessage.success('Phân công nhân viên thành công!');
     await fetchAssignedEmployees();
   } catch (error) {
