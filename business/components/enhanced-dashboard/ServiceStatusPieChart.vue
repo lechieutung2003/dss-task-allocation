@@ -4,9 +4,9 @@
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div class="card-header-left">
           <el-icon><TrendCharts /></el-icon>
-          <strong>Tỷ lệ đơn thành công / thất bại</strong>
+          <strong>{{ $t('success_fail_ratio') }}</strong>
         </div>
-        <div class="card-header-sub">So sánh số đơn thành công và số đơn thất bại</div>
+        <div class="card-header-sub">{{ $t('success_fail_comparison') }}</div>
       </div>
     </template>
 
@@ -34,7 +34,7 @@
 
                   <div>
                     <div class="summary-name">{{ item.name }}</div>
-                    <div class="summary-count">Số lượt: {{ item.count }}</div>
+                    <div class="summary-count">{{ $t('count_label') }}: {{ item.count }}</div>
                   </div>
                 </div>
 
@@ -47,7 +47,7 @@
           </el-list>
 
           <div v-else class="no-data-text">
-            Không có dữ liệu completed hoặc rejected
+            {{ $t('no_status_data') }}
           </div>
         </template>
       </div>

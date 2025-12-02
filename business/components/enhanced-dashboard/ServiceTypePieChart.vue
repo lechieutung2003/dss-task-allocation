@@ -4,9 +4,9 @@
       <div style="display:flex; align-items:center; justify-content:space-between">
         <div class="card-header-left">
           <el-icon><TrendCharts /></el-icon>
-          <strong>Dịch vụ theo tỷ lệ đặt</strong>
+          <strong>{{ $t('service_by_booking_ratio') }}</strong>
         </div>
-        <div class="card-header-sub">So sánh dịch vụ phổ biến nhất</div>
+        <div class="card-header-sub">{{ $t('popular_service_comparison') }}</div>
       </div>
     </template>
 
@@ -36,7 +36,7 @@
 
                 <div>
                   <div class="summary-name">{{ item.name }}</div>
-                  <div class="summary-count">Số lượt: {{ item.count }}</div>
+                  <div class="summary-count">{{ $t('count_label') }}: {{ item.count }}</div>
                 </div>
               </div>
 
@@ -49,7 +49,7 @@
         </el-list>
 
         <div v-else-if="!loading" class="no-data-text">
-          Không có dữ liệu dịch vụ
+          {{ $t('no_service_data') }}
         </div>
       </div>
     </div>
@@ -62,6 +62,7 @@ import { ref, onMounted, computed, nextTick } from 'vue'
 import { TrendCharts } from '@element-plus/icons-vue'
 import { Chart, registerables } from 'chart.js'
 import enhancedDashboardService from '~/services/dss/enhancedDashboardService'
+import { useI18n } from 'vue-i18n'
 
 Chart.register(...registerables)
 
@@ -97,7 +98,8 @@ const prepared = computed(() => {
   if (list.length <= 2) return list
   const top = list.slice(0,2)
   const otherCount = list.slice(2).reduce((s,it)=>s+it.count,0)
-  top.push({ name: 'Khác', count: otherCount })
+  const { t } = useI18n()
+  top.push({ name: t('other'), count: otherCount })
   return top
 })
 

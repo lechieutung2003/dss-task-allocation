@@ -1,7 +1,7 @@
 <template>
   <div class="weather-widget">
     <div class="weather-header">
-      <h3 class="weather-title">Thời Tiết Hôm Nay</h3>
+      <h3 class="weather-title">{{ $t('weather_title') }}</h3>
       <div class="weather-location">
         <el-icon><Location /></el-icon>
         {{ location }}
@@ -18,26 +18,26 @@
       <div class="weather-info">
         <div class="temperature">{{ temperature }}°C</div>
         <div class="condition">{{ condition }}</div>
-        <div class="feels-like">Cảm giác như {{ feelsLike }}°C</div>
+        <div class="feels-like">{{ $t('weather_feels_like') }} {{ feelsLike }}°C</div>
       </div>
     </div>
 
     <div class="weather-details">
       <div class="detail-item">
         <el-icon class="detail-icon"><View /></el-icon>
-        <span class="detail-label">Tầm nhìn</span>
+        <span class="detail-label">{{ $t('weather_visibility') }}</span>
         <span class="detail-value">{{ visibility }} km</span>
       </div>
 
       <div class="detail-item">
         <el-icon class="detail-icon"><Cloudy /></el-icon>
-        <span class="detail-label">Độ ẩm</span>
+        <span class="detail-label">{{ $t('weather_humidity') }}</span>
         <span class="detail-value">{{ humidity }}%</span>
       </div>
 
       <div class="detail-item">
         <el-icon class="detail-icon"><WindPower /></el-icon>
-        <span class="detail-label">Gió</span>
+        <span class="detail-label">{{ $t('weather_wind_speed') }}</span>
         <span class="detail-value">{{ windSpeed }} km/h</span>
       </div>
     </div>
@@ -45,7 +45,7 @@
     <div class="weather-impact">
       <div class="impact-header">
         <el-icon class="impact-icon"><Warning /></el-icon>
-        <span>Ảnh hưởng công việc</span>
+        <span>{{ $t('weather_impact') }}</span>
       </div>
       <p class="impact-text">{{ getWeatherImpact() }}</p>
     </div>

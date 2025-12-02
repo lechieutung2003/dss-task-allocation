@@ -563,8 +563,8 @@ const getOrderCountByStatus = (status) => {
 const getStatusText = (status) => {
   const statusMap = {
     PENDING: t("orders_status_pending"),
-    PENDING_PAYMENT: "Chờ thanh toán",
-    PAID: "Đã thanh toán",
+    PENDING_PAYMENT: t("orders_status_pending_payment"),
+    PAID: t("orders_status_paid"),
     CONFIRMED: t("orders_status_confirmed"),
     REJECTED: t("orders_status_rejected"),
     IN_PROGRESS: t("orders_status_in_progress"),

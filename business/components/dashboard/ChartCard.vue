@@ -18,19 +18,19 @@
       <!-- Summary Stats -->
       <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t">
         <div class="text-center">
-          <div class="text-sm text-gray-500 mb-1">Hoàn Thành</div>
+          <div class="text-sm text-gray-500 mb-1">{{ $t('chart_tasks_completed') }}</div>
           <div class="text-xl font-bold text-green-600">
             {{ chartData?.tasks?.completed || 0 }}
           </div>
         </div>
         <div class="text-center">
-          <div class="text-sm text-gray-500 mb-1">Thất Bại</div>
+          <div class="text-sm text-gray-500 mb-1">{{ $t('chart_tasks_failed') }}</div>
           <div class="text-xl font-bold text-red-600">
             {{ chartData?.tasks?.failed || 0 }}
           </div>
         </div>
         <div class="text-center">
-          <div class="text-sm text-gray-500 mb-1">Đang Xử Lý</div>
+          <div class="text-sm text-gray-500 mb-1">{{ $t('chart_tasks_in_progress') }}</div>
           <div class="text-xl font-bold text-blue-600">
             {{ chartData?.tasks?.in_progress || chartData?.tasks?.pending || 0 }}
           </div>
@@ -43,7 +43,7 @@
       <!-- Average Rating -->
       <div class="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg">
         <div>
-          <div class="text-sm text-gray-600 mb-1">Đánh Giá Trung Bình</div>
+          <div class="text-sm text-gray-600 mb-1">{{ $t('chart_avg_rating') }}</div>
           <div class="text-3xl font-bold text-yellow-600">
             {{ avgRating || 0 }} <span class="text-lg">/5.0</span>
           </div>
@@ -54,7 +54,7 @@
       <!-- Average Completion Time -->
       <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
         <div>
-          <div class="text-sm text-gray-600 mb-1">Thời Gian Hoàn Thành TB</div>
+          <div class="text-sm text-gray-600 mb-1">{{ $t('chart_avg_completion_time') }}</div>
           <div class="text-3xl font-bold text-blue-600">
             {{ avgTime || 0 }} <span class="text-lg">giờ</span>
           </div>
@@ -65,7 +65,7 @@
       <!-- Success Rate -->
       <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg">
         <div class="flex-1">
-          <div class="text-sm text-gray-600 mb-1">Tỷ Lệ Thành Công</div>
+          <div class="text-sm text-gray-600 mb-1">{{ $t('chart_success_rate') }}</div>
           <div class="text-3xl font-bold text-green-600 mb-2">
             {{ performance || 0 }}%
           </div>
@@ -84,7 +84,7 @@
     <!-- Empty State -->
     <div v-else class="text-center py-12 text-gray-500">
       <el-icon size="48" class="mb-3"><Warning /></el-icon>
-      <p>Chưa có dữ liệu</p>
+      <p>{{ $t('chart_no_data') }}</p>
     </div>
   </div>
 </template>
@@ -93,7 +93,9 @@
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { Warning } from '@element-plus/icons-vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 Chart.register(...registerables);
 
 const props = defineProps({
@@ -157,7 +159,7 @@ const createTasksChart = () => {
   tasksChartInstance.value = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Hoàn Thành', 'Thất Bại', 'Đang Xử Lý'],
+      labels: [t('chart_tasks_completed'), t('chart_tasks_failed'), t('chart_tasks_in_progress')],
       datasets: [{
         data: [
           tasks.completed || 0,

@@ -35,7 +35,7 @@
       <!-- Performance Metrics -->
       <div class="performance-metrics">
         <div class="metric-item">
-          <div class="metric-label">Hoàn thành</div>
+          <div class="metric-label">{{ $t('chart_tasks_completed') }}</div>
           <div class="metric-value">
             {{ employee.completedTasks }}/{{ employee.totalTasks }}
           </div>
@@ -51,7 +51,7 @@
         </div>
 
         <div class="metric-item">
-          <div class="metric-label">Đánh giá</div>
+          <div class="metric-label">{{ $t('chart_avg_rating') }}</div>
           <div class="metric-value">{{ employee.rating }}/5</div>
           <div class="rating-stars">
             <el-icon
@@ -66,7 +66,7 @@
         </div>
 
         <div class="metric-item">
-          <div class="metric-label">Hiệu suất</div>
+          <div class="metric-label">{{ $t('employee_stats_efficiency') }}</div>
           <div class="metric-value">{{ employee.efficiency }}%</div>
           <div
             class="efficiency-indicator"
@@ -81,7 +81,7 @@
       <div class="current-task" v-if="employee.currentTask">
         <div class="task-header">
           <el-icon class="task-icon"><Clock /></el-icon>
-          <span class="task-label">Nhiệm vụ hiện tại</span>
+          <span class="task-label">{{ $t('employee_stats_current_task') }}</span>
         </div>
         <p class="task-description">{{ employee.currentTask }}</p>
         <div class="task-location" v-if="employee.currentLocation">
@@ -101,6 +101,7 @@ import {
   Location,
   TrendCharts,
 } from "@element-plus/icons-vue";
+import { useI18n } from 'vue-i18n';
 
 defineProps({
   employees: {
@@ -129,14 +130,16 @@ const getStatusClass = (status) => {
   return classes[status] || "bg-gray-400";
 };
 
+const { t } = useI18n();
+
 const getStatusText = (status) => {
   const texts = {
-    online: "Đang hoạt động",
-    busy: "Đang bận",
-    away: "Tạm vắng",
-    offline: "Offline",
+    online: t('employee_stats_online'),
+    busy: t('employee_stats_busy'),
+    away: t('employee_stats_away'),
+    offline: t('employee_stats_offline'),
   };
-  return texts[status] || "Không rõ";
+  return texts[status] || status;
 };
 
 const getStatusTextClass = (status) => {
