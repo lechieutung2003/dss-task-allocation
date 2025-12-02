@@ -1088,6 +1088,30 @@ const vi = {
   create_order_min_time: 'Thời gian tối thiểu: {time}',
   create_order_time_invalid: 'Thời gian không hợp lệ',
   create_order_create_button: 'Tạo đơn',
+  orders_status_pending_payment: 'Chờ thanh toán',
+  orders_status_paid: 'Đã thanh toán',
+  
+  // Validation Messages
+  create_order_start_time_hint: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 1 tiếng',
+  create_order_end_time_hint: 'Thời gian kết thúc phải sau thời gian bắt đầu',
+  create_order_note_hint: 'Ghi chú không được vượt quá 50 từ',
+  create_order_start_time_error: 'Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 1 tiếng (sau {time})',
+  create_order_area_negative_error: 'Diện tích không được âm',
+  create_order_area_zero_error: 'Diện tích phải lớn hơn 0',
+  create_order_end_time_error: 'Thời gian kết thúc phải sau thời gian bắt đầu',
+  create_order_note_max_words_error: 'Ghi chú chỉ được tối đa 50 từ (hiện tại: {count} từ)',
+  create_order_service_required: 'Vui lòng chọn loại dịch vụ',
+  create_order_area_required: 'Vui lòng nhập diện tích hợp lệ',
+  create_order_start_time_required: 'Vui lòng chọn thời gian bắt đầu',
+  create_order_end_time_required: 'Vui lòng chọn thời gian kết thúc',
+  create_order_check_info: 'Vui lòng kiểm tra thông tin',
+  create_order_check_again: 'Vui lòng kiểm tra lại:',
+  create_order_time_error: 'Lỗi thời gian: {message}',
+  
+  // Price Calculation
+  create_order_base_price: 'Giá cơ bản: {pricePerM2} x {area} m² = {basePrice} VNĐ',
+  create_order_price_factor: 'áp dụng hệ số {factor} do số giờ yêu cầu < số giờ ước tính',
+  create_order_price_breakdown: 'Giá gốc: {basePrice} VNĐ + VAT 10% ({vat} VNĐ) = {total} VNĐ',
   
   // Payment Modal
   create_order_payment_title: 'Chọn phương thức thanh toán',

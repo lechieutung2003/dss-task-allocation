@@ -162,7 +162,7 @@ const validateStartTime = () => {
   
   if (startDate < oneHourLater) {
     isStartTimeValid.value = false;
-    startTimeValidationMessage.value = `Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 1 tiếng (sau ${oneHourLater.toLocaleString('vi-VN')})`;
+    startTimeValidationMessage.value = t('create_order_start_time_error', { time: oneHourLater.toLocaleString('vi-VN') });
   } else {
     isStartTimeValid.value = true;
     startTimeValidationMessage.value = '';
@@ -195,10 +195,10 @@ const validateRequestedTime = () => {
 const validateArea = () => {
   const area = order.value.area_m2;
   if (area !== null && area < 0) {
-    areaError.value = 'Diện tích không được âm';
+    areaError.value = t('create_order_area_negative_error');
     return false;
   } else if (area !== null && area === 0) {
-    areaError.value = 'Diện tích phải lớn hơn 0';
+    areaError.value = t('create_order_area_zero_error');
     return false;
   } else {
     areaError.value = '';
@@ -219,7 +219,7 @@ const validateEndTime = () => {
   const endDate = new Date(endTime);
   
   if (endDate <= startDate) {
-    endTimeError.value = 'Thời gian kết thúc phải sau thời gian bắt đầu';
+    endTimeError.value = t('create_order_end_time_error');
     return false;
   } else {
     endTimeError.value = '';
@@ -232,7 +232,7 @@ const validateNote = () => {
   const wordCount = note.trim().split(/\s+/).filter(word => word.length > 0).length;
   
   if (wordCount > 50) {
-    noteError.value = `Ghi chú chỉ được tối đa 50 từ (hiện tại: ${wordCount} từ)`;
+    noteError.value = t('create_order_note_max_words_error', { count: wordCount });
     return false;
   } else {
     noteError.value = '';
@@ -245,19 +245,19 @@ const validateForm = () => {
   
   // Kiểm tra các trường bắt buộc
   if (!order.value.service_type) {
-    errors.push('Vui lòng chọn loại dịch vụ');
+    errors.push(t('create_order_service_required'));
   }
   
   if (!order.value.area_m2 || order.value.area_m2 <= 0) {
-    errors.push('Vui lòng nhập diện tích hợp lệ');
+    errors.push(t('create_order_area_required'));
   }
   
   if (!order.value.preferred_start_time) {
-    errors.push('Vui lòng chọn thời gian bắt đầu');
+    errors.push(t('create_order_start_time_required'));
   }
   
   if (!order.value.preferred_end_time) {
-    errors.push('Vui lòng chọn thời gian kết thúc');
+    errors.push(t('create_order_end_time_required'));
   }
   
   // Kiểm tra validation riêng lẻ
@@ -316,7 +316,11 @@ const calcEstimatedPrice = () => {
   }
 
   let basePrice = pricePerM2 > 0 ? pricePerM2 * area : null;
-  let explanation = `Giá cơ bản: ${pricePerM2.toLocaleString('vi-VN')} x ${area} m² = ${(basePrice || 0).toLocaleString('vi-VN')} VNĐ`;
+  let explanation = t('create_order_base_price', { 
+    pricePerM2: pricePerM2.toLocaleString('vi-VN'), 
+    area, 
+    basePrice: (basePrice || 0).toLocaleString('vi-VN') 
+  });
 
   const requested = order.value.requested_hours;
   const estimated = order.value.estimated_hours;
@@ -328,7 +332,7 @@ const calcEstimatedPrice = () => {
     else if (diff > 2) factor = 1.5;
 
     if (factor > 1) {
-      explanation += ` (áp dụng hệ số ${factor} do số giờ yêu cầu < số giờ ước tính)`;
+      explanation += ` (${t('create_order_price_factor', { factor })})`;
       basePrice = basePrice * factor;
     }
   }
@@ -337,7 +341,11 @@ const calcEstimatedPrice = () => {
   if (basePrice) {
     const vatAmount = Math.round(basePrice * 0.1);
     const finalPrice = basePrice + vatAmount;
-    explanation += `\nGiá gốc: ${basePrice.toLocaleString('vi-VN')} VNĐ + VAT 10% (${vatAmount.toLocaleString('vi-VN')} VNĐ) = ${finalPrice.toLocaleString('vi-VN')} VNĐ`;
+    explanation += `\n${t('create_order_price_breakdown', { 
+      basePrice: basePrice.toLocaleString('vi-VN'), 
+      vat: vatAmount.toLocaleString('vi-VN'), 
+      total: finalPrice.toLocaleString('vi-VN') 
+    })}`;
     estimatedPrice.value = finalPrice;
   } else {
     estimatedPrice.value = null;
@@ -393,7 +401,7 @@ const openPaymentModal = () => {
   }
   
   if (!isStartTimeValid.value) {
-    alert(`Lỗi thời gian: ${startTimeValidationMessage.value}`);
+    alert(t('create_order_time_error', { message: startTimeValidationMessage.value }));
     return;
   }
   
@@ -702,7 +710,7 @@ onMounted(() => {
                   {{ noteError }}
                 </div>
                 <small class="form-hint">
-                  Ghi chú không được vượt quá 50 từ
+                  {{ t('create_order_note_hint') }}
                 </small>
               </div>
             </div>
@@ -730,7 +738,7 @@ onMounted(() => {
                   {{ startTimeValidationMessage }}
                 </div>
                 <small class="form-hint">
-                  Thời gian bắt đầu phải cách thời điểm hiện tại ít nhất 1 tiếng
+                  {{ t('create_order_start_time_hint') }}
                 </small>
               </div>
               <div class="form-group">
@@ -742,7 +750,7 @@ onMounted(() => {
                   {{ endTimeError }}
                 </div>
                 <small class="form-hint">
-                  Thời gian kết thúc phải sau thời gian bắt đầu
+                  {{ t('create_order_end_time_hint') }}
                 </small>
               </div>
             </div>
@@ -796,7 +804,7 @@ onMounted(() => {
           
           <!-- Hiển thị lỗi form validation -->
           <div v-if="formErrors.length > 0" class="form-errors">
-            <h4>Vui lòng kiểm tra lại:</h4>
+            <h4>{{ t('create_order_check_again') }}</h4>
             <ul>
               <li v-for="error in formErrors" :key="error" class="error-item">
                 {{ error }}
@@ -805,7 +813,7 @@ onMounted(() => {
           </div>
           
           <button type="button" class="featured-cta" :disabled="!isTimeValid || !isStartTimeValid || formErrors.length > 0" @click="openPaymentModal" data-qa="create-order-cta">
-            {{ !isTimeValid || !isStartTimeValid ? t('create_order_time_invalid') : formErrors.length > 0 ? 'Vui lòng kiểm tra thông tin' : t('create_order_create_button') }}
+            {{ !isTimeValid || !isStartTimeValid ? t('create_order_time_invalid') : formErrors.length > 0 ? t('create_order_check_info') : t('create_order_create_button') }}
           </button>
         </form>
       </div>
@@ -859,19 +867,6 @@ onMounted(() => {
               </label>
             </div>
             
-            <div class="payment-option">
-              <label class="radio-container">
-                <input type="radio" v-model="paymentMethod" value="CASH" checked data-qa="radio-cash">
-                <span class="checkmark"></span>
-                <div class="payment-info">
-                  <div class="payment-title">
-                    <span class="payment-icon">💵</span>
-                    {{ t('create_order_cash_payment') }}
-                  </div>
-                  <div class="payment-desc">{{ t('create_order_cash_description') }}</div>
-                </div>
-              </label>
-            </div>
           </div>
         </div>
 

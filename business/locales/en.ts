@@ -1078,6 +1078,28 @@ const en = {
   create_order_time_invalid: 'Invalid time',
   create_order_create_button: 'Create Order',
   
+  // Validation Messages
+  create_order_start_time_hint: 'Start time must be at least 1 hour from now',
+  create_order_end_time_hint: 'End time must be after start time',
+  create_order_note_hint: 'Note must not exceed 50 words',
+  create_order_start_time_error: 'Start time must be at least 1 hour from now (after {time})',
+  create_order_area_negative_error: 'Area cannot be negative',
+  create_order_area_zero_error: 'Area must be greater than 0',
+  create_order_end_time_error: 'End time must be after start time',
+  create_order_note_max_words_error: 'Note can only have up to 50 words (current: {count} words)',
+  create_order_service_required: 'Please select a service type',
+  create_order_area_required: 'Please enter a valid area',
+  create_order_start_time_required: 'Please select start time',
+  create_order_end_time_required: 'Please select end time',
+  create_order_check_info: 'Please check information',
+  create_order_check_again: 'Please check again:',
+  create_order_time_error: 'Time error: {message}',
+  
+  // Price Calculation
+  create_order_base_price: 'Base price: {pricePerM2} x {area} m² = {basePrice} VND',
+  create_order_price_factor: 'applying factor {factor} because requested hours < estimated hours',
+  create_order_price_breakdown: 'Original price: {basePrice} VND + VAT 10% ({vat} VND) = {total} VND',
+  
   // Payment Modal
   create_order_payment_title: 'Choose Payment Method',
   create_order_order_info: 'Order Information',
@@ -1135,7 +1157,9 @@ const en = {
   create_order_value_none: 'None',
   create_order_value_na: 'N/A',
   create_order_thank_you: 'Thank you for using our service!',
-  
+  orders_status_pending_payment: 'Pending Payment',
+  orders_status_paid: 'Paid',
+
   // Cancel Order
   cancel_order_button: 'Cancel Order',
   cancel_order_title: 'Cancel Order Request',
