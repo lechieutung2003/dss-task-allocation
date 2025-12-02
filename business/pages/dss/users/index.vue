@@ -1,5 +1,50 @@
 <template>
   <div class="p-6">
+
+    <!-- Success Alert -->
+    <div
+      v-if="showSuccessAlert"
+      class="fixed top-4 right-4 z-50 max-w-sm w-full bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 flex items-start animate-slide-in"
+    >
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <div class="ml-3 flex-1">
+        <p class="text-sm font-medium text-green-800">
+          {{ $t('employee_created_success') }}
+        </p>
+      </div>
+      <button @click="showSuccessAlert = false" class="ml-auto text-green-400 hover:text-green-600">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Error Alert -->
+    <div
+      v-if="showErrorAlert"
+      class="fixed top-4 right-4 z-50 max-w-sm w-full bg-red-50 border border-red-200 rounded-lg shadow-lg p-4 flex items-start animate-slide-in"
+    >
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <div class="ml-3 flex-1">
+        <p class="text-sm font-medium text-red-800">
+          {{ errorMessage }}
+        </p>
+      </div>
+      <button @click="showErrorAlert = false" class="ml-auto text-red-400 hover:text-red-600">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+    </div>
+
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <button 
@@ -48,7 +93,8 @@
       :available-areas="availableAreas"
       :loading="creating"
       @close="closeCreateModal"
-      @create="handleCreateEmployee"
+      @success="handleCreateSuccess"
+      @error="handleCreateError"
     />
 
     <!-- Delete Confirmation Modal Component -->
@@ -83,6 +129,9 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const showSuccessAlert = ref(false)
+const showErrorAlert = ref(false)
+const errorMessage = ref('')
 
 // USE: Employee Management Composable
 const {
@@ -121,20 +170,43 @@ const {
   initializeForm
 } = useEmployeeCrud()
 
-// HANDLERS: Success callbacks
-const handleCreateEmployee = async (employeeData: any) => {
-  await createEmployee(employeeData, () => {
-    // Refresh data after create
-    if (currentPage.value === 1) {
-      loadEmployees()
-    } else {
-      currentPage.value = 1
-      loadEmployees()
-    }
-    // Reload areas in case new area was added
-    loadAllAreas()
-  })
+// ✅ Handler: Success
+const handleCreateSuccess = async (message: string) => {
+  // Show success alert
+  showSuccessAlert.value = true
+  
+  // Auto hide after 3 seconds
+  setTimeout(() => {
+    showSuccessAlert.value = false
+  }, 3000)
+  
+  // Refresh data
+  if (currentPage.value === 1) {
+    await loadEmployees()
+  } else {
+    currentPage.value = 1
+    await loadEmployees()
+  }
+  
+  // Reload areas in case new area was added
+  await loadAllAreas()
 }
+
+// ✅ Handler: Error
+const handleCreateError = (message: string) => {
+  errorMessage.value = message || t('employee_created_failed')
+  showErrorAlert.value = true
+  
+  // Auto hide after 5 seconds
+  setTimeout(() => {
+    showErrorAlert.value = false
+  }, 5000)
+}
+
+// HANDLERS: Legacy - keeping for backward compatibility
+// const handleCreateEmployee = async (employeeData: any) => {
+//   await createEmployee(employeeData, handleCreateSuccess)
+// }
 
 const handleDeleteEmployee = async () => {
   await deleteEmployee(() => {
@@ -156,3 +228,21 @@ onMounted(() => {
   initializeForm() // Initialize form with current date
 })
 </script>
+
+
+<style scoped>
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+</style>

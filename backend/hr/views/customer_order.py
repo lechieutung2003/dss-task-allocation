@@ -22,16 +22,55 @@ from hr.serializers import AssignmentSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
+import traceback
 
 class SimpleCreateOrderAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        serializer = OrderSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Debug log incoming request and user
+        try:
+            serializer = OrderSerializer(data=request.data)
+        except Exception as e:
+            # Unexpected error while preparing serializer
+            tb = traceback.format_exc()
+            print("Error preparing OrderSerializer: %s", e)
+            print("EXCEPTION preparing serializer:\n", tb)
+            return Response({
+                "detail": "Server error preparing request",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        try:
+            if serializer.is_valid():
+                try:
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                except Exception as e:
+                    tb = traceback.format_exc()
+                    print("Error saving Order: %s", e)
+                    print("EXCEPTION saving order:\n", tb)
+                    return Response({
+                        "detail": "Error saving order",
+                        "error": str(e)
+                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                # Log validation errors for easier debugging
+                print("OrderSerializer.is_valid() == False; errors: %s", serializer.errors)
+                print("VALIDATION ERRORS:", serializer.errors)
+                return Response({
+                    "detail": "Invalid data",
+                    "errors": serializer.errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Catch-all for unexpected errors during validation flow
+            tb = traceback.format_exc()
+            print("Unexpected error in create-order POST: %s", e)
+            print("UNEXPECTED EXCEPTION in create-order POST:\n", tb)
+            return Response({
+                "detail": "Unexpected server error",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class CustomerOrdersAPIView(APIView):

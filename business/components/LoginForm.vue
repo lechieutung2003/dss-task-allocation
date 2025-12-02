@@ -161,6 +161,8 @@ const login = async () => {
     
     try {
         const response = await OAuthService.login(data);
+        console.log('Login response:', response);
+        
         const { access_token, refresh_token } = response;
         store.setTokenInfo({ access_token, refresh_token });
         if (access_token && refresh_token) {

@@ -13,9 +13,9 @@ class RegisterCustomerSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=50, required=False, allow_blank=True)
     last_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
     # name sẽ tự động được tạo từ first_name và last_name, không cần nhập từ frontend
-    phone = serializers.CharField(max_length=20)
-    address = serializers.CharField(max_length=255)
-    area = serializers.ChoiceField(choices=Customer.AREA_CHOICES)
+    phone = serializers.CharField(max_length=20, required=False)
+    address = serializers.CharField(max_length=255, required=False)
+    area = serializers.ChoiceField(choices=Customer.AREA_CHOICES, required=False)
 
     def create(self, validated_data):
         password = validated_data.pop('password')

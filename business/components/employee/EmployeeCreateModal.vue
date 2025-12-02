@@ -24,12 +24,13 @@
           <EmployeeForm
             :employee="newEmployee"
             :available-areas="availableAreas"
+            :loading="saving"
             :skills-list="skillsList"
-            :loading="loading"
             :skills-loading="skillsLoading"
-            @submit="$emit('create', $event)"
+            @submit="onSubmit"
             @cancel="$emit('close')"
           />
+          <p v-if="errorMsg" class="mt-2 text-sm text-red-600">{{ errorMsg }}</p>
         </div>
       </div>
     </div>
@@ -37,13 +38,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SkillService from '@/services/dss/users/skill'
+import EmployeeService from '@/services/dss/users/employees'
 
 const { t } = useI18n()
 const skillsList = ref<any[]>([])
 const skillsLoading = ref(false)
+const saving = ref(false)
+const errorMsg = ref('')
 
 onMounted(async () => {
   skillsLoading.value = true
@@ -68,8 +72,65 @@ interface Props {
 
 defineProps<Props>()
 
-defineEmits<{
+const emit = defineEmits<{
   close: []
-  create: [data: any]
+  success: [message?: string]
+  error: [message: string]
 }>()
+
+const onSubmit = async (formData: any) => {
+  errorMsg.value = ''
+  const first = formData.first_name?.trim()
+  const last = formData.last_name?.trim()
+  const mail = formData.work_mail?.trim()
+
+  // Validate required fields
+  if (!first || !last || !mail) {
+    const message = t('please_fill_required_fields')
+    errorMsg.value = message
+    emit('error', message)
+    return
+  }
+
+  // Set default password
+  if (!formData.password) {
+    formData.password = '123456'
+  }
+
+  try {
+    saving.value = true
+    
+    console.log('[EmployeeCreateModal] Creating employee with data:', formData)
+    const response = await EmployeeService.createEmployee(formData)
+    console.log('[EmployeeCreateModal] Employee created successfully:', response)
+
+    // ✅ Check status từ response
+    if (response.status && response.status == "404") {
+      // Error case
+      const message = response.work_mail 
+        ? (Array.isArray(response.work_mail) ? response.work_mail[0] : response.work_mail)
+        : (response.detail || t('error_saving_employee'))
+      
+      errorMsg.value = message
+      emit('error', message)
+      emit('close')
+      
+    } else {
+      // Success case
+      console.log("Creating employee succeeded")
+      emit('success','Creating employee succeeded')
+      emit('close')
+    }
+    
+  } catch (e: any) {
+    // Network error hoặc exception khác
+    console.error('[EmployeeCreateModal] Exception:', e)
+    const message = e.message || t('error_saving_employee')
+    errorMsg.value = message
+    emit('error', message)
+    
+  } finally {
+    saving.value = false
+  }
+}
 </script>

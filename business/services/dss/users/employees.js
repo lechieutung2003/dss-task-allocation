@@ -96,15 +96,32 @@ class EmployeeService extends BaseService {
     }
   }
 
-  async createEmployee(data) {
-    console.log('Creating employee:', data)
+  removeEmptyFields(obj) {
+    return Object.fromEntries(
+      Object.entries(obj).filter(([_, v]) =>
+        !(v === '' || v === null || v === undefined || (Array.isArray(v) && v.length === 0))
+      )
+    )
+  }
+
+  async createEmployee(payload) {
+    console.log('Creating employee:', payload)
     try {
-      const response = await this.create(data)
-      console.log('Employee created successfully:', response)
-      return response
-    } catch (error) {
-      console.error('Error creating employee:', error)
-      throw error
+      // Chỉ giữ 3 field + password + skills nếu có
+      const minimal = {
+        first_name: payload.first_name?.trim(),
+        last_name: payload.last_name?.trim(),
+        work_mail: payload.work_mail?.trim(),
+        password: payload.password || '123456',
+        ...(payload.skills?.length ? { skills: payload.skills } : {})
+      }
+      const clean = this.removeEmptyFields(minimal)
+      const res = await this.request().post(`${this.entity}`, clean)
+      return res?.data || res
+    } catch (err) {
+      console.error('Error creating employee:', err)
+      console.error('Server error body:', err.response?.data || err.data)
+      throw err
     }
   }
 
