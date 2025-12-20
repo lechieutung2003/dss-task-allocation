@@ -127,6 +127,9 @@ const en = {
   
   // Table Headers
   orders_table_service: 'Service',
+  orders_table_code: 'Order Code',
+  orders_table_customer: 'Customer',
+  orders_table_price: 'Price (VND)',
   orders_table_area: 'Area (m2)',
   orders_table_start_time: 'Start Time',
   orders_table_end_time: 'End Time',
@@ -1357,11 +1360,6 @@ const en = {
   hours_remaining: 'Hours Remaining',
   priority_score: 'Priority Score',
   coefficient: 'Coefficient',
-  orders_table_code: 'Order Code',
-  orders_table_customer: 'Customer',
-  orders_table_service: 'Service',
-  orders_table_price: 'Price',
-  orders_table_status: 'Status',
   status_pending: 'Pending',
   status_in_progress: 'In Progress',
   status_completed: 'Completed',
@@ -1371,9 +1369,6 @@ const en = {
   kpi_medium: 'Medium (20-39)',
   kpi_needs_improvement: 'Needs Improvement (<20)',
   no_email: 'No email',
-  total_hours_worked: 'Total Hours Worked',
-  work_hour_score: 'Work Hour Score',
-  orders_count: 'Orders Count',
   
   // Revenue Cost Profit Chart
   revenue_cost_profit_title: 'Revenue - Cost - Profit',
@@ -1391,7 +1386,6 @@ const en = {
   count_label: 'Count',
   no_status_data: 'No completed or rejected data',
   no_service_data: 'No service data',
-  other: 'Other',
   
 }
 

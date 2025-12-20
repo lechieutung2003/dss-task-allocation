@@ -127,6 +127,9 @@ const vi = {
   
   // Table Headers
   orders_table_service: 'Dịch vụ',
+  orders_table_code: 'Mã đơn',
+  orders_table_customer: 'Khách hàng',
+  orders_table_price: 'Giá (VND)',
   orders_table_area: 'Diện tích (m2)',
   orders_table_start_time: 'Thời gian bắt đầu',
   orders_table_end_time: 'Thời gian kết thúc',
@@ -1370,11 +1373,6 @@ const vi = {
   hours_remaining: 'Giờ còn lại',
   priority_score: 'Điểm ưu tiên',
   coefficient: 'Hệ số',
-  orders_table_code: 'Mã đơn',
-  orders_table_customer: 'Khách hàng',
-  orders_table_service: 'Dịch vụ',
-  orders_table_price: 'Giá trị',
-  orders_table_status: 'Trạng thái',
   status_pending: 'Chờ xử lý',
   status_in_progress: 'Đang làm',
   status_completed: 'Hoàn thành',
@@ -1384,9 +1382,6 @@ const vi = {
   kpi_medium: 'Trung bình (20-39)',
   kpi_needs_improvement: 'Cần cải thiện (<20)',
   no_email: 'Chưa có email',
-  total_hours_worked: 'Tổng giờ làm',
-  work_hour_score: 'Điểm giờ làm',
-  orders_count: 'Số đơn',
   
   // Revenue Cost Profit Chart
   revenue_cost_profit_title: 'Doanh Thu - Chi Phí - Lợi Nhuận',
@@ -1404,7 +1399,6 @@ const vi = {
   count_label: 'Số lượt',
   no_status_data: 'Không có dữ liệu completed hoặc rejected',
   no_service_data: 'Không có dữ liệu dịch vụ',
-  other: 'Khác',
   
 };
 

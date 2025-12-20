@@ -120,6 +120,9 @@ class EmployeeKPIView(APIView):
         manual_parameters=[
             openapi.Parameter('page', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, default=1),
             openapi.Parameter('page_size', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, default=5),
+            openapi.Parameter('period', openapi.IN_QUERY, type=openapi.TYPE_STRING, enum=['week', 'month'], default='week'),
+            openapi.Parameter('start_date', openapi.IN_QUERY, type=openapi.TYPE_STRING, format='date'),
+            openapi.Parameter('end_date', openapi.IN_QUERY, type=openapi.TYPE_STRING, format='date'),
         ],
         responses={200: EmployeeKPIEnhancedSerializer(many=True)}
     )
@@ -127,10 +130,17 @@ class EmployeeKPIView(APIView):
         try:
             page = int(request.query_params.get('page', 1))
             page_size = int(request.query_params.get('page_size', 5))
+            period = request.query_params.get('period', 'week')
+            start_date = _parse_date_only_start(request.GET.get('start_date'))
+            end_date = _parse_date_only_end(request.GET.get('end_date'))
             
             # Get top 10 employees
             try:
-                employee_kpi = EnhancedDashboardService.calculate_employee_kpi_enhanced()
+                employee_kpi = EnhancedDashboardService.calculate_employee_kpi_enhanced(
+                    start_date=start_date,
+                    end_date=end_date,
+                    period=period
+                )
             except Exception as e:
                 print(f"❌ Error in calculate_employee_kpi_enhanced: {e}")
                 import traceback
@@ -172,12 +182,24 @@ class EmployeeKPIDetailView(APIView):
         operation_description="Get detailed KPI for a specific employee",
         manual_parameters=[
             openapi.Parameter('employee_id', openapi.IN_PATH, type=openapi.TYPE_INTEGER, required=True),
+            openapi.Parameter('period', openapi.IN_QUERY, type=openapi.TYPE_STRING, enum=['week', 'month'], default='week'),
+            openapi.Parameter('start_date', openapi.IN_QUERY, type=openapi.TYPE_STRING, format='date'),
+            openapi.Parameter('end_date', openapi.IN_QUERY, type=openapi.TYPE_STRING, format='date'),
         ],
         responses={200: EmployeeKPIDetailSerializer()}
     )
     def get(self, request, employee_id):
         try:
-            kpi_detail = EnhancedDashboardService.get_employee_kpi_detail(employee_id)
+            period = request.query_params.get('period', 'week')
+            start_date = _parse_date_only_start(request.GET.get('start_date'))
+            end_date = _parse_date_only_end(request.GET.get('end_date'))
+            
+            kpi_detail = EnhancedDashboardService.get_employee_kpi_detail(
+                employee_id,
+                start_date=start_date,
+                end_date=end_date,
+                period=period
+            )
             
             if kpi_detail is None:
                 return Response({

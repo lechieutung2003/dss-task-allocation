@@ -382,7 +382,7 @@ class OrderViewSet(BaseViewSet):
             return Response({"detail": "Missing status field"}, status=status.HTTP_400_BAD_REQUEST)
         
         new_status = request.data['status'].upper()  # Chuẩn hóa thành chữ HOA
-        valid_statuses = ['PENDING', 'PENDING_PAYMENT', 'PAID', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'REJECTED']
+        valid_statuses = ['PENDING', 'PENDING_PAYMENT', 'PAID', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'REJECTED', 'REFUND']
         
         logger.info(f"Update status request: order={pk}, old={old_status}, new={new_status}, raw={request.data['status']}")
         

@@ -30,7 +30,7 @@ export default {
   
   /**
    * Get top 10 employees by KPI with pagination
-   * @param {Object} params - { page: 1, page_size: 5 }
+   * @param {Object} params - { page: 1, page_size: 5, period: 'week' | 'month', start_date, end_date }
    */
   async getEmployeeKPI(params = {}) {
     try {
@@ -45,10 +45,11 @@ export default {
   /**
    * Get detailed KPI for specific employee (for popup)
    * @param {Number} employeeId
+   * @param {Object} params - { period: 'week' | 'month', start_date, end_date }
    */
-  async getEmployeeKPIDetail(employeeId) {
+  async getEmployeeKPIDetail(employeeId, params = {}) {
     try {
-      const response = await ApiService.get(`${BASE_URL}/employee-kpi/${employeeId}`)
+      const response = await ApiService.get(`${BASE_URL}/employee-kpi/${employeeId}`, { params })
       return response
     } catch (error) {
       console.error('❌ Error fetching employee KPI detail:', error)
