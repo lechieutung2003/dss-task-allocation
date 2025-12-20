@@ -7,6 +7,12 @@
           <h3>{{ $t('dashboard_title') }}</h3>
           <el-tag type="primary" size="small" effect="plain">{{ $t('top_10') }}</el-tag>
         </div>
+        <div class="header-actions">
+          <el-radio-group v-model="selectedPeriod" size="small" @change="handlePeriodChange">
+            <el-radio-button value="week">Tuần</el-radio-button>
+            <el-radio-button value="month">Tháng</el-radio-button>
+          </el-radio-group>
+        </div>
       </div>
     </template>
 
@@ -224,6 +230,7 @@ const pageSize = ref(5)
 const totalRecords = ref(0)
 const chartRef = ref(null)
 let chartInstance = null
+const selectedPeriod = ref('week')
 
 // Dialog
 const dialogVisible = ref(false)
@@ -236,13 +243,14 @@ const fetchEmployees = async () => {
   try {
     const response = await enhancedDashboardService.getEmployeeKPI({
       page: currentPage.value,
-      page_size: pageSize.value
+      page_size: pageSize.value,
+      period: selectedPeriod.value
     })
     
     if (response.success) {
       employees.value = response.data
       totalRecords.value = response.pagination.total
-      console.log('✅ Employee KPI loaded:', employees.value.length)
+      console.log('✅ Employee KPI loaded:', employees.value.length, 'Period:', selectedPeriod.value)
       
       nextTick(() => {
         updateChart()
@@ -255,6 +263,11 @@ const fetchEmployees = async () => {
   }
 }
 
+const handlePeriodChange = () => {
+  console.log('📅 Period changed to:', selectedPeriod.value)
+  fetchEmployees()
+}
+
 const handleRowClick = async (row) => {
   selectedEmployee.value = row
   dialogVisible.value = true
@@ -262,7 +275,9 @@ const handleRowClick = async (row) => {
   detailLoading.value = true
   
   try {
-    const response = await enhancedDashboardService.getEmployeeKPIDetail(row.employee_id)
+    const response = await enhancedDashboardService.getEmployeeKPIDetail(row.employee_id, {
+      period: selectedPeriod.value
+    })
     
     if (response.success) {
       employeeDetail.value = response.data
@@ -307,6 +322,12 @@ const updateChart = () => {
     chartInstance.destroy()
   }
   
+  // Scale based on period
+  const isMonth = selectedPeriod.value === 'month'
+  const kpiTarget = isMonth ? 240 : 60  // 60 * 4 = 240
+  const maxScale = isMonth ? 300 : 100
+  const maxHours = isMonth ? 192 : 48  // 48 * 4 = 192
+  
   const ctx = chartRef.value.getContext('2d')
 
   chartInstance = new Chart(ctx, {
@@ -325,7 +346,7 @@ const updateChart = () => {
       {
         id: 'thresholdLine',
         beforeDraw(chart) {
-          const threshold = 60
+          const threshold = kpiTarget
           const xScale = chart.scales.x
           if (!xScale) return
           const x = xScale.getPixelForValue(threshold)
@@ -342,7 +363,7 @@ const updateChart = () => {
           // Add label
           ctx.fillStyle = '#67c23a'
           ctx.font = 'bold 12px sans-serif'
-          ctx.fillText('Mục tiêu: 60', x + 5, chart.chartArea.top + 20)
+          ctx.fillText(`Mục tiêu: ${threshold}`, x + 5, chart.chartArea.top + 20)
           ctx.restore()
         }
       }
@@ -373,9 +394,8 @@ const updateChart = () => {
               const emp = employees.value[idx] || {}
               const hours = Number(emp.total_worked_hours || 0)
               const orders = Number(emp.completed_orders || 0)
-              const pct = Math.min((hours / 48) * 100, 100)
+              const pct = Math.min((hours / maxHours) * 100, 100)
               const points = hours + orders
-              const kpiTarget = 60
               const need = Math.max(0, kpiTarget - points)
 
               return [
@@ -391,7 +411,7 @@ const updateChart = () => {
       scales: {
         x: {
           beginAtZero: true,
-          max: 100,
+          max: maxScale,
           grid: {
             color: 'rgba(0, 0, 0, 0.05)'
           },
@@ -443,6 +463,24 @@ defineExpose({ fetchEmployees })
   justify-content: space-between;
   align-items: center;
   padding: 6px 4px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.header-actions :deep(.el-radio-button__inner) {
+  padding: 8px 16px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.header-actions :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+  background: white;
+  color: #409eff;
+  border-color: white;
 }
 
 .header-title {

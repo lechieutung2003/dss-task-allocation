@@ -128,7 +128,7 @@
       </div> -->
 
       <!-- Hành động - Buttons clean layout -->
-      <div v-if="order.status !== 'completed' && order.status !== 'rejected'" class="mt-8">
+      <div v-if="order.status !== 'completed' && order.status !== 'rejected' && order.status !== 'refund'" class="mt-8">
         <h3 class="text-lg font-medium mb-3">Hành động</h3>
         <div class="flex space-x-3">
           <el-button 
@@ -139,6 +139,15 @@
             icon="el-icon-close"
           >
             Hủy đơn hàng
+          </el-button>
+          <el-button 
+            type="warning" 
+            @click="handleRefundOrder"
+            size="medium" 
+            plain
+            icon="el-icon-refresh-left"
+          >
+            Hoàn tiền
           </el-button>
           <!-- <el-button
             type="primary"
@@ -223,7 +232,8 @@ const getStatusLabel = (status) => {
     'confirmed': 'Đã xác nhận',
     'in_progress': 'Đang xử lý',
     'completed': 'Hoàn thành',
-    'rejected': 'Đã hủy'
+    'rejected': 'Đã hủy',
+    'refund': 'Hoàn tiền'
   };
   return statusMap[status] || status;
 };
@@ -235,7 +245,8 @@ const getStatusType = (status) => {
     'confirmed': 'primary',
     'in_progress': 'info',
     'completed': 'success',
-    'cancelled': 'danger'
+    'cancelled': 'danger',
+    'refund': 'warning'
   };
   return statusTypeMap[status] || '';
 };
@@ -283,6 +294,31 @@ const handleCancelOrder = () => {
   }).catch((error) => {
     // User cancelled
     console.log('Hủy bỏ hủy đơn hàng', error);
+  });
+};
+
+// Handle refund order
+const handleRefundOrder = () => {
+  ElMessageBox.prompt('Vui lòng nhập lý do hoàn tiền', 'Xác nhận hoàn tiền', {
+    confirmButtonText: 'Xác nhận',
+    cancelButtonText: 'Hủy',
+    type: 'warning',
+    inputType: 'textarea',
+    inputPlaceholder: 'Nhập lý do hoàn tiền...'
+  }).then(async ({ value: reason }) => {
+    const orderId = props.order.id;
+    console.log('Hoàn tiền đơn hàng', orderId, 'Lý do:', reason);
+    
+    // Gọi API để ghi log hoàn tiền
+    await OrderService.rejectOrder(orderId, reason);
+    
+    // Cập nhật trạng thái thành REFUND
+    await OrderService.updateOrderStatus(orderId, 'refund');
+    
+    props.order.status = 'refund';
+  }).catch((error) => {
+    // User cancelled
+    console.log('Hủy bỏ hoàn tiền', error);
   });
 };
 </script>
