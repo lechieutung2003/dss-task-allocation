@@ -65,7 +65,7 @@ class EnhancedDashboardService:
             time_factor = 0
 
         # Price Factor
-        ref_price = 2000
+        ref_price = 2000000
         price = float(order.cost_confirm or 0)
         price_factor = 0.3 * min(price / ref_price, 1)
 
@@ -144,9 +144,14 @@ class EnhancedDashboardService:
     
     # ==================== MODULE 2: EMPLOYEE KPI ====================
     @staticmethod
-    def calculate_employee_kpi_enhanced() -> List[Dict[str, Any]]:
+    def calculate_employee_kpi_enhanced(start_date=None, end_date=None, period='week') -> List[Dict[str, Any]]:
         """
         Tính KPI nhân viên: KPI = tổng số giờ làm + số đơn hoàn thành.
+        
+        Args:
+            start_date: datetime or str (ISO format) - Ngày bắt đầu filter
+            end_date: datetime or str (ISO format) - Ngày kết thúc filter
+            period: 'week' | 'month' - Khoảng thời gian tính KPI
         """
         try:
             employees = Employee.objects.filter(user__is_staff=True, user__is_superuser=False)
@@ -154,23 +159,76 @@ class EnhancedDashboardService:
             print(f"❌ Error filtering employees: {e}")
             return []
 
+        # Parse dates if provided
+        def _parse_dt(dt):
+            if dt is None:
+                return None
+            if isinstance(dt, str):
+                try:
+                    return timezone.make_aware(datetime.fromisoformat(dt))
+                except Exception:
+                    return timezone.make_aware(datetime.fromisoformat(dt + 'T00:00:00'))
+            return dt
+
+        if end_date is None:
+            end_date = timezone.now()
+        end_date = _parse_dt(end_date) or end_date
+
+        if start_date is None:
+            # Default range based on period
+            if period == 'month':
+                start_date = end_date - timedelta(days=30)
+            else:  # week
+                start_date = end_date - timedelta(days=7)
+        start_date = _parse_dt(start_date) or start_date
+
+        # Ensure aware datetimes
+        if timezone.is_naive(start_date):
+            start_date = timezone.make_aware(start_date)
+        if timezone.is_naive(end_date):
+            end_date = timezone.make_aware(end_date)
+
         result = []
         for emp in employees:
             try:
-                total_worked_hours = float(emp.total_hours_worked or 0)
-                order_count = int(emp.completed_orders_count or 0)
+                # Filter orders trong khoảng thời gian
+                completed_orders = emp.orders.filter(
+                    status__in=['completed', 'COMPLETED'],
+                    updated_at__gte=start_date,
+                    updated_at__lte=end_date
+                )
+                
+                # Tính total worked hours từ các đơn trong khoảng thời gian
+                total_worked_hours = 0
+                for order in completed_orders:
+                    estimated_h = float(order.estimated_hours or 0)
+                    requested_h = float(order.requested_hours or 0)
+                    
+                    if estimated_h > 0 and requested_h > 0:
+                        worked_hours = min(estimated_h, requested_h)
+                    elif estimated_h > 0:
+                        worked_hours = estimated_h
+                    elif requested_h > 0:
+                        worked_hours = requested_h
+                    else:
+                        worked_hours = 0
+                    
+                    total_worked_hours += worked_hours
+                
+                order_count = completed_orders.count()
                 kpi_score = total_worked_hours + order_count
 
                 result.append({
-                    'employee_id': str(emp.id),  # ép kiểu về string để an toàn
+                    'employee_id': str(emp.id),
                     'name': f"{getattr(emp, 'first_name', '')} {getattr(emp, 'last_name', '')}".strip() or 'Unknown',
                     'email': getattr(emp, 'work_mail', '') or getattr(emp, 'personal_mail', '') or 'N/A',
                     'total_worked_hours': round(total_worked_hours, 2),
-                    'work_hour_score': round(total_worked_hours, 2),  # Same as total_worked_hours
-                    'early_bonus': 0.0,  # No bonus in simplified version
+                    'work_hour_score': round(total_worked_hours, 2),
+                    'early_bonus': 0.0,
                     'completed_orders': order_count,
-                    'area': 'N/A',  # Add area field if available
+                    'area': 'N/A',
                     'kpi_score': round(kpi_score, 2),
+                    'period': period,
                 })
             except Exception as e:
                 print(f"❌ Error appending employee {getattr(emp, 'id', None)} to result: {e}")
@@ -182,23 +240,57 @@ class EnhancedDashboardService:
         return result
     
     @staticmethod
-    def get_employee_kpi_detail(employee_id: int) -> Dict[str, Any]:
+    def get_employee_kpi_detail(employee_id: int, start_date=None, end_date=None, period='week') -> Dict[str, Any]:
         """
         Chi tiết KPI của 1 nhân viên (cho popup)
-        Lấy từ bảng Employee (total_hours_worked, completed_orders_count) 
-        và từ bảng trung gian Order.employees để hiển thị chi tiết các đơn
+        Lấy từ bảng Employee và từ bảng trung gian Order.employees để hiển thị chi tiết các đơn
+        
+        Args:
+            employee_id: ID của nhân viên
+            start_date: datetime or str (ISO format) - Ngày bắt đầu filter
+            end_date: datetime or str (ISO format) - Ngày kết thúc filter
+            period: 'week' | 'month' - Khoảng thời gian tính KPI
         """
         try:
             emp = Employee.objects.get(id=employee_id)
         except Employee.DoesNotExist:
             return None
         
-        # Lấy tổng số giờ và số đơn từ bảng Employee
-        total_worked_hours = float(emp.total_hours_worked or 0)
-        completed_orders_count = int(emp.completed_orders_count or 0)
+        # Parse dates if provided
+        def _parse_dt(dt):
+            if dt is None:
+                return None
+            if isinstance(dt, str):
+                try:
+                    return timezone.make_aware(datetime.fromisoformat(dt))
+                except Exception:
+                    return timezone.make_aware(datetime.fromisoformat(dt + 'T00:00:00'))
+            return dt
+
+        if end_date is None:
+            end_date = timezone.now()
+        end_date = _parse_dt(end_date) or end_date
+
+        if start_date is None:
+            # Default range based on period
+            if period == 'month':
+                start_date = end_date - timedelta(days=30)
+            else:  # week
+                start_date = end_date - timedelta(days=7)
+        start_date = _parse_dt(start_date) or start_date
+
+        # Ensure aware datetimes
+        if timezone.is_naive(start_date):
+            start_date = timezone.make_aware(start_date)
+        if timezone.is_naive(end_date):
+            end_date = timezone.make_aware(end_date)
         
-        # Lấy danh sách các đơn đã hoàn thành từ bảng trung gian Order.employees
-        completed_orders = emp.orders.filter(status__in=['completed','COMPLETED']).order_by('-updated_at')
+        # Lấy danh sách các đơn đã hoàn thành từ bảng trung gian Order.employees trong khoảng thời gian
+        completed_orders = emp.orders.filter(
+            status__in=['completed','COMPLETED'],
+            updated_at__gte=start_date,
+            updated_at__lte=end_date
+        ).order_by('-updated_at')
         
         orders_detail = []
         early_bonus_total = 0
@@ -237,6 +329,8 @@ class EnhancedDashboardService:
             else:
                 worked_hours = 0
             
+            total_worked_hours += worked_hours
+            
             orders_detail.append({
                 'order_id': str(order.id),
                 'code': f'ORD-{str(order.id)[:8]}',
@@ -250,6 +344,7 @@ class EnhancedDashboardService:
             })
         
         # Tính KPI score: total_worked_hours + completed_orders_count
+        completed_orders_count = completed_orders.count()
         kpi_score = total_worked_hours + completed_orders_count
         
         return {
@@ -262,110 +357,12 @@ class EnhancedDashboardService:
             'early_bonus_total': round(early_bonus_total, 3),
             'kpi_score': round(kpi_score, 2),
             'completed_orders_count': completed_orders_count,
-            'orders_detail': orders_detail
+            'orders_detail': orders_detail,
+            'period': period,
         }
     
     # ==================== MODULE 3: REVENUE - COST - PROFIT ====================
-    
-    # @staticmethod
-    # def clean_orders_for_revenue():
-    #     """Clean data: loại records lỗi, null, thời gian âm"""
-    #     return Order.objects.filter(
-    #         preferred_start_time__isnull=False,
-    #         preferred_end_time__isnull=False,
-    #         cost_confirm__isnull=False,
-    #         cost_confirm__gt=0,
-    #         preferred_start_time__lt=F('preferred_end_time'),
-    #         status='completed'
-    #     )
-    
-    # @staticmethod
-    # def calculate_revenue_cost_profit(start_date=None, end_date=None, period='day') -> List[Dict[str, Any]]:
-    #     """
-    #     Tính Revenue - Cost - Profit theo ngày/tuần/tháng
-        
-    #     Revenue: cost_confirm của orders completed
-    #     Cost: 20 * (giờ kết thúc - giờ bắt đầu) * số nhân viên làm đơn
-    #     Profit: Revenue - Cost
-        
-    #     Args:
-    #         start_date: datetime
-    #         end_date: datetime
-    #         period: 'day' | 'week' | 'month'
-    #     """
-    #     if end_date is None:
-    #         end_date = timezone.now()
-    #     if start_date is None:
-    #         start_date = end_date - timedelta(days=30)
-        
-    #     # Clean orders
-    #     orders = EnhancedDashboardService.clean_orders_for_revenue().filter(
-    #         updated_at__gte=start_date,
-    #         updated_at__lte=end_date
-    #     )
-        
-    #     # Group by period
-    #     if period == 'week':
-    #         orders_grouped = orders.annotate(period_date=TruncWeek('updated_at'))
-    #     elif period == 'month':
-    #         orders_grouped = orders.annotate(period_date=TruncMonth('updated_at'))
-    #     else:  # day
-    #         orders_grouped = orders.annotate(period_date=TruncDate('updated_at'))
-        
-    #     # Aggregate revenue
-    #     revenue_data = orders_grouped.values('period_date').annotate(
-    #         revenue=Sum('cost_confirm', output_field=DecimalField())
-    #     ).order_by('period_date')
-        
-    #     # Tính cost cho từng order
-    #     result = {}
-    #     for order in orders:
-    #         # Period key
-    #         if period == 'week':
-    #             period_key = order.updated_at.date() - timedelta(days=order.updated_at.weekday())
-    #         elif period == 'month':
-    #             period_key = order.updated_at.date().replace(day=1)
-    #         else:
-    #             period_key = order.updated_at.date()
-            
-    #         if period_key not in result:
-    #             result[period_key] = {
-    #                 'date': period_key.isoformat(),
-    #                 'revenue': 0,
-    #                 'cost': 0,
-    #                 'profit': 0
-    #             }
-            
-    #         # Revenue
-    #         result[period_key]['revenue'] += float(order.cost_confirm or 0)
-            
-    #         # Cost calculation: 20 * (end - start in hours) * số nhân viên
-    #         duration_hours = (order.preferred_end_time - order.preferred_start_time).total_seconds() / 3600
-    #         employee_count = Assignment.objects.filter(order=order).count()
-            
-    #         if employee_count == 0:
-    #             employee_count = 1  # Default nếu không có assignment
-            
-    #         cost = 20 * duration_hours * employee_count
-    #         result[period_key]['cost'] += cost
-        
-    #     # Calculate profit
-    #     final_result = []
-    #     for date_key in sorted(result.keys()):
-    #         data = result[date_key]
-    #         data['profit'] = data['revenue'] - data['cost']
-            
-    #         # Round values
-    #         data['revenue'] = round(data['revenue'], 2)
-    #         data['cost'] = round(data['cost'], 2)
-    #         data['profit'] = round(data['profit'], 2)
-            
-    #         final_result.append(data)
-        
-    #     return final_result
-    
-    
-    
+
     @staticmethod
     def clean_orders_for_revenue():
         """Clean data: loại records lỗi, null, thời gian âm"""
